@@ -1,0 +1,8 @@
+* Talks
+
+Source code for presentations, talks and demos.
+
+Most of them are Org files designed for LaTeX Beamer publication. Fro your
+convenience, resulting PDF files are also included.
+
+Feel free to contact me if you want to compile them by yourself.
