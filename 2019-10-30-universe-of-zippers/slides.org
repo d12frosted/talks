@@ -1,0 +1,2661 @@
+#+TITLE: Universe of zippers (or how to plant a bomb)
+#+AUTHOR: Boris Buliga
+#+EMAIL: boris@d12frosted.io
+#+STARTUP: beamer
+#+LATEX_CLASS: beamer
+#+LATEX_CLASS_OPTIONS: [presentation,aspectratio=169,smaller]
+#+LATEX_HEADER: \usepackage[utf8]{inputenc}
+#+LATEX_HEADER: \usepackage{soul}
+#+LATEX_HEADER: \usepackage{unicode-math}
+#+LATEX_HEADER: \usepackage{mathtools}
+#+LATEX_HEADER: \usepackage[mathletters]{ucs}
+#+LATEX_HEADER: \usemintedstyle{tango}
+#+LATEX_HEADER: \setminted{fontsize=\scriptsize}
+#+LATEX_HEADER: \setminted{mathescape=true}
+#+LATEX_HEADER: \setbeamertemplate{itemize items}[circle]
+#+LATEX_HEADER: \setbeamertemplate{enumerate items}[default]
+#+LATEX_HEADER: \setlength{\parskip}{\baselineskip}%
+#+LATEX_HEADER: \setlength{\parindent}{0pt}%
+#+LATEX_HEADER: \setbeamertemplate{navigation symbols}{}%remove navigation symbols
+#+LATEX_HEADER: \newcommand{\hlyellow}[1]{\colorbox{yellow!50}{$\displaystyle#1$}}
+#+LATEX_HEADER: \newcommand{\hlfancy}[2]{\sethlcolor{#1}\hl{#2}}
+#+OPTIONS: H:2 toc:nil num:t
+
+#+begin_export latex
+\newcommand{\mathcolorbox}[2]{%
+  \begingroup
+  \setlength{\fboxsep}{2pt}%
+  \colorbox{#1}{$\displaystyle #2$}%
+  \endgroup
+}
+
+\AtBeginSection[]{
+  \begin{frame}
+  \vfill
+  \centering
+  \begin{beamercolorbox}[sep=8pt,center,shadow=true,rounded=true]{title}
+    \usebeamerfont{title}\insertsectionhead\par%
+  \end{beamercolorbox}
+  \vfill
+  \end{frame}
+}
+#+end_export
+
+* Intro
+:PROPERTIES:
+:UNNUMBERED:             t
+:END:
+
+** About me
+
+**** About                                                      :B_column:
+:PROPERTIES:
+:BEAMER_env:             column
+:BEAMER_col:             0.75
+:END:
+
+- Server developer @Wix.
+- Haskell ↔ Emacs Lisp extremist. Whatever that means.
+- Chinese tea lover.
+- Wine-lifestyle activist (92% of my life).
+
+**** Photo                                                      :B_column:
+:PROPERTIES:
+:BEAMER_env:             column
+:BEAMER_col:             0.25
+:END:
+
+#+ATTR_LATEX: :height 3.5cm
+[[file:images/boris.jpg]]
+
+** Agenda
+
+- <1-> Cellular Automata
+  - Elementary CA
+  - Conway's game of life
+- <2-> Bomberman
+- <3-> Secret abstraction
+
+* Act 1: Elementary Cellular Automata
+
+** Cellular Automaton
+
+A cellular automaton is a collection of "colored" *cells* on a *grid* of
+specified shape that evolves through a number of discrete time *steps* according
+to a set of *rules* based on the states of neighboring cells.
+
+The rules are then applied /iteratively/ for as many time steps as desired.
+
+** Many grids
+
+1. one-dimensional line;
+2. rectangle grid;
+3. square grid;
+4. triangular grid;
+5. hexagonal grid;
+6. d-dimensional integer lattice.
+
+** Elementary Cellular Automata
+:PROPERTIES:
+:BEAMER_opt:             t
+:END:
+
+*** Definition                                                  :B_onlyenv:
+:PROPERTIES:
+:BEAMER_env:             onlyenv
+:BEAMER_act:             <1->
+:END:
+
+The simplest class of one-dimensional cellular automata.
+
+*** Cells                                                       :B_onlyenv:
+:PROPERTIES:
+:BEAMER_env:             onlyenv
+:BEAMER_act:             <2->
+:END:
+
+Each cell has a value $a \in \lbrace 0, 1 \rbrace = \lbrace \square, \blacksquare
+\rbrace$
+
+*** Example of grid                                             :B_onlyenv:
+:PROPERTIES:
+:BEAMER_env:             onlyenv
+:BEAMER_act:             <3->
+:BEAMER_opt:             center
+:END:
+
+#+begin_export latex
+\hfill \dots
+\square \blacksquare \blacksquare \square \square \square \blacksquare
+\dots \hfill
+#+end_export
+
+*** Rule                                                        :B_onlyenv:
+:PROPERTIES:
+:BEAMER_env:             onlyenv
+:BEAMER_act:             <4->
+:BEAMER_opt:             center
+:END:
+
+#+begin_export latex
+\begin{equation*}
+  \begingroup
+  \setlength\arraycolsep{0.25pt}
+  \renewcommand{\arraystretch}{0.5}
+  \begin{matrix}
+    \blacksquare & \blacksquare & \blacksquare \\
+    & \square &
+  \end{matrix}\mspace{28mu}
+  \begin{matrix}
+    \blacksquare & \blacksquare & \square \\
+    & \blacksquare &
+  \end{matrix}\mspace{28mu}
+  \begin{matrix}
+    \blacksquare & \square & \blacksquare \\
+    & \blacksquare &
+  \end{matrix}\mspace{28mu}
+  \begin{matrix}
+    \blacksquare & \square & \square \\
+    & \square &
+  \end{matrix}\mspace{28mu}
+  \begin{matrix}
+    \square & \blacksquare & \blacksquare \\
+    & \blacksquare &
+  \end{matrix}\mspace{28mu}
+  \begin{matrix}
+    \square & \blacksquare & \square \\
+    & \blacksquare &
+  \end{matrix}\mspace{28mu}
+  \begin{matrix}
+    \square & \square & \blacksquare \\
+    & \blacksquare &
+  \end{matrix}\mspace{28mu}
+  \begin{matrix}
+    \square & \square & \square \\
+    & \square &
+  \end{matrix}
+  \endgroup
+\end{equation*}
+#+end_export
+
+** Evolution example
+:PROPERTIES:
+:BEAMER_opt:             t
+:END:
+
+*** App 1 - 0 - 1                                               :B_onlyenv:
+:PROPERTIES:
+:BEAMER_env:             onlyenv
+:BEAMER_act:             <1-3>
+:END:
+
+Current automation contents
+
+#+begin_export latex
+\begin{equation*}
+  \hfill
+  \dots
+  \square
+  \blacksquare
+  \blacksquare
+  \square
+  \square
+  \square
+  \blacksquare
+  \dots
+  \hfill
+\end{equation*}
+#+end_export
+
+*** App 1 - 0 - 2                                               :B_onlyenv:
+:PROPERTIES:
+:BEAMER_env:             onlyenv
+:BEAMER_act:             <2-3>
+:END:
+
+Rule $110$ ($01101110$)
+
+#+begin_export latex
+\begin{equation*}
+  \begingroup
+  \setlength\arraycolsep{0.25pt}
+  \renewcommand{\arraystretch}{0.5}
+  \begin{matrix}
+    \blacksquare & \blacksquare & \blacksquare \\
+    & \square &
+  \end{matrix}\mspace{28mu}
+  \begin{matrix}
+    \blacksquare & \blacksquare & \square \\
+    & \blacksquare &
+  \end{matrix}\mspace{28mu}
+  \begin{matrix}
+    \blacksquare & \square & \blacksquare \\
+    & \blacksquare &
+  \end{matrix}\mspace{28mu}
+  \begin{matrix}
+    \blacksquare & \square & \square \\
+    & \square &
+  \end{matrix}\mspace{28mu}
+  \begin{matrix}
+    \square & \blacksquare & \blacksquare \\
+    & \blacksquare &
+  \end{matrix}\mspace{28mu}
+  \begin{matrix}
+    \square & \blacksquare & \square \\
+    & \blacksquare &
+  \end{matrix}\mspace{28mu}
+  \begin{matrix}
+    \square & \square & \blacksquare \\
+    & \blacksquare &
+  \end{matrix}\mspace{28mu}
+  \begin{matrix}
+    \square & \square & \square \\
+    & \square &
+  \end{matrix}
+  \endgroup
+\end{equation*}
+#+end_export
+
+*** App 1 - 0 - 3                                               :B_onlyenv:
+:PROPERTIES:
+:BEAMER_env:             onlyenv
+:BEAMER_act:             <3>
+:END:
+
+The next generation of the automation
+
+#+begin_export latex
+\hfill \dots
+\mspace{14mu} \mspace{14mu} \mspace{14mu} \mspace{14mu} \mspace{14mu} \mspace{14mu} \mspace{14mu}
+\dots \hfill
+#+end_export
+
+*** App 1 - 1                                                   :B_onlyenv:
+:PROPERTIES:
+:BEAMER_env:             onlyenv
+:BEAMER_act:             <4>
+:END:
+
+Current automation contents
+
+#+begin_export latex
+\begin{equation*}
+  \hfill
+  \dots
+  \mathcolorbox{yellow}{%
+    \square%
+    \blacksquare%
+  }%
+  \blacksquare
+  \square
+  \square
+  \square
+  \blacksquare
+  \dots
+  \hfill
+\end{equation*}
+#+end_export
+
+Rule $110$ ($01101110$)
+
+#+begin_export latex
+\begin{equation*}
+  \begingroup
+  \setlength\arraycolsep{0.25pt}
+  \renewcommand{\arraystretch}{0.5}
+  \begin{matrix}
+    \blacksquare & \blacksquare & \blacksquare \\
+    & \square &
+  \end{matrix}\mspace{28mu}
+  \begin{matrix}
+    \blacksquare & \blacksquare & \square \\
+    & \blacksquare &
+  \end{matrix}\mspace{28mu}
+  \begin{matrix}
+    \blacksquare & \square & \blacksquare \\
+    & \blacksquare &
+  \end{matrix}\mspace{28mu}
+  \begin{matrix}
+    \blacksquare & \square & \square \\
+    & \square &
+  \end{matrix}\mspace{28mu}
+  \begin{matrix}
+    \square & \blacksquare & \blacksquare \\
+    & \blacksquare &
+  \end{matrix}\mspace{28mu}
+  \begin{matrix}
+    \square & \blacksquare & \square \\
+    & \blacksquare &
+  \end{matrix}\mspace{28mu}
+  \mathcolorbox{yellow}{
+    \begin{matrix}
+      \square & \square & \blacksquare \\
+      & \blacksquare &
+    \end{matrix}
+  }\mspace{28mu}
+  \begin{matrix}
+    \square & \square & \square \\
+    & \square &
+  \end{matrix}
+  \endgroup
+\end{equation*}
+#+end_export
+
+The next generation of the automation
+
+#+begin_export latex
+\hfill \dots
+\mathcolorbox{yellow}{\blacksquare}
+\mspace{14mu}
+\mspace{14mu}
+\mspace{14mu}
+\mspace{14mu}
+\mspace{14mu}
+\mspace{14mu}
+\dots \hfill
+#+end_export
+
+*** App 1 - 2                                                   :B_onlyenv:
+:PROPERTIES:
+:BEAMER_env:             onlyenv
+:BEAMER_act:             <5>
+:END:
+
+Current automation contents
+
+#+begin_export latex
+\begin{equation*}
+  \hfill
+  \dots
+  \mathcolorbox{yellow}{
+    \square
+    \blacksquare
+    \blacksquare
+  }
+  \square
+  \square
+  \square
+  \blacksquare
+  \dots
+  \hfill
+\end{equation*}
+#+end_export
+
+Rule $110$ ($01101110$)
+
+#+begin_export latex
+\begin{equation*}
+  \begingroup
+  \setlength\arraycolsep{0.25pt}
+  \renewcommand{\arraystretch}{0.5}
+  \begin{matrix}
+    \blacksquare & \blacksquare & \blacksquare \\
+    & \square &
+  \end{matrix}\mspace{28mu}
+  \begin{matrix}
+    \blacksquare & \blacksquare & \square \\
+    & \blacksquare &
+  \end{matrix}\mspace{28mu}
+  \begin{matrix}
+    \blacksquare & \square & \blacksquare \\
+    & \blacksquare &
+  \end{matrix}\mspace{28mu}
+  \begin{matrix}
+    \blacksquare & \square & \square \\
+    & \square &
+  \end{matrix}\mspace{28mu}
+  \mathcolorbox{yellow}{
+    \begin{matrix}
+      \square & \blacksquare & \blacksquare \\
+      & \blacksquare &
+    \end{matrix}
+  }\mspace{28mu}
+  \begin{matrix}
+    \square & \blacksquare & \square \\
+    & \blacksquare &
+  \end{matrix}\mspace{28mu}
+  \begin{matrix}
+    \square & \square & \blacksquare \\
+    & \blacksquare &
+  \end{matrix}\mspace{28mu}
+  \begin{matrix}
+    \square & \square & \square \\
+    & \square &
+  \end{matrix}
+  \endgroup
+\end{equation*}
+#+end_export
+
+The next generation of the automation
+
+#+begin_export latex
+\hfill \dots
+\blacksquare
+\mathcolorbox{yellow}{\blacksquare}
+\mspace{14mu}
+\mspace{14mu}
+\mspace{14mu}
+\mspace{14mu}
+\mspace{14mu}
+\dots \hfill
+#+end_export
+
+*** App 1 - 3                                                   :B_onlyenv:
+:PROPERTIES:
+:BEAMER_env:             onlyenv
+:BEAMER_act:             <6>
+:END:
+
+Current automation contents
+
+#+begin_export latex
+\begin{equation*}
+  \hfill
+  \dots
+  \square
+  \mathcolorbox{yellow}{
+    \blacksquare
+    \blacksquare
+    \square
+  }
+  \square
+  \square
+  \blacksquare
+  \dots
+  \hfill
+\end{equation*}
+#+end_export
+
+Rule $110$ ($01101110$)
+
+#+begin_export latex
+\begin{equation*}
+  \begingroup
+  \setlength\arraycolsep{0.25pt}
+  \renewcommand{\arraystretch}{0.5}
+  \begin{matrix}
+    \blacksquare & \blacksquare & \blacksquare \\
+    & \square &
+  \end{matrix}\mspace{28mu}
+  \mathcolorbox{yellow}{
+    \begin{matrix}
+      \blacksquare & \blacksquare & \square \\
+      & \blacksquare &
+    \end{matrix}
+  }\mspace{28mu}
+  \begin{matrix}
+    \blacksquare & \square & \blacksquare \\
+    & \blacksquare &
+  \end{matrix}\mspace{28mu}
+  \begin{matrix}
+    \blacksquare & \square & \square \\
+    & \square &
+  \end{matrix}\mspace{28mu}
+  \begin{matrix}
+    \square & \blacksquare & \blacksquare \\
+    & \blacksquare &
+  \end{matrix}\mspace{28mu}
+  \begin{matrix}
+    \square & \blacksquare & \square \\
+    & \blacksquare &
+  \end{matrix}\mspace{28mu}
+  \begin{matrix}
+    \square & \square & \blacksquare \\
+    & \blacksquare &
+  \end{matrix}\mspace{28mu}
+  \begin{matrix}
+    \square & \square & \square \\
+    & \square &
+  \end{matrix}
+  \endgroup
+\end{equation*}
+#+end_export
+
+The next generation of the automation
+
+#+begin_export latex
+\hfill \dots
+\blacksquare
+\blacksquare
+\mathcolorbox{yellow}{\blacksquare}
+\mspace{14mu}
+\mspace{14mu}
+\mspace{14mu}
+\dots \hfill
+#+end_export
+
+*** App 1 - 4                                                   :B_onlyenv:
+:PROPERTIES:
+:BEAMER_env:             onlyenv
+:BEAMER_act:             <7>
+:END:
+
+Current automation contents
+
+#+begin_export latex
+\begin{equation*}
+  \hfill
+  \dots
+  \square
+  \blacksquare
+  \mathcolorbox{yellow}{
+    \blacksquare
+    \square
+    \square
+  }
+  \square
+  \blacksquare
+  \dots
+  \hfill
+\end{equation*}
+#+end_export
+
+Rule $110$ ($01101110$)
+
+#+begin_export latex
+\begin{equation*}
+  \begingroup
+  \setlength\arraycolsep{0.25pt}
+  \renewcommand{\arraystretch}{0.5}
+  \begin{matrix}
+    \blacksquare & \blacksquare & \blacksquare \\
+    & \square &
+  \end{matrix}\mspace{28mu}
+  \begin{matrix}
+    \blacksquare & \blacksquare & \square \\
+    & \blacksquare &
+  \end{matrix}\mspace{28mu}
+  \begin{matrix}
+    \blacksquare & \square & \blacksquare \\
+    & \blacksquare &
+  \end{matrix}\mspace{28mu}
+  \mathcolorbox{yellow}{
+    \begin{matrix}
+      \blacksquare & \square & \square \\
+      & \square &
+    \end{matrix}
+  }\mspace{28mu}
+  \begin{matrix}
+    \square & \blacksquare & \blacksquare \\
+    & \blacksquare &
+  \end{matrix}\mspace{28mu}
+  \begin{matrix}
+    \square & \blacksquare & \square \\
+    & \blacksquare &
+  \end{matrix}\mspace{28mu}
+  \begin{matrix}
+    \square & \square & \blacksquare \\
+    & \blacksquare &
+  \end{matrix}\mspace{28mu}
+  \begin{matrix}
+    \square & \square & \square \\
+    & \square &
+  \end{matrix}
+  \endgroup
+\end{equation*}
+#+end_export
+
+The next generation of the automation
+
+#+begin_export latex
+\hfill \dots
+\blacksquare
+\blacksquare
+\blacksquare
+\mathcolorbox{yellow}{\square}
+\mspace{14mu}
+\mspace{14mu}
+\mspace{14mu}
+\dots \hfill
+#+end_export
+
+*** App 1 - 5                                                   :B_onlyenv:
+:PROPERTIES:
+:BEAMER_env:             onlyenv
+:BEAMER_act:             <8>
+:END:
+
+Current automation contents
+
+#+begin_export latex
+\begin{equation*}
+  \hfill
+  \dots
+  \square
+  \blacksquare
+  \blacksquare
+  \mathcolorbox{yellow}{
+    \square
+    \square
+    \square
+  }
+  \blacksquare
+  \dots
+  \hfill
+\end{equation*}
+#+end_export
+
+Rule $110$ ($01101110$)
+
+#+begin_export latex
+\begin{equation*}
+  \begingroup
+  \setlength\arraycolsep{0.25pt}
+  \renewcommand{\arraystretch}{0.5}
+  \begin{matrix}
+    \blacksquare & \blacksquare & \blacksquare \\
+    & \square &
+  \end{matrix}\mspace{28mu}
+  \begin{matrix}
+    \blacksquare & \blacksquare & \square \\
+    & \blacksquare &
+  \end{matrix}\mspace{28mu}
+  \begin{matrix}
+    \blacksquare & \square & \blacksquare \\
+    & \blacksquare &
+  \end{matrix}\mspace{28mu}
+  \begin{matrix}
+    \blacksquare & \square & \square \\
+    & \square &
+  \end{matrix}\mspace{28mu}
+  \begin{matrix}
+    \square & \blacksquare & \blacksquare \\
+    & \blacksquare &
+  \end{matrix}\mspace{28mu}
+  \begin{matrix}
+    \square & \blacksquare & \square \\
+    & \blacksquare &
+  \end{matrix}\mspace{28mu}
+  \begin{matrix}
+    \square & \square & \blacksquare \\
+    & \blacksquare &
+  \end{matrix}\mspace{28mu}
+  \mathcolorbox{yellow}{
+    \begin{matrix}
+      \square & \square & \square \\
+      & \square &
+    \end{matrix}
+  }
+  \endgroup
+\end{equation*}
+#+end_export
+
+The next generation of the automation
+
+#+begin_export latex
+\hfill \dots
+\blacksquare
+\blacksquare
+\blacksquare
+\square
+\mathcolorbox{yellow}{\square}
+\mspace{14mu}
+\mspace{14mu}
+\dots \hfill
+#+end_export
+
+*** App 1 - 6                                                   :B_onlyenv:
+:PROPERTIES:
+:BEAMER_env:             onlyenv
+:BEAMER_act:             <9>
+:END:
+
+Current automation contents
+
+#+begin_export latex
+\begin{equation*}
+  \hfill
+  \dots
+  \square
+  \blacksquare
+  \blacksquare
+  \square
+  \mathcolorbox{yellow}{
+    \square
+    \square
+    \blacksquare
+  }
+  \dots
+  \hfill
+\end{equation*}
+#+end_export
+
+Rule $110$ ($01101110$)
+
+#+begin_export latex
+\begin{equation*}
+  \begingroup
+  \setlength\arraycolsep{0.25pt}
+  \renewcommand{\arraystretch}{0.5}
+  \begin{matrix}
+    \blacksquare & \blacksquare & \blacksquare \\
+    & \square &
+  \end{matrix}\mspace{28mu}
+  \begin{matrix}
+    \blacksquare & \blacksquare & \square \\
+    & \blacksquare &
+  \end{matrix}\mspace{28mu}
+  \begin{matrix}
+    \blacksquare & \square & \blacksquare \\
+    & \blacksquare &
+  \end{matrix}\mspace{28mu}
+  \begin{matrix}
+    \blacksquare & \square & \square \\
+    & \square &
+  \end{matrix}\mspace{28mu}
+  \begin{matrix}
+    \square & \blacksquare & \blacksquare \\
+    & \blacksquare &
+  \end{matrix}\mspace{28mu}
+  \begin{matrix}
+    \square & \blacksquare & \square \\
+    & \blacksquare &
+  \end{matrix}\mspace{28mu}
+  \mathcolorbox{yellow}{
+    \begin{matrix}
+      \square & \square & \blacksquare \\
+      & \blacksquare &
+    \end{matrix}
+  }\mspace{28mu}
+  \begin{matrix}
+    \square & \square & \square \\
+    & \square &
+  \end{matrix}
+  \endgroup
+\end{equation*}
+#+end_export
+
+The next generation of the automation
+
+#+begin_export latex
+\hfill \dots
+\blacksquare
+\blacksquare
+\blacksquare
+\square
+\square
+\mathcolorbox{yellow}{\blacksquare}
+\mspace{14mu}
+\dots \hfill
+#+end_export
+
+*** App 1 - 7                                                   :B_onlyenv:
+:PROPERTIES:
+:BEAMER_env:             onlyenv
+:BEAMER_act:             <10>
+:END:
+
+Current automation contents
+
+#+begin_export latex
+\begin{equation*}
+  \hfill
+  \dots
+  \square
+  \blacksquare
+  \blacksquare
+  \square
+  \square
+  \mathcolorbox{yellow}{
+    \square
+    \blacksquare
+  }
+  \dots
+  \hfill
+\end{equation*}
+#+end_export
+
+Rule $110$ ($01101110$)
+
+#+begin_export latex
+\begin{equation*}
+  \begingroup
+  \setlength\arraycolsep{0.25pt}
+  \renewcommand{\arraystretch}{0.5}
+  \begin{matrix}
+    \blacksquare & \blacksquare & \blacksquare \\
+    & \square &
+  \end{matrix}\mspace{28mu}
+  \begin{matrix}
+    \blacksquare & \blacksquare & \square \\
+    & \blacksquare &
+  \end{matrix}\mspace{28mu}
+  \begin{matrix}
+    \blacksquare & \square & \blacksquare \\
+    & \blacksquare &
+  \end{matrix}\mspace{28mu}
+  \begin{matrix}
+    \blacksquare & \square & \square \\
+    & \square &
+  \end{matrix}\mspace{28mu}
+  \begin{matrix}
+    \square & \blacksquare & \blacksquare \\
+    & \blacksquare &
+  \end{matrix}\mspace{28mu}
+  \mathcolorbox{yellow}{
+    \begin{matrix}
+      \square & \blacksquare & \square \\
+      & \blacksquare &
+    \end{matrix}
+  }\mspace{28mu}
+  \begin{matrix}
+    \square & \square & \blacksquare \\
+    & \blacksquare &
+  \end{matrix}\mspace{28mu}
+  \begin{matrix}
+    \square & \square & \square \\
+    & \square &
+  \end{matrix}
+  \endgroup
+\end{equation*}
+#+end_export
+
+The next generation of the automation
+
+#+begin_export latex
+\hfill \dots
+\blacksquare
+\blacksquare
+\blacksquare
+\square
+\square
+\square
+\mathcolorbox{yellow}{\blacksquare}
+\dots \hfill
+#+end_export
+
+*** App 1                                                       :B_onlyenv:
+:PROPERTIES:
+:BEAMER_env:             onlyenv
+:BEAMER_act:             <11>
+:END:
+
+Current automation contents
+
+#+begin_export latex
+\begin{equation*}
+  \hfill
+  \dots
+  \square
+  \blacksquare
+  \blacksquare
+  \square
+  \square
+  \square
+  \blacksquare
+  \dots
+  \hfill
+\end{equation*}
+#+end_export
+
+Rule $110$ ($01101110$)
+
+#+begin_export latex
+\begin{equation*}
+  \begingroup
+  \setlength\arraycolsep{0.25pt}
+  \renewcommand{\arraystretch}{0.5}
+  \begin{matrix}
+    \blacksquare & \blacksquare & \blacksquare \\
+    & \square &
+  \end{matrix}\mspace{28mu}
+  \begin{matrix}
+    \blacksquare & \blacksquare & \square \\
+    & \blacksquare &
+  \end{matrix}\mspace{28mu}
+  \begin{matrix}
+    \blacksquare & \square & \blacksquare \\
+    & \blacksquare &
+  \end{matrix}\mspace{28mu}
+  \begin{matrix}
+    \blacksquare & \square & \square \\
+    & \square &
+  \end{matrix}\mspace{28mu}
+  \begin{matrix}
+    \square & \blacksquare & \blacksquare \\
+    & \blacksquare &
+  \end{matrix}\mspace{28mu}
+  \begin{matrix}
+    \square & \blacksquare & \square \\
+    & \blacksquare &
+  \end{matrix}\mspace{28mu}
+  \begin{matrix}
+    \square & \square & \blacksquare \\
+    & \blacksquare &
+  \end{matrix}\mspace{28mu}
+  \begin{matrix}
+    \square & \square & \square \\
+    & \square &
+  \end{matrix}
+  \endgroup
+\end{equation*}
+#+end_export
+
+The next generation of the automation
+
+#+begin_export latex
+\hfill \dots
+\blacksquare
+\blacksquare
+\blacksquare
+\square
+\square
+\square
+\blacksquare
+\dots \hfill
+#+end_export
+
+** There is more about ECA
+
+- There are $256$ possible rules.
+- Rule 110 is Turing complete.
+- There are many ways to encode the rules.
+- There are many ways to program ECA.
+
+** Universe
+
+#+begin_src haskell
+  data U a = U [a] a [a]
+  --            |  |  |
+  --            |  |  ^ entries on the right side of the focus
+  --            |  ^ focus of the universe
+  --            ^ entries on the left side of the focus, reversed
+#+end_src
+
+#+BEAMER: \pause
+
+#+begin_src haskell
+  > U [-1, -2, -3] 0 [1,2,3,4]
+  [-3, -2, -1] (0) [1, 2, 3, 4]
+#+end_src
+
+#+BEAMER: \pause
+
+#+begin_src haskell
+  > U [(-1)..] 0 [1..]
+  [..., -3, -2, -1] (0) [1, 2, 3, ...]
+  -- infinite list, you can't just print it out
+#+end_src
+
+** Reversed left?
+
+- Fast access. We care about focused element and its neighbours.
+- Fast focus shifts.
+- Supports infinite universe around focused element (like you care).
+
+** =fromList=
+
+#+begin_src haskell
+  fromList :: a -> [a] -> U a
+  fromList d []     = U (repeat d) d (repeat d)
+  fromList d (x:xs) = U (repeat d) x (xs ++ repeat d)
+
+  > fromList 0 [1, 2, 3]
+  [..., 0, 0, 0] (1) [2, 3, 0, 0, ...]
+#+end_src
+
+** Clearly a =Functor=
+
+#+begin_src haskell
+  instance Functor U where
+    fmap f (U l c r) = U (fmap f l) (f c) (fmap f r)
+#+end_src
+
+#+BEAMER: \pause
+
+=DeriveFunctor= can do it for us.
+
+#+BEAMER: \pause
+
+#+begin_src haskell
+  > abs <$> U [-1, -2, -3] 0 [1, 2, 3, 4]
+  [3, 2, 1] (0) [1, 2, 3, 4]
+
+  > (/0) <$> U [-1, -2, -3] 0 [1, 2, 3, 4]
+  [-Infinity, -Infinity, -Infinity] (NaN) [Infinity, Infinity, Infinity, Infinity]
+#+end_src
+
+** =extract=
+
+#+begin_src haskell
+  extract :: U a -> a
+  extract (U _ a _) = a
+#+end_src
+
+#+BEAMER: \pause
+
+#+begin_src haskell
+  > U ["drunk", "hello"] "folks" ["!"]
+  [hello, drunk] (folks) [!]
+
+  > extract $ U ["drunk", "hello"] "folks" ["!"]
+  "folks"
+#+end_src
+
+#+BEAMER: \pause
+
+#+begin_src haskell
+  > extract $ U [(-1)..] 0 [1..]
+  0
+#+end_src
+
+** Moving left
+
+#+begin_src haskell
+  left :: U a -> U a
+  left (U (l:ls) c rs) = U ls l (c:rs)
+#+end_src
+
+#+BEAMER: \pause
+
+#+begin_src haskell
+  > left $ U ["drunk", "hello"] "folks" ["!"]
+  [hello] (drunk) [folks, !]
+
+  > extract . left $ U ["drunk", "hello"] "folks" ["!"]
+  "drunk"
+#+end_src
+
+** Moving right
+
+#+begin_src haskell
+  right :: U a -> U a
+  right right (U ls c (r:rs)) = U (c:ls) r rs
+#+end_src
+
+#+BEAMER: \pause
+
+#+begin_src haskell
+  > right $ U ["drunk", "hello"] "folks" ["!"]
+  [hello, drunk, folks] (!) []
+
+  > extract . right $ U ["drunk", "hello"] "folks" ["!"]
+  "!"
+#+end_src
+
+** Non-totality
+
+#+begin_src haskell
+  > extract . right . right $ U ["drunk", "hello"] "folks" ["!"]
+  "*** Exception: <interactive>:23:5-41: Non-exhaustive patterns in function right
+#+end_src
+
+Non-total functions are Judahs of modern world. We can accept and forgive them
+in various ways:
+
+1. Do nothing when there is nowhere to move.
+2. Maybify them.
+
+** Defining ECA
+
+#+begin_src haskell
+  data Cell
+    = Dead
+    | Alive
+
+  type ECA = U Cell
+#+end_src
+
+#+BEAMER: \pause
+
+#+ATTR_LATEX: :options escapeinside=||,mathescape=true
+#+begin_src haskell
+  > U [Alive, Dead] Alive [Alive, Dead]
+  |$\square\blacksquare\blacksquare\blacksquare\square$|
+
+  > fromList Dead [Dead, Alive, Alive, Alive, Dead]
+  ...|$\square$\square$\square\blacksquare\blacksquare\blacksquare\square$\square$\square$|...
+#+end_src
+
+** Defining rule
+
+Rule says how to evolve a cell with respect to it's context.
+
+#+BEAMER: \pause
+
+#+begin_src haskell
+  type Rule = U a -> a
+  type ECARule = U Cell -> Cell
+#+end_src
+
+** Rule 110
+
+#+begin_src haskell
+  rule110 :: U Cell -> Cell
+  rule110 u = case extract3 Dead u of
+    (Dead  , Dead  , Dead)  -> Dead
+    (Dead  , Dead  , Alive) -> Alive
+    (Dead  , Alive , Dead)  -> Alive
+    (Dead  , Alive , Alive) -> Alive
+    (Alive , Dead  , Dead)  -> Dead
+    (Alive , Dead  , Alive) -> Alive
+    (Alive , Alive , Dead)  -> Alive
+    (Alive , Alive , Alive) -> Dead
+
+  extract3 :: Cell -> U Cell -> (Cell, Cell, Cell)
+  extract3 c u = case maybe c extract . ($ u) <$> [maybeLeft, Just, maybeRight] of
+    [l, c, r] -> (l, c, r)
+#+end_src
+
+#+BEAMER: \pause
+
+#+ATTR_LATEX: :options escapeinside=||,mathescape=true
+#+begin_src haskell
+  > rule110 $ U ([Alive, Dead, Alive] <> repeat Dead) Alive ([Dead, Alive] <> repeat Dead)
+  |$\blacksquare$|
+#+end_src
+
+#+BEAMER: \pause
+
+Damn... That's the ultimate fate of the universe - to collapse.
+
+** Possible solution
+
+1. <1-> Apply the rule.
+2. <2-> Shift original tape left once, apply the rule.
+3. <3-> Shift original tape left twice, apply the rule.
+4. <4-> ...
+5. <5-> Do the same for the right hand side.
+6. <6-> ...
+7. <7-> lists can be infinite
+8. <8-> ...
+9. <9-> =M-x doctor=
+
+** M-x doctor
+
+#+begin_verse
+I am the psychotherapist.  Please, describe your problems.  Each time you are
+finished talking, type RET twice.
+
+Hello
+
+How do you do?  What brings you to see me?
+
+I can't apply ECA rules to the infinite Universe!
+
+Why do you say that?
+#+end_verse
+
+And he is damn right! We can do it.
+
+** All possible shifts
+:PROPERTIES:
+:BEAMER_opt:             t
+:END:
+
+*** Signature                                                   :B_onlyenv:
+:PROPERTIES:
+:BEAMER_env:             onlyenv
+:BEAMER_act:             <1>
+:END:
+
+#+begin_src haskell
+  duplicate :: U a -> U (U a)
+#+end_src
+
+*** Definition                                                  :B_onlyenv:
+:PROPERTIES:
+:BEAMER_env:             onlyenv
+:BEAMER_act:             <2->
+:END:
+
+#+begin_src haskell
+  duplicate :: U a -> U (U a)
+  duplicate u = U (tail $ iterate left u) u (tail $ iterate right u)
+#+end_src
+
+*** Iterate                                                     :B_onlyenv:
+:PROPERTIES:
+:BEAMER_env:             onlyenv
+:BEAMER_act:             <3->
+:END:
+
+$$\forall f: head\ .\ iterate\ f = id$$
+
+#+begin_src haskell
+  > :t iterate
+  iterate :: (a -> a) -> a -> [a]
+
+  > take 3 $ iterate (+1) 0
+  [0,1,2]
+#+end_src
+
+** All possible shifts
+
+#+begin_export latex
+\begin{gather*}
+  \dots\ 0\ 1\ (2)\ 3\ 4\ 5\ \dots \\
+  \Downarrow \text{duplicate} \\
+  \dots\
+  \begin{matrix}
+    \vdots & \vdots & \vdots      & \vdots & \vdots & \vdots \\
+           &        & \smallfrown &        &        &        \\
+    (0)    & 0      & 0           & 0      & 0      & 0      \\
+    1      & (1)    & 1           & 1      & 1      & 1      \\
+    2      & 2      & (2)         & 2      & 2      & 2      \\
+    3      & 3      & 3           & (3)    & 3      & 3      \\
+    4      & 4      & 4           & 4      & (4)    & 4      \\
+    5      & 5      & 5           & 5      & 5      & (5)    \\
+           &        & \smallsmile &        &        &        \\
+    \vdots & \vdots & \vdots      & \vdots & \vdots & \vdots \\
+  \end{matrix}\
+  \dots
+\end{gather*}
+#+end_export
+
+** Where's the focus?
+
+#+begin_export latex
+\begin{gather*}
+  \dots\ 0\ 1\ (2)\ 3\ 4\ 5\ \dots \\
+  \Downarrow \text{left . duplicate} \\
+  \dots\
+  \begin{matrix}
+    \vdots & \vdots      & \vdots & \vdots & \vdots & \vdots \\
+           & \smallfrown &        &        &        &        \\
+    (0)    & 0           & 0      & 0      & 0      & 0      \\
+    1      & (1)         & 1      & 1      & 1      & 1      \\
+    2      & 2           & (2)    & 2      & 2      & 2      \\
+    3      & 3           & 3      & (3)    & 3      & 3      \\
+    4      & 4           & 4      & 4      & (4)    & 4      \\
+    5      & 5           & 5      & 5      & 5      & (5)    \\
+           & \smallsmile &        &        &        &        \\
+    \vdots                                                                                                           & \vdots      & \vdots & \vdots & \vdots & \vdots \\
+  \end{matrix}\
+  \dots
+\end{gather*}
+#+end_export
+
+** Where's the focus?
+
+#+begin_export latex
+\begin{gather*}
+  \dots\ 0\ 1\ (2)\ 3\ 4\ 5\ \dots \\
+  \Downarrow \text{right . duplicate} \\
+  \dots\
+  \begin{matrix}
+    \vdots & \vdots & \vdots & \vdots      & \vdots & \vdots \\
+           &        &        & \smallfrown &        &        \\
+    (0)    & 0      & 0      & 0           & 0      & 0      \\
+    1      & (1)    & 1      & 1           & 1      & 1      \\
+    2      & 2      & (2)    & 2           & 2      & 2      \\
+    3      & 3      & 3      & (3)         & 3      & 3      \\
+    4      & 4      & 4      & 4           & (4)    & 4      \\
+    5      & 5      & 5      & 5           & 5      & (5)    \\
+           &        &        & \smallsmile &        &        \\
+    \vdots                                                                                                           & \vdots      & \vdots & \vdots & \vdots & \vdots \\
+  \end{matrix}\
+  \dots
+\end{gather*}
+#+end_export
+
+** Where's focus
+
+#+begin_export latex
+\begin{gather*}
+  \dots\ 0\ 1\ (2)\ 3\ 4\ 5\ \dots \\
+  \Downarrow \text{fmap left . duplicate} \\
+  \dots\
+  \begin{matrix}
+    \vdots & \vdots & \vdots      & \vdots & \vdots & \vdots \\
+           &        & \smallfrown &        &        &        \\
+    (0)    & 0      & 0           & 0      & 0      & 0      \\
+    1      & (1)    & (1)         & 1      & 1      & 1      \\
+    2      & 2      & 2           & 2      & 2      & 2      \\
+    3      & 3      & 3           & (3)    & 3      & 3      \\
+    4      & 4      & 4           & 4      & (4)    & 4      \\
+    5      & 5      & 5           & 5      & 5      & (5)    \\
+           &        & \smallsmile &        &        &        \\
+    \vdots & \vdots & \vdots      & \vdots & \vdots & \vdots \\
+  \end{matrix}\
+  \dots
+\end{gather*}
+#+end_export
+
+** =extend=
+:PROPERTIES:
+:BEAMER_opt:             t
+:END:
+
+*** Signature                                                   :B_onlyenv:
+:PROPERTIES:
+:BEAMER_env:             onlyenv
+:BEAMER_act:             <1>
+:END:
+
+#+begin_src haskell
+  extend :: (U a -> a)
+         ->  U a
+         ->  U a
+#+end_src
+
+*** Definition                                                  :B_onlyenv:
+:PROPERTIES:
+:BEAMER_env:             onlyenv
+:BEAMER_act:             <2->
+:END:
+
+#+begin_src haskell
+  extend :: (U a -> a)
+         ->  U a
+         ->  U a
+  extend f = fmap f . duplicate
+#+end_src
+
+*** Usage                                                       :B_onlyenv:
+:PROPERTIES:
+:BEAMER_env:             onlyenv
+:BEAMER_act:             <3->
+:END:
+
+#+ATTR_LATEX: :options escapeinside=||,mathescape=true
+#+begin_src haskell
+  > U [Alive, Dead] Alive [Alive, Dead]
+  |$ \square \blacksquare \blacksquare \blacksquare \square $|
+
+  > extend rule110 $ U [Alive, Dead] Alive [Alive, Dead]
+  |$\blacksquare\blacksquare\square\blacksquare\square$|
+#+end_src
+
+** Iteration
+
+#+ATTR_LATEX: :options escapeinside=||,mathescape=true
+#+begin_src haskell
+  > mapM_ (print . narrow 20) . take 20 . iterate (extend rule110) $ fromList Dead [Alive]
+  |$\square\square\square\square\square\square\square\square\square\square\square\square\square\square\square\square\square\square\square\square\blacksquare\square\square\square\square\square\square\square\square\square\square\square\square\square\square\square\square\square\square\square\square$|
+  |$\square\square\square\square\square\square\square\square\square\square\square\square\square\square\square\square\square\square\square\blacksquare\blacksquare\square\square\square\square\square\square\square\square\square\square\square\square\square\square\square\square\square\square\square\square$|
+  |$\square\square\square\square\square\square\square\square\square\square\square\square\square\square\square\square\square\square\blacksquare\blacksquare\blacksquare\square\square\square\square\square\square\square\square\square\square\square\square\square\square\square\square\square\square\square\square$|
+  |$\square\square\square\square\square\square\square\square\square\square\square\square\square\square\square\square\square\blacksquare\blacksquare\square\blacksquare\square\square\square\square\square\square\square\square\square\square\square\square\square\square\square\square\square\square\square\square$|
+  |$\square\square\square\square\square\square\square\square\square\square\square\square\square\square\square\square\blacksquare\blacksquare\blacksquare\blacksquare\blacksquare\square\square\square\square\square\square\square\square\square\square\square\square\square\square\square\square\square\square\square\square$|
+  |$\square\square\square\square\square\square\square\square\square\square\square\square\square\square\square\blacksquare\blacksquare\square\square\square\blacksquare\square\square\square\square\square\square\square\square\square\square\square\square\square\square\square\square\square\square\square\square$|
+  |$\square\square\square\square\square\square\square\square\square\square\square\square\square\square\blacksquare\blacksquare\blacksquare\square\square\blacksquare\blacksquare\square\square\square\square\square\square\square\square\square\square\square\square\square\square\square\square\square\square\square\square$|
+  |$\square\square\square\square\square\square\square\square\square\square\square\square\square\blacksquare\blacksquare\square\blacksquare\square\blacksquare\blacksquare\blacksquare\square\square\square\square\square\square\square\square\square\square\square\square\square\square\square\square\square\square\square\square$|
+  |$\square\square\square\square\square\square\square\square\square\square\square\square\blacksquare\blacksquare\blacksquare\blacksquare\blacksquare\blacksquare\blacksquare\square\blacksquare\square\square\square\square\square\square\square\square\square\square\square\square\square\square\square\square\square\square\square\square$|
+  |$\square\square\square\square\square\square\square\square\square\square\square\blacksquare\blacksquare\square\square\square\square\square\blacksquare\blacksquare\blacksquare\square\square\square\square\square\square\square\square\square\square\square\square\square\square\square\square\square\square\square\square$|
+  |$\square\square\square\square\square\square\square\square\square\square\blacksquare\blacksquare\blacksquare\square\square\square\square\blacksquare\blacksquare\square\blacksquare\square\square\square\square\square\square\square\square\square\square\square\square\square\square\square\square\square\square\square\square$|
+  |$\square\square\square\square\square\square\square\square\square\blacksquare\blacksquare\square\blacksquare\square\square\square\blacksquare\blacksquare\blacksquare\blacksquare\blacksquare\square\square\square\square\square\square\square\square\square\square\square\square\square\square\square\square\square\square\square\square$|
+  |$\square\square\square\square\square\square\square\square\blacksquare\blacksquare\blacksquare\blacksquare\blacksquare\square\square\blacksquare\blacksquare\square\square\square\blacksquare\square\square\square\square\square\square\square\square\square\square\square\square\square\square\square\square\square\square\square\square$|
+  |$\square\square\square\square\square\square\square\blacksquare\blacksquare\square\square\square\blacksquare\square\blacksquare\blacksquare\blacksquare\square\square\blacksquare\blacksquare\square\square\square\square\square\square\square\square\square\square\square\square\square\square\square\square\square\square\square\square$|
+  |$\square\square\square\square\square\square\blacksquare\blacksquare\blacksquare\square\square\blacksquare\blacksquare\blacksquare\blacksquare\square\blacksquare\square\blacksquare\blacksquare\blacksquare\square\square\square\square\square\square\square\square\square\square\square\square\square\square\square\square\square\square\square\square$|
+  |$\square\square\square\square\square\blacksquare\blacksquare\square\blacksquare\square\blacksquare\blacksquare\square\square\blacksquare\blacksquare\blacksquare\blacksquare\blacksquare\square\blacksquare\square\square\square\square\square\square\square\square\square\square\square\square\square\square\square\square\square\square\square\square$|
+  |$\square\square\square\square\blacksquare\blacksquare\blacksquare\blacksquare\blacksquare\blacksquare\blacksquare\blacksquare\square\blacksquare\blacksquare\square\square\square\blacksquare\blacksquare\blacksquare\square\square\square\square\square\square\square\square\square\square\square\square\square\square\square\square\square\square\square\square$|
+  |$\square\square\square\blacksquare\blacksquare\square\square\square\square\square\square\blacksquare\blacksquare\blacksquare\blacksquare\square\square\blacksquare\blacksquare\square\blacksquare\square\square\square\square\square\square\square\square\square\square\square\square\square\square\square\square\square\square\square\square$|
+  |$\square\square\blacksquare\blacksquare\blacksquare\square\square\square\square\square\blacksquare\blacksquare\square\square\blacksquare\square\blacksquare\blacksquare\blacksquare\blacksquare\blacksquare\square\square\square\square\square\square\square\square\square\square\square\square\square\square\square\square\square\square\square\square$|
+  |$\square\blacksquare\blacksquare\square\blacksquare\square\square\square\square\blacksquare\blacksquare\blacksquare\square\blacksquare\blacksquare\blacksquare\blacksquare\square\square\square\blacksquare\square\square\square\square\square\square\square\square\square\square\square\square\square\square\square\square\square\square\square\square$|
+#+end_src
+
+** Final words
+
+- <1-> Great abstraction of 1D Universe with operations:
+  - =extract=
+  - =duplicate=
+  - =extend=
+  - movement
+- <2-> ECAa naturally builds on top of the Universe abstraction.
+- <3-> It's easy to implement other automata on top of this abstraction.
+  - Different cells (more values)
+  - Different rules (more neighbours)
+- <4-> Now you understand the first part of the title.
+
+* Act 2: Conway's Game of Life
+
+** Definition
+
+Two-dimensional cellular automata invented by John H. Conway.
+
+#+BEAMER: \pause
+
+Each cell has value $a \in \lbrace 0, 1 \rbrace = \lbrace \square, \blacksquare
+\rbrace$
+
+#+BEAMER: \pause
+
+Grid is rectangle.
+
+#+begin_export latex
+\begin{equation*}
+  \begingroup
+  \setlength\arraycolsep{0.25pt}
+  \renewcommand{\arraystretch}{0.5}
+  \begin{matrix}
+    \blacksquare & \blacksquare & \blacksquare & \blacksquare & \blacksquare & \blacksquare & \blacksquare & \blacksquare \\
+    \square      & \blacksquare & \square      & \blacksquare & \square      & \blacksquare & \square      & \blacksquare \\
+    \blacksquare & \square      & \blacksquare & \square      & \blacksquare & \square      & \blacksquare & \square \\
+    \blacksquare & \blacksquare & \blacksquare & \blacksquare & \blacksquare & \blacksquare & \blacksquare & \square \\
+    \blacksquare & \square      & \blacksquare & \square      & \blacksquare & \blacksquare & \blacksquare & \square \\
+    \square      & \blacksquare & \square      & \blacksquare & \square      & \blacksquare & \square      & \blacksquare \\
+  \end{matrix}
+  \endgroup
+\end{equation*}
+#+end_export
+
+** Rules
+
+$S \in {0, 1}$ is status of the focus.
+
+$A$ is amount of living cells around the focus (max $8$).
+
+- Death: if $A < 2 \vee A > 3 \to 0$.
+- Survival: if $(A = 2 \vee A = 3 \to) \wedge S = 1 \to 1$.
+- Birth: if $A = 3 \wedge S = 0 \to 1$.
+
+** Example of simulation (1)
+
+#+begin_export latex
+\begin{footnotesize}
+  \begin{equation*}
+    \begingroup
+    \setlength\arraycolsep{0.25pt}
+    \renewcommand{\arraystretch}{0.5}
+    \begin{matrix}
+      \square      & \square      & \square      & \square      & \square      & \square      & \square \\
+      \square      & \blacksquare & \blacksquare & \blacksquare & \blacksquare & \blacksquare & \square \\
+      \square      & \blacksquare & \blacksquare & \square      & \blacksquare & \blacksquare & \square \\
+      \square      & \blacksquare & \blacksquare & \square      & \blacksquare & \blacksquare & \square \\
+      \square      & \blacksquare & \blacksquare & \square      & \blacksquare & \blacksquare & \square \\
+      \square      & \blacksquare & \blacksquare & \blacksquare & \blacksquare & \blacksquare & \square \\
+      \square      & \square      & \square      & \square      & \square      & \square      & \square \\
+    \end{matrix}\Rightarrow
+    \begin{matrix}
+      \square      & \square      & \blacksquare & \blacksquare & \blacksquare & \square      & \square \\
+      \square      & \blacksquare & \square      & \square      & \square      & \blacksquare & \square \\
+      \blacksquare & \square      & \square      & \square      & \square      & \square      & \blacksquare \\
+      \blacksquare & \square      & \square      & \square      & \square      & \square      & \blacksquare \\
+      \blacksquare & \square      & \square      & \square      & \square      & \square      & \blacksquare \\
+      \square      & \blacksquare & \square      & \square      & \square      & \blacksquare & \square \\
+      \square      & \square      & \blacksquare & \blacksquare & \blacksquare & \square      & \square \\
+    \end{matrix}\Rightarrow
+    \begin{matrix}
+      \square      & \square      & \blacksquare & \blacksquare & \blacksquare & \square      & \square \\
+      \square      & \blacksquare & \blacksquare & \blacksquare & \blacksquare & \blacksquare & \square \\
+      \blacksquare & \blacksquare & \square      & \square      & \square      & \blacksquare & \blacksquare \\
+      \blacksquare & \blacksquare & \square      & \square      & \square      & \blacksquare & \blacksquare \\
+      \blacksquare & \blacksquare & \square      & \square      & \square      & \blacksquare & \blacksquare \\
+      \square      & \blacksquare & \blacksquare & \blacksquare & \blacksquare & \blacksquare & \square \\
+      \square      & \square      & \blacksquare & \blacksquare & \blacksquare & \square      & \square \\
+    \end{matrix}\Rightarrow
+    \begin{matrix}
+      \square      & \blacksquare & \square      & \square      & \square      & \blacksquare & \square \\
+      \blacksquare & \square      & \square      & \square      & \square      & \square      & \blacksquare \\
+      \square      & \square      & \square      & \blacksquare & \square      & \square      & \square \\
+      \square      & \square      & \blacksquare & \square      & \blacksquare & \square      & \square \\
+      \square      & \square      & \square      & \blacksquare & \square      & \square      & \square \\
+      \blacksquare & \square      & \square      & \square      & \square      & \square      & \blacksquare \\
+      \square      & \blacksquare & \square      & \square      & \square      & \blacksquare & \square \\
+    \end{matrix}\Rightarrow
+    \begin{matrix}
+      \square      & \blacksquare & \blacksquare & \blacksquare & \blacksquare & \blacksquare & \square \\
+      \blacksquare & \square      & \square      & \square      & \square      & \square      & \blacksquare \\
+      \blacksquare & \square      & \square      & \blacksquare & \square      & \square      & \blacksquare \\
+      \blacksquare & \square      & \blacksquare & \square      & \blacksquare & \square      & \blacksquare \\
+      \blacksquare & \square      & \square      & \blacksquare & \square      & \square      & \blacksquare \\
+      \blacksquare & \square      & \square      & \square      & \square      & \square      & \blacksquare \\
+      \square      & \blacksquare & \blacksquare & \blacksquare & \blacksquare & \blacksquare & \square \\
+    \end{matrix}\Rightarrow
+    \begin{matrix}
+      \square      & \blacksquare & \square      & \square      & \square      & \blacksquare & \square \\
+      \blacksquare & \square      & \square      & \square      & \square      & \square      & \blacksquare \\
+      \square      & \square      & \square      & \blacksquare & \square      & \square      & \square \\
+      \square      & \square      & \blacksquare & \square      & \blacksquare & \square      & \square \\
+      \square      & \square      & \square      & \blacksquare & \square      & \square      & \square \\
+      \blacksquare & \square      & \square      & \square      & \square      & \square      & \blacksquare \\
+      \square      & \blacksquare & \square      & \square      & \square      & \blacksquare & \square \\
+    \end{matrix}\Rightarrow
+    \endgroup
+  \end{equation*}
+\end{footnotesize}
+#+end_export
+
+#+begin_export latex
+\begin{footnotesize}
+  \begin{equation*}
+    \mspace{-48mu}
+    \begingroup
+    \setlength\arraycolsep{0.25pt}
+    \renewcommand{\arraystretch}{0.5}
+    \Rightarrow\begin{matrix}
+      \square      & \blacksquare & \square      & \square      & \square      & \blacksquare & \square \\
+      \blacksquare & \square      & \square      & \square      & \square      & \square      & \blacksquare \\
+      \square      & \square      & \square      & \blacksquare & \square      & \square      & \square \\
+      \square      & \square      & \blacksquare & \square      & \blacksquare & \square      & \square \\
+      \square      & \square      & \square      & \blacksquare & \square      & \square      & \square \\
+      \blacksquare & \square      & \square      & \square      & \square      & \square      & \blacksquare \\
+      \square      & \blacksquare & \square      & \square      & \square      & \blacksquare & \square \\
+    \end{matrix}\Rightarrow
+    \begin{matrix}
+      \square      & \blacksquare & \blacksquare & \square      & \blacksquare & \blacksquare & \square \\
+      \blacksquare & \square      & \square      & \square      & \square      & \square      & \blacksquare \\
+      \blacksquare & \square      & \square      & \blacksquare & \square      & \square      & \blacksquare \\
+      \square      & \square      & \blacksquare & \square      & \blacksquare & \square      & \square \\
+      \blacksquare & \square      & \square      & \blacksquare & \square      & \square      & \blacksquare \\
+      \blacksquare & \square      & \square      & \square      & \square      & \square      & \blacksquare \\
+      \square      & \blacksquare & \blacksquare & \square      & \blacksquare & \blacksquare & \square \\
+    \end{matrix}\Rightarrow
+    \begin{matrix}
+      \square      & \blacksquare & \blacksquare & \blacksquare & \blacksquare & \blacksquare & \square \\
+      \blacksquare & \square      & \blacksquare & \blacksquare & \blacksquare & \square      & \blacksquare \\
+      \blacksquare & \blacksquare & \square      & \blacksquare & \square      & \blacksquare & \blacksquare \\
+      \blacksquare & \blacksquare & \blacksquare & \square      & \blacksquare & \blacksquare & \blacksquare \\
+      \blacksquare & \blacksquare & \square      & \blacksquare & \square      & \blacksquare & \blacksquare \\
+      \blacksquare & \square      & \blacksquare & \blacksquare & \blacksquare & \square      & \blacksquare \\
+      \square      & \blacksquare & \blacksquare & \blacksquare & \blacksquare & \blacksquare & \square \\
+    \end{matrix}\Rightarrow
+    \begin{matrix}
+      \square      & \square      & \square      & \square      & \square      & \square      & \square \\
+      \square      & \square      & \square      & \square      & \square      & \square      & \square \\
+      \square      & \square      & \square      & \square      & \square      & \square      & \square \\
+      \square      & \square      & \square      & \square      & \square      & \square      & \square \\
+      \square      & \square      & \square      & \square      & \square      & \square      & \square \\
+      \square      & \square      & \square      & \square      & \square      & \square      & \square \\
+      \square      & \square      & \square      & \square      & \square      & \square      & \square \\
+    \end{matrix}\Rightarrow
+    \begin{matrix}
+      \square      & \square      & \square      & \square      & \square      & \square      & \square \\
+      \square      & \square      & \square      & \square      & \square      & \square      & \square \\
+      \square      & \square      & \square      & \square      & \square      & \square      & \square \\
+      \square      & \square      & \square      & \square      & \square      & \square      & \square \\
+      \square      & \square      & \square      & \square      & \square      & \square      & \square \\
+      \square      & \square      & \square      & \square      & \square      & \square      & \square \\
+      \square      & \square      & \square      & \square      & \square      & \square      & \square \\
+    \end{matrix}\Rightarrow
+    \begin{matrix}
+      \square      & \square      & \square      & \square      & \square      & \square      & \square \\
+      \square      & \square      & \square      & \square      & \square      & \square      & \square \\
+      \square      & \square      & \square      & \square      & \square      & \square      & \square \\
+      \square      & \square      & \square      & \square      & \square      & \square      & \square \\
+      \square      & \square      & \square      & \square      & \square      & \square      & \square \\
+      \square      & \square      & \square      & \square      & \square      & \square      & \square \\
+      \square      & \square      & \square      & \square      & \square      & \square      & \square \\
+    \end{matrix}
+    \endgroup
+  \end{equation*}
+\end{footnotesize}
+#+end_export
+
+** Example of simulation (2)
+
+#+begin_export latex
+\begin{equation*}
+  \begingroup
+  \setlength\arraycolsep{0.25pt}
+  \renewcommand{\arraystretch}{0.5}
+  \begin{matrix}
+    \square & \square      & \square      & \square      & \square \\
+    \square & \square      & \blacksquare & \square      & \square \\
+    \square & \square      & \blacksquare & \square      & \square \\
+    \square & \square      & \blacksquare & \square      & \square \\
+    \square & \square      & \square      & \square      & \square \\
+  \end{matrix}\Rightarrow
+  \begin{matrix}
+    \square & \square      & \square      & \square      & \square \\
+    \square & \square      & \square      & \square      & \square \\
+    \square & \blacksquare & \blacksquare & \blacksquare & \square \\
+    \square & \square      & \square      & \square      & \square \\
+    \square & \square      & \square      & \square      & \square \\
+  \end{matrix}\Rightarrow
+  \begin{matrix}
+    \square & \square      & \square      & \square      & \square \\
+    \square & \square      & \blacksquare & \square      & \square \\
+    \square & \square      & \blacksquare & \square      & \square \\
+    \square & \square      & \blacksquare & \square      & \square \\
+    \square & \square      & \square      & \square      & \square \\
+  \end{matrix}\Rightarrow
+  \begin{matrix}
+    \square & \square      & \square      & \square      & \square \\
+    \square & \square      & \square      & \square      & \square \\
+    \square & \blacksquare & \blacksquare & \blacksquare & \square \\
+    \square & \square      & \square      & \square      & \square \\
+    \square & \square      & \square      & \square      & \square \\
+  \end{matrix}\Rightarrow
+  \endgroup
+\end{equation*}
+#+end_export
+
+#+begin_export latex
+\begin{equation*}
+  \mspace{-48mu}
+  \begingroup
+  \setlength\arraycolsep{0.25pt}
+  \renewcommand{\arraystretch}{0.5}
+  \Rightarrow\begin{matrix}
+    \square & \square      & \square      & \square      & \square \\
+    \square & \square      & \blacksquare & \square      & \square \\
+    \square & \square      & \blacksquare & \square      & \square \\
+    \square & \square      & \blacksquare & \square      & \square \\
+    \square & \square      & \square      & \square      & \square \\
+  \end{matrix}\Rightarrow
+  \begin{matrix}
+    \square & \square      & \square      & \square      & \square \\
+    \square & \square      & \square      & \square      & \square \\
+    \square & \blacksquare & \blacksquare & \blacksquare & \square \\
+    \square & \square      & \square      & \square      & \square \\
+    \square & \square      & \square      & \square      & \square \\
+  \end{matrix}\Rightarrow
+  \begin{matrix}
+    \square & \square      & \square      & \square      & \square \\
+    \square & \square      & \blacksquare & \square      & \square \\
+    \square & \square      & \blacksquare & \square      & \square \\
+    \square & \square      & \blacksquare & \square      & \square \\
+    \square & \square      & \square      & \square      & \square \\
+  \end{matrix}\Rightarrow
+  \begin{matrix}
+    \square & \square      & \square      & \square      & \square \\
+    \square & \square      & \square      & \square      & \square \\
+    \square & \blacksquare & \blacksquare & \blacksquare & \square \\
+    \square & \square      & \square      & \square      & \square \\
+    \square & \square      & \square      & \square      & \square \\
+  \end{matrix}
+  \endgroup
+\end{equation*}
+#+end_export
+
+** Example of simulation (3)
+
+#+begin_export latex
+\begin{tiny}
+  \begin{equation*}
+    \begingroup
+    \setlength\arraycolsep{0.25pt}
+    \renewcommand{\arraystretch}{0.5}
+    \setcounter{MaxMatrixCols}{17}
+    \begin{matrix}
+      \square & \square & \square & \square & \square & \square & \square & \square & \square & \square & \square & \square & \square & \square & \square & \square & \square \\
+      \square & \square & \square & \square & \square & \square & \square & \square & \square & \square & \square & \square & \square & \square & \square & \square & \square \\
+      \square & \square & \square & \square & \blacksquare & \blacksquare & \blacksquare & \square & \square & \square & \blacksquare & \blacksquare & \blacksquare & \square & \square & \square & \square \\
+      \square & \square & \square & \square & \square & \square & \square & \square & \square & \square & \square & \square & \square & \square & \square & \square & \square \\
+      \square & \square & \blacksquare & \square & \square & \square & \square & \blacksquare & \square & \blacksquare & \square & \square & \square & \square & \blacksquare & \square & \square \\
+      \square & \square & \blacksquare & \square & \square & \square & \square & \blacksquare & \square & \blacksquare & \square & \square & \square & \square & \blacksquare & \square & \square \\
+      \square & \square & \blacksquare & \square & \square & \square & \square & \blacksquare & \square & \blacksquare & \square & \square & \square & \square & \blacksquare & \square & \square \\
+      \square & \square & \square & \square & \blacksquare & \blacksquare & \blacksquare & \square & \square & \square & \blacksquare & \blacksquare & \blacksquare & \square & \square & \square & \square \\
+      \square & \square & \square & \square & \square & \square & \square & \square & \square & \square & \square & \square & \square & \square & \square & \square & \square \\
+      \square & \square & \square & \square & \blacksquare & \blacksquare & \blacksquare & \square & \square & \square & \blacksquare & \blacksquare & \blacksquare & \square & \square & \square & \square \\
+      \square & \square & \blacksquare & \square & \square & \square & \square & \blacksquare & \square & \blacksquare & \square & \square & \square & \square & \blacksquare & \square & \square \\
+      \square & \square & \blacksquare & \square & \square & \square & \square & \blacksquare & \square & \blacksquare & \square & \square & \square & \square & \blacksquare & \square & \square \\
+      \square & \square & \blacksquare & \square & \square & \square & \square & \blacksquare & \square & \blacksquare & \square & \square & \square & \square & \blacksquare & \square & \square \\
+      \square & \square & \square & \square & \square & \square & \square & \square & \square & \square & \square & \square & \square & \square & \square & \square & \square \\
+      \square & \square & \square & \square & \blacksquare & \blacksquare & \blacksquare & \square & \square & \square & \blacksquare & \blacksquare & \blacksquare & \square & \square & \square & \square \\
+      \square & \square & \square & \square & \square & \square & \square & \square & \square & \square & \square & \square & \square & \square & \square & \square & \square \\
+      \square & \square & \square & \square & \square & \square & \square & \square & \square & \square & \square & \square & \square & \square & \square & \square & \square \\
+    \end{matrix}\Rightarrow
+    \begin{matrix}
+      \square & \square & \square & \square & \square & \square & \square & \square & \square & \square & \square & \square & \square & \square & \square & \square & \square \\
+      \square & \square & \square & \square & \square & \blacksquare & \square & \square & \square & \square & \square & \blacksquare & \square & \square & \square & \square & \square \\
+      \square & \square & \square & \square & \square & \blacksquare & \square & \square & \square & \square & \square & \blacksquare & \square & \square & \square & \square & \square \\
+      \square & \square & \square & \square & \square & \blacksquare & \blacksquare & \square & \square & \square & \blacksquare & \blacksquare & \square & \square & \square & \square & \square \\
+      \square & \square & \square & \square & \square & \square & \square & \square & \square & \square & \square & \square & \square & \square & \square & \square & \square \\
+      \square & \blacksquare & \blacksquare & \blacksquare & \square & \square & \blacksquare & \blacksquare & \square & \blacksquare & \blacksquare & \square & \square & \blacksquare & \blacksquare & \blacksquare & \square \\
+      \square & \square & \square & \blacksquare & \square & \blacksquare & \square & \blacksquare & \square & \blacksquare & \square & \blacksquare & \square & \blacksquare & \square & \square & \square \\
+      \square & \square & \square & \square & \square & \blacksquare & \blacksquare & \square & \square & \square & \blacksquare & \blacksquare & \square & \square & \square & \square & \square \\
+      \square & \square & \square & \square & \square & \square & \square & \square & \square & \square & \square & \square & \square & \square & \square & \square & \square \\
+      \square & \square & \square & \square & \square & \blacksquare & \blacksquare & \square & \square & \square & \blacksquare & \blacksquare & \square & \square & \square & \square & \square \\
+      \square & \square & \square & \blacksquare & \square & \blacksquare & \square & \blacksquare & \square & \blacksquare & \square & \blacksquare & \square & \blacksquare & \square & \square & \square \\
+      \square & \blacksquare & \blacksquare & \blacksquare & \square & \square & \blacksquare & \blacksquare & \square & \blacksquare & \blacksquare & \square & \square & \blacksquare & \blacksquare & \blacksquare & \square \\
+      \square & \square & \square & \square & \square & \square & \square & \square & \square & \square & \square & \square & \square & \square & \square & \square & \square \\
+      \square & \square & \square & \square & \square & \blacksquare & \blacksquare & \square & \square & \square & \blacksquare & \blacksquare & \square & \square & \square & \square & \square \\
+      \square & \square & \square & \square & \square & \blacksquare & \square & \square & \square & \square & \square & \blacksquare & \square & \square & \square & \square & \square \\
+      \square & \square & \square & \square & \square & \blacksquare & \square & \square & \square & \square & \square & \blacksquare & \square & \square & \square & \square & \square \\
+      \square & \square & \square & \square & \square & \square & \square & \square & \square & \square & \square & \square & \square & \square & \square & \square & \square \\
+    \end{matrix}\Rightarrow
+    \begin{matrix}
+      \square & \square & \square & \square & \square & \square & \square & \square & \square & \square & \square & \square & \square & \square & \square & \square & \square \\
+      \square & \square & \square & \square & \square & \square & \square & \square & \square & \square & \square & \square & \square & \square & \square & \square & \square \\
+      \square & \square & \square & \square & \blacksquare & \blacksquare & \square & \square & \square & \square & \square & \blacksquare & \blacksquare & \square & \square & \square & \square \\
+      \square & \square & \square & \square & \square & \blacksquare & \blacksquare & \square & \square & \square & \blacksquare & \blacksquare & \square & \square & \square & \square & \square \\
+      \square & \square & \blacksquare & \square & \square & \blacksquare & \square & \blacksquare & \square & \blacksquare & \square & \blacksquare & \square & \square & \blacksquare & \square & \square \\
+      \square & \square & \blacksquare & \blacksquare & \blacksquare & \square & \blacksquare & \blacksquare & \square & \blacksquare & \blacksquare & \square & \blacksquare & \blacksquare & \blacksquare & \square & \square \\
+      \square & \square & \square & \blacksquare & \square & \blacksquare & \square & \blacksquare & \square & \blacksquare & \square & \blacksquare & \square & \blacksquare & \square & \square & \square \\
+      \square & \square & \square & \square & \blacksquare & \blacksquare & \blacksquare & \square & \square & \square & \blacksquare & \blacksquare & \blacksquare & \square & \square & \square & \square \\
+      \square & \square & \square & \square & \square & \square & \square & \square & \square & \square & \square & \square & \square & \square & \square & \square & \square \\
+      \square & \square & \square & \square & \blacksquare & \blacksquare & \blacksquare & \square & \square & \square & \blacksquare & \blacksquare & \blacksquare & \square & \square & \square & \square \\
+      \square & \square & \square & \blacksquare & \square & \blacksquare & \square & \blacksquare & \square & \blacksquare & \square & \blacksquare & \square & \blacksquare & \square & \square & \square \\
+      \square & \square & \blacksquare & \blacksquare & \blacksquare & \square & \blacksquare & \blacksquare & \square & \blacksquare & \blacksquare & \square & \blacksquare & \blacksquare & \blacksquare & \square & \square \\
+      \square & \square & \blacksquare & \square & \square & \blacksquare & \square & \blacksquare & \square & \blacksquare & \square & \blacksquare & \square & \square & \blacksquare & \square & \square \\
+      \square & \square & \square & \square & \square & \blacksquare & \blacksquare & \square & \square & \square & \blacksquare & \blacksquare & \square & \square & \square & \square & \square \\
+      \square & \square & \square & \square & \blacksquare & \blacksquare & \square & \square & \square & \square & \square & \blacksquare & \blacksquare & \square & \square & \square & \square \\
+      \square & \square & \square & \square & \square & \square & \square & \square & \square & \square & \square & \square & \square & \square & \square & \square & \square \\
+      \square & \square & \square & \square & \square & \square & \square & \square & \square & \square & \square & \square & \square & \square & \square & \square & \square \\
+    \end{matrix}\Rightarrow
+    \endgroup
+  \end{equation*}
+\end{tiny}
+#+end_export
+
+#+begin_export latex
+\begin{tiny}
+  \begin{equation*}
+    \begingroup
+    \setlength\arraycolsep{0.25pt}
+    \renewcommand{\arraystretch}{0.5}
+    \setcounter{MaxMatrixCols}{17}
+    \mspace{-48mu}\Rightarrow\begin{matrix}
+    \square & \square & \square & \square & \square & \square & \square & \square & \square & \square & \square & \square & \square & \square & \square & \square & \square \\
+    \square & \square & \square & \square & \square & \square & \square & \square & \square & \square & \square & \square & \square & \square & \square & \square & \square \\
+    \square & \square & \square & \square & \blacksquare & \blacksquare & \blacksquare & \square & \square & \square & \blacksquare & \blacksquare & \blacksquare & \square & \square & \square & \square \\
+    \square & \square & \square & \square & \square & \square & \square & \square & \square & \square & \square & \square & \square & \square & \square & \square & \square \\
+    \square & \square & \blacksquare & \square & \square & \square & \square & \blacksquare & \square & \blacksquare & \square & \square & \square & \square & \blacksquare & \square & \square \\
+    \square & \square & \blacksquare & \square & \square & \square & \square & \blacksquare & \square & \blacksquare & \square & \square & \square & \square & \blacksquare & \square & \square \\
+    \square & \square & \blacksquare & \square & \square & \square & \square & \blacksquare & \square & \blacksquare & \square & \square & \square & \square & \blacksquare & \square & \square \\
+    \square & \square & \square & \square & \blacksquare & \blacksquare & \blacksquare & \square & \square & \square & \blacksquare & \blacksquare & \blacksquare & \square & \square & \square & \square \\
+    \square & \square & \square & \square & \square & \square & \square & \square & \square & \square & \square & \square & \square & \square & \square & \square & \square \\
+    \square & \square & \square & \square & \blacksquare & \blacksquare & \blacksquare & \square & \square & \square & \blacksquare & \blacksquare & \blacksquare & \square & \square & \square & \square \\
+    \square & \square & \blacksquare & \square & \square & \square & \square & \blacksquare & \square & \blacksquare & \square & \square & \square & \square & \blacksquare & \square & \square \\
+    \square & \square & \blacksquare & \square & \square & \square & \square & \blacksquare & \square & \blacksquare & \square & \square & \square & \square & \blacksquare & \square & \square \\
+    \square & \square & \blacksquare & \square & \square & \square & \square & \blacksquare & \square & \blacksquare & \square & \square & \square & \square & \blacksquare & \square & \square \\
+    \square & \square & \square & \square & \square & \square & \square & \square & \square & \square & \square & \square & \square & \square & \square & \square & \square \\
+    \square & \square & \square & \square & \blacksquare & \blacksquare & \blacksquare & \square & \square & \square & \blacksquare & \blacksquare & \blacksquare & \square & \square & \square & \square \\
+    \square & \square & \square & \square & \square & \square & \square & \square & \square & \square & \square & \square & \square & \square & \square & \square & \square \\
+    \square & \square & \square & \square & \square & \square & \square & \square & \square & \square & \square & \square & \square & \square & \square & \square & \square \\
+    \end{matrix}\Rightarrow
+    \begin{matrix}
+      \square & \square & \square & \square & \square & \square & \square & \square & \square & \square & \square & \square & \square & \square & \square & \square & \square \\
+      \square & \square & \square & \square & \square & \blacksquare & \square & \square & \square & \square & \square & \blacksquare & \square & \square & \square & \square & \square \\
+      \square & \square & \square & \square & \square & \blacksquare & \square & \square & \square & \square & \square & \blacksquare & \square & \square & \square & \square & \square \\
+      \square & \square & \square & \square & \square & \blacksquare & \blacksquare & \square & \square & \square & \blacksquare & \blacksquare & \square & \square & \square & \square & \square \\
+      \square & \square & \square & \square & \square & \square & \square & \square & \square & \square & \square & \square & \square & \square & \square & \square & \square \\
+      \square & \blacksquare & \blacksquare & \blacksquare & \square & \square & \blacksquare & \blacksquare & \square & \blacksquare & \blacksquare & \square & \square & \blacksquare & \blacksquare & \blacksquare & \square \\
+      \square & \square & \square & \blacksquare & \square & \blacksquare & \square & \blacksquare & \square & \blacksquare & \square & \blacksquare & \square & \blacksquare & \square & \square & \square \\
+      \square & \square & \square & \square & \square & \blacksquare & \blacksquare & \square & \square & \square & \blacksquare & \blacksquare & \square & \square & \square & \square & \square \\
+      \square & \square & \square & \square & \square & \square & \square & \square & \square & \square & \square & \square & \square & \square & \square & \square & \square \\
+      \square & \square & \square & \square & \square & \blacksquare & \blacksquare & \square & \square & \square & \blacksquare & \blacksquare & \square & \square & \square & \square & \square \\
+      \square & \square & \square & \blacksquare & \square & \blacksquare & \square & \blacksquare & \square & \blacksquare & \square & \blacksquare & \square & \blacksquare & \square & \square & \square \\
+      \square & \blacksquare & \blacksquare & \blacksquare & \square & \square & \blacksquare & \blacksquare & \square & \blacksquare & \blacksquare & \square & \square & \blacksquare & \blacksquare & \blacksquare & \square \\
+      \square & \square & \square & \square & \square & \square & \square & \square & \square & \square & \square & \square & \square & \square & \square & \square & \square \\
+      \square & \square & \square & \square & \square & \blacksquare & \blacksquare & \square & \square & \square & \blacksquare & \blacksquare & \square & \square & \square & \square & \square \\
+      \square & \square & \square & \square & \square & \blacksquare & \square & \square & \square & \square & \square & \blacksquare & \square & \square & \square & \square & \square \\
+      \square & \square & \square & \square & \square & \blacksquare & \square & \square & \square & \square & \square & \blacksquare & \square & \square & \square & \square & \square \\
+      \square & \square & \square & \square & \square & \square & \square & \square & \square & \square & \square & \square & \square & \square & \square & \square & \square \\
+    \end{matrix}\Rightarrow
+    \begin{matrix}
+      \square & \square & \square & \square & \square & \square & \square & \square & \square & \square & \square & \square & \square & \square & \square & \square & \square \\
+      \square & \square & \square & \square & \square & \square & \square & \square & \square & \square & \square & \square & \square & \square & \square & \square & \square \\
+      \square & \square & \square & \square & \blacksquare & \blacksquare & \square & \square & \square & \square & \square & \blacksquare & \blacksquare & \square & \square & \square & \square \\
+      \square & \square & \square & \square & \square & \blacksquare & \blacksquare & \square & \square & \square & \blacksquare & \blacksquare & \square & \square & \square & \square & \square \\
+      \square & \square & \blacksquare & \square & \square & \blacksquare & \square & \blacksquare & \square & \blacksquare & \square & \blacksquare & \square & \square & \blacksquare & \square & \square \\
+      \square & \square & \blacksquare & \blacksquare & \blacksquare & \square & \blacksquare & \blacksquare & \square & \blacksquare & \blacksquare & \square & \blacksquare & \blacksquare & \blacksquare & \square & \square \\
+      \square & \square & \square & \blacksquare & \square & \blacksquare & \square & \blacksquare & \square & \blacksquare & \square & \blacksquare & \square & \blacksquare & \square & \square & \square \\
+      \square & \square & \square & \square & \blacksquare & \blacksquare & \blacksquare & \square & \square & \square & \blacksquare & \blacksquare & \blacksquare & \square & \square & \square & \square \\
+      \square & \square & \square & \square & \square & \square & \square & \square & \square & \square & \square & \square & \square & \square & \square & \square & \square \\
+      \square & \square & \square & \square & \blacksquare & \blacksquare & \blacksquare & \square & \square & \square & \blacksquare & \blacksquare & \blacksquare & \square & \square & \square & \square \\
+      \square & \square & \square & \blacksquare & \square & \blacksquare & \square & \blacksquare & \square & \blacksquare & \square & \blacksquare & \square & \blacksquare & \square & \square & \square \\
+      \square & \square & \blacksquare & \blacksquare & \blacksquare & \square & \blacksquare & \blacksquare & \square & \blacksquare & \blacksquare & \square & \blacksquare & \blacksquare & \blacksquare & \square & \square \\
+      \square & \square & \blacksquare & \square & \square & \blacksquare & \square & \blacksquare & \square & \blacksquare & \square & \blacksquare & \square & \square & \blacksquare & \square & \square \\
+      \square & \square & \square & \square & \square & \blacksquare & \blacksquare & \square & \square & \square & \blacksquare & \blacksquare & \square & \square & \square & \square & \square \\
+      \square & \square & \square & \square & \blacksquare & \blacksquare & \square & \square & \square & \square & \square & \blacksquare & \blacksquare & \square & \square & \square & \square \\
+      \square & \square & \square & \square & \square & \square & \square & \square & \square & \square & \square & \square & \square & \square & \square & \square & \square \\
+      \square & \square & \square & \square & \square & \square & \square & \square & \square & \square & \square & \square & \square & \square & \square & \square & \square \\
+    \end{matrix}
+    \endgroup
+  \end{equation*}
+\end{tiny}
+#+end_export
+
+** /untitled copy (1)(2) - final/
+
+*** Slide 1                                                     :B_onlyenv:
+:PROPERTIES:
+:BEAMER_env:             onlyenv
+:BEAMER_act:             <1>
+:END:
+
+iTunes anyone?
+
+*** Slide 2                                                     :B_onlyenv:
+:PROPERTIES:
+:BEAMER_env:             onlyenv
+:BEAMER_act:             <2>
+:END:
+
+#+ATTR_LATEX: :height 7cm
+[[file:images/u2.png]]
+
+** Rolling out U2
+
+#+begin_src haskell
+  type U2 a = U (U a)
+#+end_src
+
+** Moving around in the +complex+ Universe
+
+#+begin_src haskell
+  shift :: Direction -> U2 a -> U2 a
+  shift North u = left      u
+  shift South u = right     u
+  shift East  u = right <$> u
+  shift West  u = left  <$> u
+#+end_src
+
+*** Left                                                         :B_column:
+:PROPERTIES:
+:BEAMER_env:             column
+:BEAMER_col:             0.45
+:END:
+
+**** Just here                                                 :B_onlyenv:
+:PROPERTIES:
+:BEAMER_env:             onlyenv
+:BEAMER_act:             <2->
+:END:
+
+#+ATTR_LATEX: :options escapeinside=||,mathescape=true
+#+begin_src haskell
+  > print' DisplayFocused . narrow2 3 $ gof1
+  |$\ \square\square\square[\square]\square\square\square$|
+  |$\ \square\square\square[\square]\square\square\square$|
+  |$\ \square\square\square[\square]\square\square\square$|
+  |$[\square\square\square\ \square\ \square\square\square]$|
+  |$\ \square\square\square[\square]\blacksquare\blacksquare\blacksquare$|
+  |$\ \square\square\square[\square]\blacksquare\blacksquare\square$|
+  |$\ \square\square\square[\square]\blacksquare\blacksquare\square$|
+#+end_src
+
+*** Right                                                        :B_column:
+:PROPERTIES:
+:BEAMER_env:             column
+:BEAMER_col:             0.45
+:END:
+
+**** North                                                     :B_onlyenv:
+:PROPERTIES:
+:BEAMER_env:             onlyenv
+:BEAMER_act:             <3>
+:END:
+
+#+ATTR_LATEX: :options escapeinside=||,mathescape=true
+#+begin_src haskell
+  > (...) . shift North $ gof1
+  |$\ \square\square\square[\square]\square\square\square$|
+  |$\ \square\square\square[\square]\square\square\square$|
+  |$\ \square\square\square[\square]\square\square\square$|
+  |$[\square\square\square\ \square\ \square\square\square]$|
+  |$\ \square\square\square[\square]\square\square\square$|
+  |$\ \square\square\square[\square]\blacksquare\blacksquare\blacksquare$|
+  |$\ \square\square\square[\square]\blacksquare\blacksquare\square$|
+#+end_src
+
+**** 3x South + 3x East                                        :B_onlyenv:
+:PROPERTIES:
+:BEAMER_env:             onlyenv
+:BEAMER_act:             <4>
+:END:
+
+#+ATTR_LATEX: :options escapeinside=||,mathescape=true
+#+begin_src haskell
+  > (...) . shiftn 3 South . shiftn 3 East $ gof1
+  |$\ \square\square\square[\square]\square\square\square$|
+  |$\ \square\blacksquare\blacksquare[\blacksquare]\blacksquare\blacksquare\square$|
+  |$\ \square\blacksquare\blacksquare[\square]\blacksquare\blacksquare\square$|
+  |$[\square\blacksquare\blacksquare\ \square\ \blacksquare\blacksquare\square]$|
+  |$\ \square\blacksquare\blacksquare[\square]\blacksquare\blacksquare\square$|
+  |$\ \square\blacksquare\blacksquare[\blacksquare]\blacksquare\blacksquare\square$|
+  |$\ \square\square\square[\square]\square\square\square$|
+#+end_src
+
+** Game of Life rules
+
+#+begin_src haskell
+  rule :: U (U Cell) -> Cell
+  rule u | ns == 3   = Alive
+         | ns == 2   = extract . extract $ u
+         | otherwise = Dead
+    where ns = length . filter (== Alive) . neighbours Dead $ u
+
+  --------------------------------------------------------------------------------
+
+  neighbours :: Cell -> U (U Cell) -> [Cell]
+  neighbours c u
+    = fmap (\f -> extract . extract $ f u)
+      [ shift North
+      , shift North . shift East
+      , shift East
+      , shift East . shift South
+      , shift South
+      , shift South . shift West
+      , shift West
+      , shift West . shift North
+      ]
+#+end_src
+
+** Was easy, right?
+
+#+begin_src haskell
+  > let someGof = undefined :: U (U Cell)
+#+end_src
+
+#+BEAMER: \pause
+
+#+begin_src haskell
+  > :t rule someGof
+  rule someGof :: Cell
+#+end_src
+
+#+BEAMER: \pause
+
+#+begin_src haskell
+  > :t extend rule someGof
+  extend rule someGof :: U Cell
+#+end_src
+
+#+BEAMER: \pause
+
+Wait... WAT?
+
+** Extending 2D Universe (1)
+
+#+begin_src haskell
+  > :t extend
+  extend :: (U a -> b) -> U a -> U b
+#+end_src
+
+#+BEAMER: \pause
+
+#+begin_src haskell
+  > :t extend rule
+  extend rule' :: U (U Cell) -> U Cell
+#+end_src
+
+#+BEAMER: \pause
+
+But we need =extend2 :: (U (U a) -> b) - U (U a) -> U (U b)=.
+
+** Extending 2D Universe (2)
+
+#+begin_src haskell
+  duplicate2 :: U (U a) -> U (U (U (U a)))
+  duplicate2 = fmap duplicate . duplicate
+
+  extend2 :: (U (U a) -> b) -> U (U a) -> U (U b)
+  extend2 f = fmap (fmap f) . duplicate2
+#+end_src
+
+#+BEAMER: \pause
+
+#+begin_export latex
+\begin{equation*}
+  \begingroup
+  \setlength\arraycolsep{0.25pt}
+  \renewcommand{\arraystretch}{0.5}
+  \begin{matrix}
+    \square & \square & \square      & \square      & \square \\
+    \square & \square & \blacksquare & \square      & \square \\
+    \square & \square & \blacksquare & \square      & \square \\
+    \square & \square & \blacksquare & \square      & \square \\
+    \square & \square & \square      & \square      & \square \\
+  \end{matrix}\Rightarrow
+  \begin{matrix}
+    \square & \square & \square & \square & \square \\
+    \square & \square & \square & \square & \square \\
+    \square & \square & \square & \square & \square \\
+    \square & \square & \square & \square & \square \\
+    \square & \square & \square & \square & \square \\
+  \end{matrix}\ne
+  \begin{matrix}
+    \square & \square      & \square      & \square      & \square \\
+    \square & \square      & \square      & \square      & \square \\
+    \square & \blacksquare & \blacksquare & \blacksquare & \square \\
+    \square & \square      & \square      & \square      & \square \\
+    \square & \square      & \square      & \square      & \square \\
+  \end{matrix}
+  \endgroup
+\end{equation*}
+#+end_export
+
+#+BEAMER: \pause
+
+fmap-fu can't always save you, functor-kun!
+
+** Extending 2D Universe
+
+#+begin_src haskell
+newtype U2 a
+  = U2
+  { getUniverse :: U (U a)
+  } deriving (Functor)
+
+extract :: U2 a -> a
+extract = extract . extract . getUniverse
+
+duplicate :: U2 a -> U2 (U2 a)
+duplicate = fmap U2 . U2 . shifted . shifted . getUniverse
+  where shifted :: U (U a) -> U (U (U a))
+        shifted u@(U _ (U ls _ rs) _) = U
+          (tail $ iterate (fmap left) u)
+          u
+          (tail $ iterate (fmap right) u)
+
+extend :: (U2 a -> a) -> U2 a -> U2 a
+extend f = fmap f . duplicate
+#+end_src
+
+** Works
+
+#+ATTR_LATEX: :options escapeinside=||,mathescape=true
+#+begin_src haskell
+  > mapM_ (print . narrow2' 0 4 0 4) . take 2 . iterate (extend rule) $ gof3
+  |$\square\square\square\square\square$|
+  |$\square\square\blacksquare\square\square$|
+  |$\square\square\blacksquare\square\square$|
+  |$\square\square\blacksquare\square\square$|
+  |$\square\square\square\square\square$|
+  |$$|
+  |$\square\square\square\square\square$|
+  |$\square\square\square\square\square$|
+  |$\square\blacksquare\blacksquare\blacksquare\square$|
+  |$\square\square\square\square\square$|
+  |$\square\square\square\square\square$|
+#+end_src
+
+** Final words
+
+- <1-> Moving from 1D to 2D is really simple (not counting the wasted time on the
+  wrong idea).
+- <2-> Great abstraction for our task.
+- <3-> It's easy to implement other automata on top of this abstraction.
+  - Different cells (more values)
+  - Different rules (more neighbours)
+
+* Act 3: Bomberman
+
+** Definition
+
+#+BEAMER: \pause
+
+Do you really need a definition of Bomberman?
+
+** Definition
+
+[[file:images/bomberman-1.jpg]]
+
+** But we have a different one
+
+#+ATTR_LATEX: :height 8cm
+[[file:images/bomberman-2.png]]
+
+** Bells and whistles
+
+#+ATTR_LATEX: :height 8cm
+[[file:images/bomberman-3.png]]
+
+** Reusing U2
+
+#+begin_src haskell
+  data Cell
+    = Bomberman
+    | BombBomberman
+    | DeadBomberman
+
+    | OtherBomberman
+    | OtherBombBomberman
+    | OtherDeadBomberman
+
+    | BombTimer5
+    | BombTimer4
+    | BombTimer3
+    | BombTimer2
+    | BombTimer1
+    | Boom
+
+    | Wall
+    | DestroyableWall
+    | DestroyedWall
+
+    | MeatChopper
+    | DeadMeatChopper
+
+    | Empty
+#+end_src
+
+** What is bot?
+
+#+begin_src haskell
+  bot :: ( MonadIO m
+         , MonadReader r m
+         , HasLogFunc r
+         )
+      => U2 Cell
+      -> m Action
+  bot = undefined
+#+end_src
+
+#+BEAMER: \pause
+
+What to =extend=?
+
+** What we care about
+
+- <1-> Greed. What can be destroyed?
+- <2-> Safety. What can kill us?
+
+** Fatum of the Universe
+
+#+begin_src haskell
+  data MarkedCell
+    = MarkedCell
+    { getCell        :: !Cell
+    , getDangers     :: ![Cell]
+    , getTargets     :: ![Cell]
+    }
+#+end_src
+
+#+BEAMER: \pause
+
+#+begin_src haskell
+  mark :: U2 Cell -> MarkedCell
+  mark board = MarkedCell (extract board) dangers targets
+    where dangers = bombs <> monsters
+          bombs = filter isBomb (allVisible (not . isAnyWall) 3 board)
+          monsters = filter (isMonster .| isEnemy) (allVisible (not . isAnyWall) 1 board)
+
+          targets
+            = filter (isDestroyableWall .| isMonster .| isEnemy)
+            $ allVisible (not . isWall) 3 board
+#+end_src
+
+** Fatum of the Universe
+
+#+begin_src haskell
+  > :t extend
+  extend :: (U2 a -> b) -> U2 a -> U2 b
+
+  > :t extend mark
+  extend mark :: U2 Cell -> U2 MarkedCell
+#+end_src
+
+** The bot
+:PROPERTIES:
+:BEAMER_opt:             t
+:END:
+
+*** Step 1                                                      :B_onlyenv:
+:PROPERTIES:
+:BEAMER_env:             onlyenv
+:BEAMER_act:             <1>
+:END:
+
+#+begin_src haskell
+bot :: ( MonadIO m
+       , MonadReader r m
+       , HasLogFunc r
+       )
+    => U2 Cell
+    -> m Action
+bot board = do
+  let markedBoard = extend mark $ narrow 11 board
+  ...
+#+end_src
+
+*** Step 2                                                      :B_onlyenv:
+:PROPERTIES:
+:BEAMER_env:             onlyenv
+:BEAMER_act:             <2>
+:END:
+
+#+begin_src haskell
+bot :: ( MonadIO m
+       , MonadReader r m
+       , HasLogFunc r
+       )
+    => U2 Cell
+    -> m Action
+bot board = do
+  let markedBoard = extend mark $ narrow 11 board
+      directions  = if isSafe . extract $ markedBoard
+                    then ...
+                    else ...
+  ...
+
+isSafe :: MarkedCell -> Bool
+isSafe = L.null . getDangers
+#+end_src
+
+*** Step 3                                                      :B_onlyenv:
+:PROPERTIES:
+:BEAMER_env:             onlyenv
+:BEAMER_act:             <3>
+:END:
+
+#+begin_src haskell
+bot :: ( MonadIO m
+       , MonadReader r m
+       , HasLogFunc r
+       )
+    => U2 Cell
+    -> m Action
+bot board = do
+  let markedBoard = extend mark $ narrow 11 board
+      directions  = if isSafe . extract $ markedBoard
+                    then directionsToTargets markedBoard
+                    else escapeDirections markedBoard
+  ...
+
+isSafe :: MarkedCell -> Bool
+isSafe = L.null . getDangers
+#+end_src
+
+*** Step 4                                                      :B_onlyenv:
+:PROPERTIES:
+:BEAMER_env:             onlyenv
+:BEAMER_act:             <4>
+:END:
+
+#+begin_src haskell
+bot :: ( MonadIO m
+       , MonadReader r m
+       , HasLogFunc r
+       )
+    => U2 Cell
+    -> m Action
+bot board = do
+  let markedBoard = extend mark $ narrow 11 board
+      directions  = if isSafe . extract $ markedBoard
+                    then directionsToTargets markedBoard
+                    else escapeDirections markedBoard
+  direction <- randomElement directions
+  ...
+
+isSafe :: MarkedCell -> Bool
+isSafe = L.null . getDangers
+#+end_src
+
+*** Step 5                                                      :B_onlyenv:
+:PROPERTIES:
+:BEAMER_env:             onlyenv
+:BEAMER_act:             <5>
+:END:
+
+#+begin_src haskell
+bot :: ( MonadIO m
+       , MonadReader r m
+       , HasLogFunc r
+       )
+    => U2 Cell
+    -> m Action
+bot board = do
+  let markedBoard = extend mark $ narrow 11 board
+      directions  = if isSafe . extract $ markedBoard
+                    then directionsToTargets markedBoard
+                    else escapeDirections markedBoard
+  direction <- randomElement directions
+  let bomb = shouldBomb markedBoard direction
+  ...
+
+isSafe :: MarkedCell -> Bool
+isSafe = L.null . getDangers
+#+end_src
+
+*** Step 6                                                      :B_onlyenv:
+:PROPERTIES:
+:BEAMER_env:             onlyenv
+:BEAMER_act:             <6>
+:END:
+
+#+begin_src haskell
+bot :: ( MonadIO m
+       , MonadReader r m
+       , HasLogFunc r
+       )
+    => U2 Cell
+    -> m Action
+bot board = do
+  let markedBoard = extend mark $ narrow 11 board
+      directions  = if isSafe . extract $ markedBoard
+                    then directionsToTargets markedBoard
+                    else escapeDirections markedBoard
+  direction <- randomElement directions
+  let bomb = shouldBomb markedBoard direction
+  pure $ maybe (Action Stay bomb) (flip Action bomb . Move) direction
+
+isSafe :: MarkedCell -> Bool
+isSafe = L.null . getDangers
+#+end_src
+
+** Danger! Live demo
+
+/Live demos are subject to fail. Accept and forgive. Move on./
+
+** Final words
+
+- <1-> Great abstraction for our task. Again.
+  - We care about elements surrounding player.
+  - Easy to mark all the interesting points to be used in our bot logic.
+- <2-> Not all topics are covered.
+  - Path finding. Data type helps us here.
+  - Being a smart bot.
+- <3-> Now you understand the last bit of the title.
+- <4-> Do you think we are done?
+
+* Act 4: Comonads
+
+** Builder
+
+#+begin_src haskell
+  type Option = String
+
+  data Config = MkConfig [Option] deriving (Show)
+#+end_src
+
+#+BEAMER: \pause
+
+#+begin_src haskell
+  mkConfig :: [Option] -> Config
+  mkConfig = MkConfig
+
+  defaultConfig :: [Option] -> Config
+  defaultConfig options = MkConfig ("-Wall" : options)
+#+end_src
+
+** Composing builders (1)
+
+#+begin_src haskell
+  builder :: [Option] -> Config
+#+end_src
+
+#+BEAMER: \pause
+
+#+begin_src haskell
+  profile :: ([Option] -> Config) -> Config
+  profile builder = builder ["-prof", "-auto-all"]
+#+end_src
+
+#+BEAMER: \pause
+
+#+begin_src haskell
+  > profile defaultConfig
+  MkConfig ["-Wall","-prof","-auto-all"]
+#+end_src
+
+** Composing builders (2)
+
+#+begin_src haskell
+  fullOpt :: ([Option] -> Config) -> Config
+  fullOpt builder = builder ["-O2"]
+#+end_src
+
+#+BEAMER: \pause
+
+#+begin_src haskell
+  > fullOpt defaultConfig
+  MkConfig ["-Wall","-O2"]
+#+end_src
+
+#+BEAMER: \pause
+
+But how to compose =fullOpt= and =profile=?
+
+** Cheating
+
+#+begin_src haskell
+  profile'  :: ([Option] -> Config) -> ([Option] -> Config)
+  profile' builder =
+      \options -> builder (["-prof", "-auto-all"] ++ options)
+
+  fullOpt' :: ([Option] -> Config) -> ([Option] -> Config)
+  fullOpt' builder =
+      \options -> builder (["-O2"] ++ options)
+#+end_src
+
+#+BEAMER: \pause
+
+#+begin_src haskell
+  > :t profile' . fullOpt'
+  profile' . fullOpt' :: ([Option] -> Config) -> [Option] -> Config
+
+  > :t profile' . fullOpt' $ defaultConfig
+  profile' . fullOpt' $ defaultConfig :: [Option] -> Config
+#+end_src
+
+** Extracting
+
+#+begin_src haskell
+  extract :: ([Option] -> Config) -> Config
+  extract builder = builder []
+#+end_src
+
+#+BEAMER: \pause
+
+#+begin_src haskell
+  > :t extract . profile' . fullOpt' $ defaultConfig
+  extract . profile' . fullOpt' $ defaultConfig :: Config
+#+end_src
+
+#+BEAMER: \pause
+
+#+begin_src haskell
+  > extract . profile' . fullOpt' $ defaultConfig
+  MkConfig ["-Wall","-O2","-prof","-auto-all"]
+#+end_src
+
+** Setter
+
+#+begin_src haskell
+  profile :: ([Option] -> Config) -> Config
+  profile builder = builder ["-prof", "-auto-all"]
+#+end_src
+
+This looks better than promoted version:
+
+#+begin_src haskell
+  profile'  :: ([Option] -> Config) -> ([Option] -> Config)
+  profile' builder =
+      \options -> builder (["-prof", "-auto-all"] ++ options)
+#+end_src
+
+** Cheating again
+
+#+begin_src haskell
+  -- raw setter
+  setter :: ([Option] -> Config) -> Config
+#+end_src
+
+#+BEAMER: \pause
+
+#+begin_src haskell
+  -- promoted setter
+  extend setter :: ([Option] -> Config) -> ([Option] -> Config)
+#+end_src
+
+#+BEAMER: \pause
+
+#+begin_src haskell
+  -- setter promotion
+  extend :: (([Option] -> Config) ->              Config)
+         ->  ([Option] -> Config) -> ([Option] -> Config)
+#+end_src
+
+** =extend=
+
+#+begin_src haskell
+  extend :: (([Option] -> Config) ->              Config)
+         ->  ([Option] -> Config) -> ([Option] -> Config)
+  extend setter builder =
+      \opts2 -> setter (\opts1 -> builder (opts1 <> opts2))
+#+end_src
+
+#+BEAMER: \pause
+
+#+begin_src haskell
+  > :t extract . extend profile
+  extract . extend profile :: ([Option] -> Config) -> Config
+#+end_src
+
+#+BEAMER: \pause
+
+#+begin_src haskell
+  > :t extract . extend profile . extend fullOpt
+  extract . extend profile . extend fullOpt :: ([Option] -> Config) -> Config
+#+end_src
+
+#+BEAMER: \pause
+
+#+begin_src haskell
+  > extract . extend profile . extend fullOpt $ defaultConfig
+  MkConfig ["-Wall","-prof","-auto-all","-O2"]
+#+end_src
+
+#+BEAMER: \pause
+
+#+begin_src haskell
+  > defaultConfig =>> profile =>> fullOpt # extract
+  MkConfig ["-Wall","-O2","-prof","-auto-all"]
+
+  > defaultConfig =>> profile =>> fullOpt $ ["-boris"]
+  MkConfig ["-Wall","-boris","-O2","-prof","-auto-all"]
+#+end_src
+
+** Commonalities (1)
+
+#+begin_src haskell
+  extract :: U a  -> a
+  extract :: U2 a -> a
+#+end_src
+
+#+BEAMER: \pause
+
+#+begin_src haskell
+  extract :: ([Option] -> Config) -> Config
+#+end_src
+
+#+BEAMER: \pause
+
+#+begin_src haskell
+  extract :: ((->) [Option]) Config -> Config
+#+end_src
+
+#+BEAMER: \pause
+
+#+begin_src haskell
+  extract :: f a -> a
+#+end_src
+
+** Commonalities (2)
+
+#+begin_src haskell
+  extend :: (U a -> b) -> U a  -> U a
+  extend :: (U2 a -> b) -> U2 a -> U2 b
+#+end_src
+
+#+BEAMER: \pause
+
+#+begin_src haskell
+  extend :: (([Option] -> Config) ->              Config)
+         ->  ([Option] -> Config) -> ([Option] -> Config)
+#+end_src
+
+#+BEAMER: \pause
+
+#+begin_src haskell
+  extend :: (((->) [Option]) Config -> Config)
+         ->  ((->) [Option]) Config
+         ->  ((->) [Option]) Config
+#+end_src
+
+#+BEAMER: \pause
+
+#+begin_src haskell
+  extend :: (f a -> b) -> f a -> f b
+#+end_src
+
+** Comonad
+
+#+begin_src haskell
+  class Functor f => Comonad f where
+    extract :: f a -> a
+    extend :: (f a -> b) -> f a -> f b
+    duplicate :: f a -> f (f a)
+#+end_src
+
+#+BEAMER: \pause
+
+=Comonad= laws:
+
+#+begin_src haskell
+  extend extract      = id
+  extract . extend f  = f
+  extend f . extend g = extend (f . extend g)
+#+end_src
+
+** Co-monad
+
+*** Comonad                                                      :B_column:
+:PROPERTIES:
+:BEAMER_env:             column
+:BEAMER_col:             0.45
+:END:
+
+#+begin_src haskell
+  extract :: f a -> a
+  (=>>) :: f a -> (f a -> b) -> f b
+#+end_src
+
+*** Monad                                                        :B_column:
+:PROPERTIES:
+:BEAMER_env:             column
+:BEAMER_col:             0.45
+:END:
+
+#+begin_src haskell
+  return :: a -> f a
+  (>>=) :: f a -> (a -> f b) -> f b
+#+end_src
+
+** Universe is Comonad
+
+That should be obvious by now.
+
+** Store
+
+#+begin_src haskell
+  data Store s a = Store (s -> a) s
+
+  extract (Store f s) = f s
+
+  duplicate (Store f s) = Store (Store f) s
+#+end_src
+
+#+BEAMER: \pause
+
+/Homework:/ solve ECA and GOF using =Store= data type.
+
+** Many uses
+
+- <1-> Instances
+  - Pointed lists (Universe)
+  - Functions returning monoids.
+  - Store
+- <2-> Problems
+  - Cellular automata.
+  - Discrete board games.
+  - Builder patter.
+  - Iterator pattern.
+  - Command pattern.
+  - FRP.
+
+** Final words
+
+- <1-> Comonads give us an interface for extracting and extending certain data
+  types.
+- <2-> They also provide a 'method' like notation to Haskell.
+- <3-> Comonads are flipped Monads.
+- <4-> Using this interface we solved 3 different problems.
+
+** Grab the code
+
+https://gitlab.com/d12frosted/talks
+
+* References
+:PROPERTIES:
+:UNNUMBERED:             t
+:END:
+
+** References
+
+- https://www.st.cs.uni-saarland.de/edu/seminare/2005/advanced-fp/docs/huet-zipper.pdf
+- http://mathworld.wolfram.com/CellularAutomaton.html
+- http://mathworld.wolfram.com/ElementaryCellularAutomaton.html
+- http://mathworld.wolfram.com/GameofLife.html
+- https://hackage.haskell.org/package/comonad
+- https://bartoszmilewski.com/2017/01/02/comonads/
+- http://blog.sigfpe.com/2006/12/evaluating-cellular-automata-is.html
+- http://www.haskellforall.com/2013/02/you-could-have-invented-comonads.html
+
+* Questions?
+* Thank you
