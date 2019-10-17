@@ -1,0 +1,1917 @@
+#+TITLE: Functional Forkshop: Part 1
+#+AUTHOR: Boris Buliga, Valentyn Vakatsiienko
+#+EMAIL: boris@d12frosted.io
+#+STARTUP: beamer
+#+LATEX_CLASS: beamer
+#+LATEX_CLASS_OPTIONS: [presentation,aspectratio=169,smaller]
+#+LATEX_HEADER: \usepackage[utf8]{inputenc}
+#+LATEX_HEADER: \usepackage{soul}
+#+LATEX_HEADER: \usepackage{unicode-math}
+#+LATEX_HEADER: \usepackage{mathtools}
+#+LATEX_HEADER: \usepackage[mathletters]{ucs}
+#+LATEX_HEADER: \usemintedstyle{tango}
+#+LATEX_HEADER: \setminted{fontsize=\scriptsize}
+#+LATEX_HEADER: \setminted{mathescape=true}
+#+LATEX_HEADER: \setbeamertemplate{itemize items}[circle]
+#+LATEX_HEADER: \setbeamertemplate{enumerate items}[default]
+#+LATEX_HEADER: \setlength{\parskip}{\baselineskip}%
+#+LATEX_HEADER: \setlength{\parindent}{0pt}%
+#+LATEX_HEADER: \setbeamertemplate{navigation symbols}{}%remove navigation symbols
+#+LATEX_HEADER: \newcommand{\hlyellow}[1]{\colorbox{yellow!50}{$\displaystyle#1$}}
+#+LATEX_HEADER: \newcommand{\hlfancy}[2]{\sethlcolor{#1}\hl{#2}}
+#+OPTIONS: H:2 toc:nil num:t
+
+#+begin_export latex
+\newcommand{\mathcolorbox}[2]{%
+  \begingroup
+  \setlength{\fboxsep}{2pt}%
+  \colorbox{#1}{$\displaystyle #2$}%
+  \endgroup
+}
+
+\AtBeginSection[]{
+  \begin{frame}
+  \vfill
+  \centering
+  \begin{beamercolorbox}[sep=8pt,center,shadow=true,rounded=true]{title}
+    \usebeamerfont{title}\insertsectionhead\par%
+  \end{beamercolorbox}
+  \vfill
+  \end{frame}
+}
+#+end_export
+
+* Intro
+:PROPERTIES:
+:UNNUMBERED:             t
+:END:
+
+** About us
+
+#+begin_export latex
+\vspace*{20px}
+#+end_export
+
+*** Valik
+**** About                                                      :B_column:
+:PROPERTIES:
+:BEAMER_env:             column
+:BEAMER_col:             0.75
+:END:
+
+Server guild manager in Kyiv. Formerly forced people to use functional
+programming style in the Domains (Premium) team. Now works on Tagless Infra to
+provide you with the best tools for your daily needs. Which are all functional,
+of course.
+
+**** Photo                                                      :B_column:
+:PROPERTIES:
+:BEAMER_env:             column
+:BEAMER_col:             0.25
+:END:
+
+#+ATTR_LATEX: :height 2.5cm
+[[file:images/valik.png]]
+
+#+BEAMER: \pause
+
+*** Boris
+
+**** About                                                      :B_column:
+:PROPERTIES:
+:BEAMER_env:             column
+:BEAMER_col:             0.75
+:END:
+
+Developer at Payments by Wix team. Jumps between two extremes - Emacs Lisp and
+Haskell. Wants to force people around to use both languages, but fails to
+explain why.
+
+**** Photo                                                      :B_column:
+:PROPERTIES:
+:BEAMER_env:             column
+:BEAMER_col:             0.25
+:END:
+
+#+ATTR_LATEX: :height 2.5cm
+[[file:images/boris.jpg]]
+
+** About the Forkshop
+
+- Basic forkshop is split into several parts:
+  1. Type classes, Semigroups and Monoids.
+  2. Functors and Applicative Functors.
+  3. Monads.
+  4. Readers.
+  5. Comonads.
+- Theory and practice. Make sure that you are ready to write the code.
+
+** Whys
+
+- <1-> Functional programming roams (a bit).
+  - More projects are using functional programming techniques and idioms (at
+    different scale).
+- <2-> Some people are still confused by all these functional talks (~OptionT~, type
+  lambdas etc).
+- <3-> Having a common language and understanding of some fundamental stuff is
+  important.
+
+* Today
+:PROPERTIES:
+:UNNUMBERED:             t
+:END:
+
+** Agenda
+
+- Type classes
+- Semigroups
+- Monoids
+- 3 interesting™ tasks
+
+** Before we start
+
+#+begin_src bash
+  $ git clone git@gitlab.com:wax-org/fforkshop-monoids-scala.git
+#+end_src
+
+And import it as sbt project.
+
+* Type classes
+
+** Application definition
+
+- We are writing a game.
+- With multiple different creatures.
+- Everyone introduces themselves.
+- Introduction consists of animations and text showing in a bubble.
+
+** Meet the hero
+
+#+begin_src scala
+  case class Hero(name: String, job: String, level: Int) {
+    def introduce(): String = s"Hi! My name is $name. I am $level level $job."
+  }
+
+  object Game extends App {
+    val player = Hero("Valik", "Black Mage", 20)
+
+    someRealShitSounds()
+    drawBubble(player.introduce())
+    someRealShitAnimations()
+  }
+
+  // Hi! My name is Valik. I am 20 level Black Mage.
+#+end_src
+
+** Every hero needs a monster
+
+#+begin_src scala
+  case class Orc(name: String, level: Int) {
+    def introduce(): String =
+      s"Lok-tar ogar! Me be $name. Me be strong. Level $level strong!"
+  }
+
+  case class Ooze(level: Int) {
+    def introduce(): String = 1.to(level).map(_ => "brlup").mkString("-")
+  }
+#+end_src
+
+** Game
+
+*** Code                                                         :B_column:
+:PROPERTIES:
+:BEAMER_opt:             [t]
+:BEAMER_col:             0.46
+:BEAMER_env:             column
+:END:
+
+#+begin_src scala
+  object Game extends App {
+    val player = Hero("Valik", "Black Mage", 20)
+    val orc = Orc("Garrosh", 105)
+    val ooze = Ooze(2)
+
+    // Introduce player
+    someRealShitSounds()
+    drawBubble(player.introduce())
+    someRealShitAnimations()
+
+    // Introduce orc
+    someRealShitSounds()
+    drawBubble(orc.introduce())
+    someRealShitAnimations()
+
+    // Introduce ooze
+    someRealShitSounds()
+    drawBubble(ooze.introduce())
+    someRealShitAnimations()
+  }
+
+  // Hi! My name is Valik. I am 20 level Black Mage.
+  // Lok-tar ogar! Me be Garrosh. Me be strong. Level 105 strong!
+  // brlup-brlup
+#+end_src
+
+#+BEAMER: \pause
+
+*** Problems                                                     :B_column:
+:PROPERTIES:
+:BEAMER_opt:             [t]
+:BEAMER_col:             0.46
+:BEAMER_env:             column
+:END:
+
+#+begin_export latex
+\vspace*{0px}
+#+end_export
+
+Issues with this code:
+
+1. Repetition
+2. Noise
+
+** Introducing abstractions
+
+*** Old code                                                     :B_column:
+:PROPERTIES:
+:BEAMER_opt:             [t]
+:BEAMER_col:             0.5
+:BEAMER_env:             column
+:END:
+
+#+begin_src scala
+  //
+
+
+
+  case class Hero(...) {
+    def introduce(): String = s"..."
+  }
+
+  case class Orc(...) {
+    def introduce(): String = s"..."
+  }
+
+  case class Ooze(...) {
+    def introduce(): String = s"..."
+  }
+#+end_src
+
+#+BEAMER: \pause
+
+*** New code                                                     :B_column:
+:PROPERTIES:
+:BEAMER_opt:             [t]
+:BEAMER_col:             0.5
+:BEAMER_env:             column
+:END:
+
+#+begin_src scala
+  trait Introducible {
+    def introduce(): String
+  }
+
+  case class Hero(...) extends Introducible {
+    override def introduce(): String = s"..."
+  }
+
+  case class Orc(...) extends Introducible {
+    override def introduce(): String = s"..."
+  }
+
+  case class Ooze(...) extends Introducible {
+    override def introduce(): String = s"..."
+  }
+#+end_src
+
+** Game with trait
+
+*** Old code                                                     :B_column:
+:PROPERTIES:
+:BEAMER_opt:             [t]
+:BEAMER_col:             0.5
+:BEAMER_env:             column
+:END:
+
+#+begin_src scala
+  def introduce(phrase: String): Unit = {
+    someRealShitSounds()
+    drawBubble(phrase)
+    someRealShitAnimations()
+  }
+
+  object Game extends App {
+    /* ... */
+
+    introduce(player.introduce())
+    introduce(orc.introduce())
+    introduce(ooze.introduce())
+  }
+#+end_src
+
+*** New code                                                     :B_column:
+:PROPERTIES:
+:BEAMER_opt:             [t]
+:BEAMER_col:             0.5
+:BEAMER_env:             column
+:END:
+
+#+begin_src scala
+  def introduce(creature: Introducible): Unit = {
+    someRealShitSounds()
+    drawBubble(creature.introduce())
+    someRealShitAnimations()
+  }
+
+  object Game extends App {
+    /* ... */
+
+    introduce(player)
+    introduce(orc)
+    introduce(ooze)
+  }
+#+end_src
+
+*** Outcome                                                      :B_column:
+:PROPERTIES:
+:BEAMER_opt:             [t]
+:BEAMER_env:             column
+:END:
+
+#+BEAMER: \pause
+
+- No more ~introduce(_.introduce())~.
+- We are adaptive. Less code needs to be changed if we need something new in the
+  ~introduce~ function (e.g. sound name) - just add new 'method' to the trait.
+- Refactoring becomes easier.
+
+** Here comes the cockatrice
+
+*** Code                                                         :B_column:
+:PROPERTIES:
+:BEAMER_env:             column
+:BEAMER_col:             0.55
+:END:
+
+#+begin_src scala
+  import io.proprietary.monsters.cockatrice._
+
+  /* ... */
+
+  object Game extends App {
+    /* ... */
+
+    val cockatrice = Cockatrice(
+      level = 666,
+      element = Element.Fire
+    )
+
+    introduce(cockatrice) // ???
+                          // ain't gonna work
+  }
+#+end_src
+
+*** Image                                                        :B_column:
+:PROPERTIES:
+:BEAMER_env:             column
+:BEAMER_col:             0.45
+:END:
+
+#+ATTR_LATEX: :height 5cm
+[[file:images/cockatrice.jpg]]
+
+** Shawarma to the rescue
+
+*** Image                                                        :B_column:
+:PROPERTIES:
+:BEAMER_env:             column
+:BEAMER_col:             0.25
+:END:
+
+#+ATTR_LATEX: :height 7cm
+[[file:images/shawarma.jpg]]
+
+*** Code                                                         :B_column:
+:PROPERTIES:
+:BEAMER_env:             column
+:BEAMER_col:             0.75
+:END:
+
+#+begin_src scala
+  import io.proprietary.monsters.cockatrice._
+
+  /* ... */
+
+  case class CockatriceWrapper(cockatrice: Cockatrice) extends Introducible {
+    override def introduce(): String = {
+      import cockatrice._
+      s"Haha. I am a ${element.shortName} cockatrice of level ${level}."
+    }
+  }
+
+  object Game extends App {
+    /* ... */
+
+    val cockatrice = Cockatrice(level = 666, element = Element.Fire)
+    val cockatriceW = CockatriceWrapper(cockatrice)
+
+    introduce(cockatriceW)
+
+    /* ... */
+  }
+
+
+  // Haha. I am a fire cockatrice of level 666.
+#+end_src
+
+** Calm down and reevaluate our goal
+
+- <1-> Abstraction - caring about what you can do and not what you are. E.g.
+  separation of data and behaviour.
+- <2-> Composition - having a way to express something that can do several things at
+  once.
+- <3-> Extensibility - extending all kind of types:
+  - types we own
+  - types we don't own
+  - even built-in types
+
+** =trait= + wrapper: abstraction
+
+Abstraction holds. Proof is the ~introduce~ function itself.
+
+#+begin_src scala
+  def introduce(creature: Introducible): Unit = {
+    someRealShitSounds()
+    drawBubble(creature.introduce())
+    someRealShitAnimations()
+  }
+#+end_src
+
+** =trait= + wrapper: composition
+
+Composition holds thanks to =with= keyword.
+
+#+BEAMER: \pause
+
+#+begin_src scala
+  trait CanAttack {
+    def attack(): Unit
+  }
+
+  def patheticAttack[A <: Introducible with CanAttack](creature: A): Unit
+#+end_src
+
+#+BEAMER: \pause
+
+=with= keyword is not commutative
+
+~Introducible with CanAttack~ != ~CanAttack with Introducible~.
+
+** =trait= + wrapper: extensibility
+
+Extensibility holds, but with several caveats:
+
+1. No consistency - we wrap only types we don't own.
+2. Wrappers don't compose very well. You might even wrap your wrappers.
+3. Bad usability:
+   1. You can’t interchangeably use wrapper and the underlying value.
+   2. You can't plug in different behaviour implementations.
+
+** You know where it’s going to, right?
+
+#+BEAMER: \pause
+
+#+ATTR_LATEX: :height 7cm
+[[file:images/f_.jpg]]
+
+** Dividing data and behaviour
+
+*** Trait - before                                               :B_column:
+:PROPERTIES:
+:BEAMER_env:             column
+:BEAMER_opt:             [t]
+:BEAMER_col:             0.5
+:END:
+
+#+begin_src scala
+  trait Introducible {
+    def introduce(): String
+  }
+
+  def introduce(creature: Introducible): Unit = {
+
+    /* ... */
+    drawBubble(creature.introduce())
+    /* ... */
+  }
+#+end_src
+
+#+BEAMER: \pause
+
+*** Trait - now                                                  :B_column:
+:PROPERTIES:
+:BEAMER_env:             column
+:BEAMER_opt:             [t]
+:BEAMER_col:             0.5
+:END:
+
+#+begin_src scala
+  trait Introducible[A] {
+    def introduce(a: A): String
+  }
+
+  def introduce[A](creature: A,
+                   impl: Introducible[A]): Unit = {
+    /* ... */
+    drawBubble(impl.introduce(creature))
+    /* ... */
+  }
+#+end_src
+
+** Usage
+
+#+begin_src scala
+  // Define new trait
+  trait Introducible[A] {
+    def introduce(a: A): String
+  }
+#+end_src
+
+#+BEAMER: \pause
+
+#+begin_src scala
+  // Remove behaviour from data
+  case class Hero(name: String, job: String, level: Int)
+#+end_src
+
+#+BEAMER: \pause
+
+#+begin_src scala
+  // Implement behaviour as a value in companion object
+  object Hero {
+    val introducibleHero: Introducible[Hero] = new Introducible[Hero] {
+      override def introduce(a: Hero): String =
+        s"..."
+    }
+  }
+#+end_src
+
+#+BEAMER: \pause
+
+#+begin_src scala
+  // Pass data and behaviour separately
+  object Game extends App {
+    /* ... */
+    introduce(
+      creature = hero,
+      impl = Hero.introducibleHero
+    )
+  }
+#+end_src
+
+** External types? Pff...
+
+#+begin_src scala
+  import io.proprietary.monsters.cockatrice._
+
+  // Implement behaviour as a value in companion object
+  object CockatriceInstances {
+    val introducibleCockatrice: Introducible[Cockatrice] = new Introducible[Cockatrice] {
+      override def introduce(a: Cockatrice): String =
+        s"..."
+    }
+  }
+#+end_src
+
+#+BEAMER: \pause
+
+#+begin_src scala
+  // Pass data and behaviour separately
+  object Game extends App {
+    /* ... */
+    introduce(
+      creature = cockatrice,
+      impl = CockatriceInstances.introducibleCockatrice
+    )
+  }
+#+end_src
+
+** But passing implementation around is...
+
+#+ATTR_LATEX: :height 5cm
+[[file:images/cucumber.jpg]]
+
+Cucumbersome
+
+** So implicits :(
+
+*** Before                                                       :B_column:
+:PROPERTIES:
+:BEAMER_env:             column
+:BEAMER_opt:             [t]
+:BEAMER_col:             0.5
+:END:
+
+#+begin_src scala
+  object Hero {
+    val introducibleHero:
+        Introducible[Hero] = ???
+  }
+
+  object CockatriceInstances {
+    val introducibleCockatrice:
+        Introducible[Cockatrice] = ???
+  }
+
+  def introduce[A](creature: A,
+                   impl: Introducible[A]): Unit = {
+    /* ... */
+    drawBubble(impl.introduce(creature))
+    /* ... */
+  }
+
+  object Game extends App {
+    /* ... */
+    introduce(hero, introducibleHero)
+    introduce(cockatrice, introducibleCockatrice)
+  }
+#+end_src
+
+#+BEAMER: \pause
+
+*** After                                                        :B_column:
+:PROPERTIES:
+:BEAMER_env:             column
+:BEAMER_opt:             [t]
+:BEAMER_col:             0.5
+:END:
+
+#+begin_src scala
+  object Hero {
+    implicit val introducibleHero:
+        Introducible[Hero] = ???
+  }
+
+  object CockatriceInstances {
+    implicit val introducibleCockatrice:
+        Introducible[Cockatrice] = ???
+  }
+
+  def introduce[A](creature: A)
+               (implicit impl: Introducible[A]): Unit = {
+    /* ... */
+    drawBubble(impl.introduce(creature))
+    /* ... */
+  }
+
+  object Game extends App {
+    /* ... */
+    introduce(hero)
+    introduce(cockatrice)
+  }
+#+end_src
+
+** Summoning the summoner
+
+*** Before                                                       :B_column:
+:PROPERTIES:
+:BEAMER_env:             column
+:BEAMER_opt:             [t]
+:BEAMER_col:             0.5
+:END:
+
+#+begin_src scala
+  trait Introducible[A] {
+    def introduce(a: A): String
+  }
+
+
+
+
+
+
+  def introduce[A](creature: A)
+               (implicit impl: Introducible[A]): Unit = {
+    /* ... */
+    drawBubble(impl.introduce(creature))
+    /* ... */
+  }
+#+end_src
+
+#+BEAMER: \pause
+
+*** After                                                        :B_column:
+:PROPERTIES:
+:BEAMER_env:             column
+:BEAMER_opt:             [t]
+:BEAMER_col:             0.5
+:END:
+
+#+begin_src scala
+  trait Introducible[A] {
+    def introduce(a: A): String
+  }
+
+  object Introducible {
+    def apply[A: Introducible]: Introducible[A] =
+      implicitly[Introducible[A]]
+  }
+
+  def introduce[A: Introducible](creature: A): Unit = {
+
+    /* ... */
+    drawBubble(Introducible[A].introduce(creature))
+    /* ... */
+  }
+#+end_src
+
+** What have we done?
+
+*Type class* is just a construct that supports *ad hoc polymorphism*. E.g.
+allows one to define polymorphic functions that can be applied to arguments of
+different types and behave differently based the type of the arguments.
+
+In other words, *type classes* are solution for supporting *function
+overloading*.
+
+#+BEAMER: \pause
+
+In Scala this can be achieved in several ways:
+
+- Class inheritance or traits.
+- Type classes (traits + implicits).
+
+** Type classes: abstraction
+
+*** Main                                                         :B_column:
+:PROPERTIES:
+:BEAMER_env:             column
+:BEAMER_opt:             [t]
+:END:
+
+Abstraction holds. Proof is the ~introduce~ function itself.
+
+#+BEAMER: \pause
+
+*** Before                                                       :B_column:
+:PROPERTIES:
+:BEAMER_env:             column
+:BEAMER_opt:             [t]
+:BEAMER_col:             0.5
+:END:
+
+#+begin_src scala
+  def introduce(creature: Introducible): Unit = {
+    /* ... */
+    drawBubble(creature.introduce())
+    /* ... */
+  }
+#+end_src
+
+*** After                                                        :B_column:
+:PROPERTIES:
+:BEAMER_env:             column
+:BEAMER_opt:             [t]
+:BEAMER_col:             0.5
+:END:
+
+#+begin_src scala
+  def introduce[A: Introducible](creature: A): Unit = {
+    /* ... */
+    drawBubble(Introducible[A].introduce(creature))
+    /* ... */
+  }
+#+end_src
+
+#+BEAMER: \pause
+
+*** Main                                                         :B_column:
+:PROPERTIES:
+:BEAMER_env:             column
+:BEAMER_opt:             [t]
+:END:
+
+We gain literal data and behaviour separation.
+
+** Type classes: composition
+
+Composition holds. We just pass two different behaviours.
+
+#+BEAMER: \pause
+
+#+begin_src scala
+  def patheticAttack[A <: Introducible with CanAttack](creature: A): Unit
+#+end_src
+
+#+BEAMER: \pause
+
+#+begin_src scala
+  def patheticAttack[A : Introducible : CanAttack](creature: A): Unit
+  def patheticAttack[A](creature: A)
+                    (implicit introducibleImpl: Introducible[A],
+                     canAttackImpl: CanAttack[A]): Unit
+#+end_src
+
+#+BEAMER: \pause
+
+But with type classes we don't care about the order.
+
+** Type classes: extensibility
+
+Extensibility holds with some gains:
+
+1. Consistency - we treat our own type the same way we treat external types.
+2. Usability - no wrappers, no interchangeability problem.
+
+** Type classes: final thoughts
+
+1. Simple idea giving us good properties.
+2. Found a good use for controversial implicits feature.
+3. Literal separation of data and behaviour.
+4. Good for overloading.
+5. + more abstraction, - more code
+
+* Semigroup
+
+** Time for a quiz!
+
+*** Commonalities                                                :B_column:
+:PROPERTIES:
+:BEAMER_env:             column
+:BEAMER_opt:             [t]
+:BEAMER_col:             0.5
+:END:
+
+What is common between:
+
+1. =Int=
+2. =String=
+3. =List=
+4. =PartialFunction=
+5. =HttpMapping=
+
+#+BEAMER: \pause
+
+*** Combinability                                                :B_column:
+:PROPERTIES:
+:BEAMER_env:             column
+:BEAMER_opt:             [t]
+:BEAMER_col:             0.5
+:END:
+
+They can be combined!
+
+1. Int + Int = Int
+2. String + String = String
+3. List ::: List = List
+4. PartialFunction orElse PartialFunction = PartialFunction
+5. HttpMapping + HttpMapping = HttpMapping
+
+** Associativity
+
+1. $Int + Int + Int = Int + (Int + Int) = (Int + Int) + Int$
+2. $String + String + String = String + (String + String) = (String + String) + String$
+3. etc...
+
+** Semigroup
+
+*Semigroup* is a set $S$ with binary closed operation $\cdot : S \times S
+\rightarrow S$ that satisfies associativity property:
+
+$$\forall a, b, c \in S : (a \cdot b) \cdot c = a \cdot (b \cdot c)$$
+
+Operation is closed when $\forall a, b \in S : a \cdot b \in S$.
+
+** But it’s not that scary
+
+*** Code                                                         :B_column:
+:PROPERTIES:
+:BEAMER_env:             column
+:BEAMER_col:             0.5
+:END:
+#+begin_src scala
+  package object typeclass {
+
+    //
+    // Laws:
+    //   1. $\forall a, b, c \in A: (a \cdot b) \cdot c = a \cdot (b \cdot c)$
+    //
+    trait Semigroup[A] {
+      def combine(x: A, y: A): A
+    }
+
+    object Semigroup {
+      def apply[A: Semigroup]: Semigroup[A] =
+        implicitly[Semigroup[A]]
+    }
+
+  }
+#+end_src
+
+#+BEAMER: \pause
+
+In simple words, semigroup is a set with means of combining elements of that
+set.
+
+#+BEAMER: \pause
+
+*** Image                                                        :B_column:
+:PROPERTIES:
+:BEAMER_env:             column
+:BEAMER_col:             0.5
+:END:
+
+#+ATTR_LATEX: :height 7cm
+[[file:images/scary.png]]
+
+** Important!
+
+Semigroup is a pair of the set and the operation.
+
+You can’t say that string is a semigroup, you must provide an operation.
+
+And in many cases there is more than one operation for a set to form a
+semigroup.
+
+** What is law?
+
+- <1-> In programming world it's just a contract.
+- <2-> Operations in the type classes are very generic.
+  #+begin_src scala
+    def combine(x: A, y: A): A
+  #+end_src
+- <3-> So type classes should have some associated laws.
+- <4-> Laws describe properties of these operations and connection between operations
+  in one type class.
+- <5-> Contract of the interface gives us confidence when we write generic code.
+- <6-> And as you will see, we really care about these laws.
+
+** Instance example
+
+#+begin_src scala
+  package object implicits {
+    implicit val stringSemigroup: Semigroup[String] = new Semigroup[String] {
+      override def combine(x: String, y: String): String = x + y
+    }
+  }
+#+end_src
+
+** Checking laws - +pen and paper+ in comments
+
+#+begin_src scala
+  package object implicits {
+    implicit val stringSemigroup: Semigroup[String] = new Semigroup[String] {
+      override def combine(x: String, y: String): String = x + y
+    }
+  }
+
+  /*
+  combine(a, combine(b, c))
+    = combine(a, b + c)
+    = a + (b + c)
+    = (associativity of +)
+    = (a + b) + c = combine(a + b, c)
+    = combine(combine(a, b), c)
+  */
+#+end_src
+
+** You're programmer after all
+
+#+ATTR_LATEX: :height 7cm
+[[file:images/you-re-programmer.jpg]]
+
+** Question on the interview: property based testing
+
+#+begin_src scala
+  object SemigroupSpecification extends Properties("Semigroup") with SemigroupSpecificationSupport {
+   include(semigroup[String](stringSemigroup))
+  }
+
+  trait SemigroupSpecificationSupport {
+   def semigroup[A](sg: Semigroup[A])(implicit ar: Arbitrary[A], tag: ClassTag[A]): Properties =
+     new Properties(s"Semigroup[${tag.toString}]") {
+
+
+       // $\forall a, b, c \in A: (a \cdot b) \cdot c = a \cdot (b \cdot c)$
+       property("associativity") = forAll { (a: A, b: A, c: A) =>
+         sg.combine(sg.combine(a, b), c) =? sg.combine(a, sg.combine(b, c))
+       }
+
+
+     }
+  }
+
+  /*
+  + Semigroup.Semigroup[java.lang.String].associativity: OK, passed 100 tests
+    .
+  ,*/
+#+end_src
+
+** More than one valid instance
+
+#+begin_src scala
+  package object implicits {
+    implicit val stringSemigroup: Semigroup[String] = new Semigroup[String] {
+      override def combine(x: String, y: String): String = x
+    }
+  }
+#+end_src
+
+** More examples
+
+- Numbers with $+$, $*$, $min$, $max$
+- Booleans with conjunction, disjunction, implication etc.
+- Square nonnegative matrices with multiplication.
+- Lists, Strings, Maps etc. with concatenation/union
+- We will see even more examples during practical part.
+
+** Contra-examples
+
+- $\{\mathbb{N}, /\}$ is not a Semigroup, because $/$ is not associative.
+- The same goes for $\{\mathbb{N}, a^b \}$.
+- $\{\mathbb{N}, -\}$ is not a Semigroup, because $-$ is not a closed operation,
+  e.g. $\exists a, b \in \mathbb{N}: a - b \notin \mathbb{N}$,
+  for example $10 - 15 = -5 \notin \mathbb{N}$.
+
+** Coding time
+
+3. <1-> Go to =src/main=
+4. <2-> Task 1
+   1. Implement missing =Semigroup= instances in
+      =wax.typeclass.semigroup.cats.implicits=
+   2. Run =wax.typeclass.semigroup.laws.cats.SemigroupSpec=
+5. <3-> Task 2
+   1. Implement missing =Semigroup= instances in
+      =wax.typeclass.semigroup.manual.implicits=
+   2. Run =wax.typeclass.semigroup.laws.manual.SemigroupSpec=
+
+* Monoid
+
+** Monoid
+
+- Sometimes you want to compose $n$ elements where $n \geq 0$.
+- Semigroup works only for $n > 0$.
+- We need a default element to use if $n = 0$.
+
+** Monoid
+
+One does not simply become a default element:
+
+- $Int + 0 = 0 + Int = Int$
+- $String + "" = "" + String = String$
+- etc...
+
+** Monoid
+
+Back to fancy words.
+
+#+BEAMER: \pause
+
+A monoid is a set $S$ with binary closed operation $\cdot : S \times S
+\rightarrow S$ that satisfies associativity property:
+$$\forall a, b, c \in S : (a \cdot b) \cdot c = a \cdot (b \cdot c)$$
+
+and identity element $e$ that satisfies
+$$\forall a \in S : e \cdot a = a \cdot e = a$$
+
+Operation is closed when $\forall a, b \in S : a \cdot b \in S$.
+
+#+BEAMER: \pause
+
+In other words, monoid is just a semigroup with identity element.
+
+** Again, it's not that scary
+
+#+begin_src scala
+  package object typeclass {
+
+    //
+    // Laws:
+    //   1. $\forall a, b, c \in S : (a \cdot b) \cdot c = a \cdot (b \cdot c)$
+    //   2. $\forall a \in S : e \cdot a = a \cdot e = a$
+    //
+    trait Monoid[A] extends Semigroup[A] {
+      def empty: A
+    }
+
+    object Monoid {
+      def apply[A: Monoid]: Monoid[A] = implicitly[Monoid[A]]
+    }
+
+  }
+#+end_src
+
+** Examples
+
+- $\{\mathbb{N}_0, +\}$, where $0$ is the identity element.
+- $\{\mathbb{N}, *\}$, where $1$ is the identity element.
+- Boolean with XOR, XNOR, OR, AND.
+- String with concatenation (empty string is identity element).
+
+#+BEAMER: \pause
+
+But not every Semigroup forms a Monoid (we are not talking about free monoids
+here):
+
+- =BigNumber= practically doesn’t have identity element for =min=.
+
+** The most important question
+
+#+BEAMER: \pause
+
+#+ATTR_LATEX: :height 5cm
+[[file:images/whyyy.png]]
+
+Why did we learn this?
+
+* Fibonacci
+
+** The Fibonacci numbers
+
+#+begin_export latex
+\begin{align*}
+  F_0 &= 0 \\
+  F_1 &= 1 \\
+  F_n &= F_{n - 1} + F_{n - 2}, \forall n > 1 \\
+\end{align*}
+#+end_export
+
+** Solution
+
+*** What we expect                                               :B_column:
+:PROPERTIES:
+:BEAMER_col:             0.5
+:BEAMER_opt:             [t]
+:BEAMER_env:             column
+:END:
+
+**** What we expect
+
+#+begin_src scala
+  def fib(n: Int): Int = {
+    def fibTail(n: Int, a: Int, b: Int): Int = n match {
+      case 0 => a
+      case _ => fibTail(n - 1, b, a + b)
+    }
+
+    fibTail(n, 0, 1)
+  }
+#+end_src
+
+#+BEAMER: \pause
+
+*** Ideal solution                                               :B_column:
+:PROPERTIES:
+:BEAMER_col:             0.5
+:BEAMER_opt:             [t]
+:BEAMER_env:             column
+:END:
+
+**** Ideal solution
+
+#+begin_export latex
+\begin{align*}
+  F_n &= \frac {\phi ^ n - {(- \phi)}^{-n}} {\sqrt{5}} \\
+  &= \frac {\phi ^ n - {(- \phi)}^{-n}} {2\phi - 1} \\
+  \\
+  \phi &= \frac {1 + \sqrt{5}}{2}
+\end{align*}
+#+end_export
+
+#+BEAMER: \pause
+
+*** Quote                                                        :B_column:
+:PROPERTIES:
+:BEAMER_env:             column
+:BEAMER_opt:             [t]
+:END:
+
+As they say, truth is somewhere in the logarithm.
+
+** Two folds
+
+#+begin_src scala
+def foldl[A, B](xs: Seq[A])(z: B)(op: B => A => B): B
+#+end_src
+
+#+BEAMER: \pause
+
+*** Left                                                         :B_column:
+:PROPERTIES:
+:BEAMER_env:             column
+:BEAMER_col:             0.5
+:END:
+
+#+begin_export latex
+\begin{gather*}
+  + : B \rightarrow A \rightarrow B\\
+  (((z + x1) + x2) + x3) + x4
+\end{gather*}
+#+end_export
+
+*** Right                                                  :B_column:BMCOL:
+:PROPERTIES:
+:BEAMER_env:             column
+:BEAMER_col:             0.5
+:END:
+
+#+ATTR_LATEX: :height 6cm
+[[file:diag/out/foldl-tree.png]]
+
+** Two folds
+
+#+begin_src scala
+def foldr[A, B](xs: Seq[A])(z: B)(op: A => B => B): B
+#+end_src
+
+*** Left                                                   :B_column:BMCOL:
+:PROPERTIES:
+:BEAMER_env:             column
+:BEAMER_col:             0.5
+:END:
+
+#+begin_export latex
+\begin{gather*}
+  + : A \rightarrow B \rightarrow B\\
+  x1 + (x2 + (x3 + (x4 + z)))
+\end{gather*}
+#+end_export
+
+*** Right                                                  :B_column:BMCOL:
+:PROPERTIES:
+:BEAMER_env:             column
+:BEAMER_col:             0.5
+:END:
+
+#+ATTR_LATEX: :height 6cm
+[[file:diag/out/foldr-tree.png]]
+
+** Two folds
+
+- =def foldl[A, B](xs: Seq[A])(z: B)(op: B => A => B): B=
+- =def foldr[A, B](xs: Seq[A])(z: B)(op: A => B => B): B=
+- Since combining function is asymmetrical in its types:
+  - It’s impossible to place parentheses in the arbitrary fashion or even just
+    change the direction of the =fold=
+  - It’s impossible to implement a total =fold= without default value of type =B=
+
+** Two folds
+
+*** foldl                                                        :B_column:
+:PROPERTIES:
+:BEAMER_env:             column
+:BEAMER_opt:             [t]
+:BEAMER_col:             0.5
+:END:
+
+**** foldl
+
+$$+ : B \rightarrow A \rightarrow B$$
+$$(((z + x1) + x2) + x3) + x4$$
+
+#+ATTR_LATEX: :height 5cm
+[[file:diag/out/foldl-tree.png]]
+
+*** foldr                                                        :B_column:
+:PROPERTIES:
+:BEAMER_env:             column
+:BEAMER_opt:             [t]
+:BEAMER_col:             0.5
+:END:
+
+**** foldr
+
+$$+ : A \rightarrow B \rightarrow B$$
+$$x1 + (x2 + (x3 + (x4 + z)))$$
+
+#+ATTR_LATEX: :height 5cm
+[[file:diag/out/foldr-tree.png]]
+
+** What Monoid gives us
+
+- <1-> Combining function is symmetrical (=combine : A -> A -> A=).
+- <2-> Identity element of type =A= (=empty=).
+- <3-> So we can define a special =fold=
+  - =def foldMonoid[A: Monoid](xs: Seq[A]): A=
+- <4-> Identity law says that we can place identity element anywhere.
+- <5-> Associativity law says that we can put parentheses in an arbitrary fashion.
+
+** Power in terms of Monoid
+
+In some cases all elements of the list are the same.
+
+#+BEAMER: \pause
+#+begin_export latex
+  \begin{equation*}
+    a + (a + (a + \ldots + a) \ldots ) = a ^ n
+  \end{equation*}
+#+end_export
+
+#+BEAMER: \pause
+
+Since we can reorder the parentheses, we can arrange them like this.
+
+#+BEAMER: \pause
+
+#+begin_src dot :file .dot/fold-power-1.png :cmdline -Kdot -Tpng -Gdpi=180
+  digraph {
+
+    o1[label="+₁"]
+    o2[label="+₂"]
+    o3[label="+₃"]
+    o4[label="+₄"]
+    o5[label="+₅"]
+    o6[label="+₆"]
+    o7[label="+₇"]
+
+    a1[label="a"]
+    a2[label="a"]
+    a3[label="a"]
+    a4[label="a"]
+    a5[label="a"]
+    a6[label="a"]
+    a7[label="a"]
+    a8[label="a"]
+
+    o1 -> a1;
+    o1 -> a2;
+
+    o2 -> a3;
+    o2 -> a4;
+
+    o3 -> a5;
+    o3 -> a6;
+
+    o4 -> a7;
+    o4 -> a8;
+
+    o5 -> o1;
+    o5 -> o2;
+
+    o6 -> o3;
+    o6 -> o4;
+
+    o7 -> o5;
+    o7 -> o6;
+  }
+#+end_src
+
+#+ATTR_LATEX: :height 4cm
+#+RESULTS:
+[[file:.dot/fold-power-1.png]]
+
+** Power in terms of Monoid
+
+#+begin_src dot :file .dot/fold-power-2.png :cmdline -Kdot -Tpng -Gdpi=180
+  digraph {
+
+    o1[label="+₁", style=filled, fillcolor="#FFAE42"]
+    o2[label="+₂", style=filled, fillcolor="#FFAE42"]
+    o3[label="+₃", style=filled, fillcolor="#FFAE42"]
+    o4[label="+₄", style=filled, fillcolor="#FFAE42"]
+    o5[label="+₅"]
+    o6[label="+₆"]
+    o7[label="+₇"]
+
+    a1[label="a", style=filled, fillcolor="#FBE7B2"]
+    a2[label="a", style=filled, fillcolor="#FBE7B2"]
+    a3[label="a"]
+    a4[label="a"]
+    a5[label="a"]
+    a6[label="a"]
+    a7[label="a"]
+    a8[label="a"]
+
+    o1 -> a1;
+    o1 -> a2;
+
+    o2 -> a3;
+    o2 -> a4;
+
+    o3 -> a5;
+    o3 -> a6;
+
+    o4 -> a7;
+    o4 -> a8;
+
+    o5 -> o1;
+    o5 -> o2;
+
+    o6 -> o3;
+    o6 -> o4;
+
+    o7 -> o5;
+    o7 -> o6;
+  }
+#+end_src
+
+#+ATTR_LATEX: :height 4cm
+#+RESULTS:
+[[file:.dot/fold-power-2.png]]
+
+Evaluating $a + a$ always yields the same result. So there is no point in
+repeating this calculation 4 times.
+
+** Power in terms of Monoid
+
+#+begin_src dot :file .dot/fold-power-3.png :cmdline -Kdot -Tpng -Gdpi=180
+  digraph {
+
+    o1[label="+₁", style=filled, fillcolor="#FFAE42"]
+    o2[label="+₂", style=filled, fillcolor="#FFAE42"]
+    o3[label="+₃", style=filled, fillcolor="#FFAE42"]
+    o4[label="+₄", style=filled, fillcolor="#FFAE42"]
+    o5[label="+₅", style=filled, fillcolor="#C5E17A"]
+    o6[label="+₆", style=filled, fillcolor="#C5E17A"]
+    o7[label="+₇"]
+
+    a1[label="a", style=filled, fillcolor="#FBE7B2"]
+    a2[label="a", style=filled, fillcolor="#FBE7B2"]
+    a3[label="a"]
+    a4[label="a"]
+    a5[label="a"]
+    a6[label="a"]
+    a7[label="a"]
+    a8[label="a"]
+
+    o1 -> a1;
+    o1 -> a2;
+
+    o2 -> a3;
+    o2 -> a4;
+
+    o3 -> a5;
+    o3 -> a6;
+
+    o4 -> a7;
+    o4 -> a8;
+
+    o5 -> o1;
+    o5 -> o2;
+
+    o6 -> o3;
+    o6 -> o4;
+
+    o7 -> o5;
+    o7 -> o6;
+  }
+#+end_src
+
+#+ATTR_LATEX: :height 4cm
+#+RESULTS:
+[[file:.dot/fold-power-3.png]]
+
+The same thing with the upper level. In this particular example, we can avoid 4
+operations out of 7. In general, this optimisation leads to the result in $\log
+n$ operations.
+
+** Power in terms of Monoid
+
+All this means that we can define a function =exp=:
+
+#+begin_src scala
+  def exp[A: Monoid](a: A, n: Int): A = {
+    ???
+  }
+#+end_src
+
+** Back to Fibonacci
+
+Fibonacci number can be defined in a different way.
+
+#+begin_export latex
+\begin{equation*}
+  \begin{pmatrix}
+    F_{n+1} & F_n \\
+    F_n & F_{n-1}
+  \end{pmatrix} =
+  \begin{pmatrix}
+    1 & 1 \\
+    1 & 0
+  \end{pmatrix} ^ n
+\end{equation*}
+#+end_export
+
+#+BEAMER: \pause
+
+#+begin_export latex
+\begin{equation*}
+  \begin{pmatrix}
+    F_4 & F_3 \\
+    F_3 & F_2
+  \end{pmatrix} =
+  \begin{pmatrix}
+    1 & 1 \\
+    1 & 0
+  \end{pmatrix} ^ 3 =
+  \begin{pmatrix}
+    2 & 1 \\
+    1 & 1
+  \end{pmatrix} \cdot
+  \begin{pmatrix}
+    1 & 1 \\
+    1 & 0
+  \end{pmatrix} =
+  \begin{pmatrix}
+    3 & 2 \\
+    2 & 1
+  \end{pmatrix}
+\end{equation*}
+#+end_export
+
+** Back to Fibonacci
+
+#+begin_export latex
+\begin{equation*}
+  \begin{pmatrix}
+    F_{n+1} & F_n \\
+    F_n & F_{n-1}
+  \end{pmatrix} =
+  \begin{pmatrix}
+    1 & 1 \\
+    1 & 0
+  \end{pmatrix} ^ n
+\end{equation*}
+#+end_export
+
+#+BEAMER: \pause
+
+- The Fibonacci number can be calculated using square nonnegative matrix
+  multiplication.
+- Square nonnegative matrices form Monoid with multiplication.
+- So we can put parentheses in a way we like it.
+
+** Coding time
+
+- Open =wax.exercise.fibonacci.Main= object.
+  - =Main= runs two implementations and profiles them.
+  - =Fib= contains implementation of tailrec and matrix approaches.
+  - =ExpUtils= implements generic =exp= function.
+- Task is to implement monoid for =Matrix2x2= in the =Fib= object.
+- Run =MatrixSpec= to test your instance.
+- Run =FibSpec= to test implementation of =Fib=.
+- Run =Main= to see performance differences by yourself.
+
+#+BEAMER: \pause
+
+*** Left                                                         :B_column:
+:PROPERTIES:
+:BEAMER_env:             column
+:BEAMER_opt:             [t]
+:BEAMER_col:             0.5
+:END:
+
+#+begin_export latex
+\vspace*{0px}
+#+end_export
+
+#+begin_export latex
+\begin{equation*}
+  \begin{pmatrix}
+    a_{11} & a_{12} \\
+    a_{21} & a_{22}
+  \end{pmatrix} \cdot
+  \begin{pmatrix}
+    b_{11} & b_{12} \\
+    b_{21} & b_{22}
+  \end{pmatrix} = \\
+  \begin{pmatrix}
+    a_{11} \cdot b_{11} + a_{12} \cdot b_{21} & a_{11} \cdot b_{12} + a_{12} \cdot b_{22} \\
+    a_{21} \cdot b_{11} + a_{22} \cdot b_{21} & a_{21} \cdot b_{12} + a_{22} \cdot b_{22}
+  \end{pmatrix}
+\end{equation*}
+#+end_export
+
+*** Right                                                        :B_column:
+:PROPERTIES:
+:BEAMER_env:             column
+:BEAMER_opt:             [t]
+:BEAMER_col:             0.5
+:END:
+
+#+ATTR_LATEX: :height 3cm
+[[file:images/matrix-mult.png]]
+
+** Profiling results
+
+|        N | Matrix | Tailrec |
+|----------+--------+---------|
+|       10 |     60 |       0 |
+|      100 |      0 |       0 |
+|     1000 |      1 |       1 |
+|    10000 |      5 |       6 |
+|   100000 |     46 |     168 |
+|  1000000 |    888 |   15211 |
+| 10000000 |  11266 |       - |
+
+** Outcome
+
+- <1-> Just think about it.
+- <2-> Giving any monoid we have a helper function that efficiently calculates $a^n$.
+- <3-> This is only possible because of the *laws* that come with operations.
+- <4-> ~combine~ by itself is not interesting, it's too generic.
+- <5-> Laws give us *properties*. Which we use to get a solution that works for
+  everything that is ~Monoid~.
+- <6-> Monoids are everywhere around us. We deal with them every day, without
+  even noticing it. Did you expect us to solve Fibonacci using ~Monoid~?
+- <7-> You forgot how matrix multiplication works, but now you remember, right?
+
+* Books
+
+** Folds with Monoids
+
+- We already know that Monoids give us an ability to place parentheses in any
+  fashion.
+- We already saw that when it comes to folding the list of the same elements we
+  gain performance.
+- But what if the elements are not equal? Do we gain anything?
+
+#+BEAMER: \pause
+#+begin_src dot :file .dot/fold-parallel-1.png :cmdline -Kdot -Tpng -Gdpi=180
+  digraph {
+
+    o1[label="+₁"]
+    o2[label="+₂"]
+    o3[label="+₃"]
+    o4[label="+₄"]
+    o5[label="+₅"]
+    o6[label="+₆"]
+    o7[label="+₇"]
+
+    a1[label="a₁"]
+    a2[label="a₂"]
+    a3[label="a₃"]
+    a4[label="a₄"]
+    a5[label="a₅"]
+    a6[label="a₆"]
+    a7[label="a₇"]
+    a8[label="a₈"]
+
+    o1 -> a1;
+    o1 -> a2;
+
+    o2 -> a3;
+    o2 -> a4;
+
+    o3 -> a5;
+    o3 -> a6;
+
+    o4 -> a7;
+    o4 -> a8;
+
+    o5 -> o1;
+    o5 -> o2;
+
+    o6 -> o3;
+    o6 -> o4;
+
+    o7 -> o5;
+    o7 -> o6;
+  }
+#+end_src
+
+#+ATTR_LATEX: :height 4cm
+#+RESULTS:
+[[file:.dot/fold-parallel-1.png]]
+
+** Folds with Monoids
+
+#+begin_src dot :file .dot/fold-parallel-2.png :cmdline -Kdot -Tpng -Gdpi=180
+  digraph {
+
+    o1[label="+₁", style=filled, fillcolor="#FBE7B2"]
+    o2[label="+₂", style=filled, fillcolor="#FBE7B2"]
+    o3[label="+₃", style=filled, fillcolor="#FBE7B2"]
+    o4[label="+₄", style=filled, fillcolor="#FBE7B2"]
+    o5[label="+₅", style=filled, fillcolor="#C5E17A"]
+    o6[label="+₆", style=filled, fillcolor="#C5E17A"]
+    o7[label="+₇", style=filled, fillcolor="#8FD8D8"]
+
+    a1[label="a₁"]
+    a2[label="a₂"]
+    a3[label="a₃"]
+    a4[label="a₄"]
+    a5[label="a₅"]
+    a6[label="a₆"]
+    a7[label="a₇"]
+    a8[label="a₈"]
+
+    o1 -> a1;
+    o1 -> a2;
+
+    o2 -> a3;
+    o2 -> a4;
+
+    o3 -> a5;
+    o3 -> a6;
+
+    o4 -> a7;
+    o4 -> a8;
+
+    o5 -> o1;
+    o5 -> o2;
+
+    o6 -> o3;
+    o6 -> o4;
+
+    o7 -> o5;
+    o7 -> o6;
+  }
+#+end_src
+
+#+ATTR_LATEX: :height 4cm
+#+RESULTS:
+[[file:.dot/fold-parallel-2.png]]
+
+Every expression on each level does not depend on other expressions from the
+same level, which means that we can evaluate them in parallel.
+
+** MapReduce
+
+- <1-> Sometimes we have a collection of elements that don't form Monoid.
+- <2-> But we can transform (e.g. =map=) them into something that is a Monoid
+- <3-> There is a strange accent, where people pronounce 'fold' as 'reduce'.
+- <4-> This is how we get the =mapReduce=.
+- <5-> Just think about it, =mapReduce= is possible thanks to =Monoid= and its
+  /laws/.
+
+** Coding time
+
+- <1-> Our goal is to find 10 top used words among multiple books.
+- <2-> Open =wax.exercise.mapreduce.MapReduce= file.
+- <3-> =MapReduce= object implements =mapReduce= function (two variants - par and
+  seq).
+- <4-> =Main= object runs (not yet defined) =job= and profiles it (par vs seq).
+- <5-> =Result[Int]= is a map with words and their usage counter.
+- <6-> Your goal is to:
+  1. Implement monoid instance for =MapReduce.Result[Int]=.
+  2. Implement the =job= function to find the most used word.
+- <7-> Use helpers from =FileUtils=:
+  - =readTokens= to get the list of words from the file.
+  - =authorBooks= to get the list of books (files) by author (e.g.
+    =authorBooks("boris")=).
+  - =allBooks= to get the list of all book among all available authors.
+
+** Benchmarks
+
+#+begin_example
+  Par
+  duration = 65633 ms
+  result   = List(..., (people,37798), ...)
+
+  Seq
+  duration = 396530 ms
+  result   = List(..., (people,37798), ...)
+#+end_example
+
+** Outcome
+
+- <1-> Thanks to /associative/ and /identity/ laws it's possible to implement a
+  parallel fold.
+- <2-> This is what makes =mapReduce= possible.
+- <3-> Many applications: inverted index, document clustering, machine learning.
+- <4-> Google used it to regenerate index of World Wide Web.
+
+** Homework
+
+=mapReduce= is really interesting!
+
+#+BEAMER: \pause
+
+So play with it after the forkshop.
+
+* Logger
+
+** Many monoids
+
+We dealt with some trivial monoids here:
+
+- Integers with addition.
+- Strings and lists with concatenation.
+- Matrix with multiplication.
+- Maps of monoid values with merging.
+
+#+BEAMER: \pause
+
+They say that functional programming is all about /functions/.
+
+#+BEAMER: \pause
+
+Can function be monoid?
+
+** Let's start with some wrappers (pun intended)
+
+- <1-> Suppose that we have some case class =Wrapper[A](value: A)=
+- <2-> Can it be a monoid?
+- <3-> Well, generally speaking, not! Because we know nothing about the type =A=.
+- <4-> But what if =A= is a monoid?
+- <5-> Hell, yeah!
+  #+begin_src scala
+    case class Wrapper[A](value: A)
+
+    object Wrapper {
+      implicit def wrapperMonoid[A: Monoid]: Monoid[Wrapper[A]] = new Monoid[Wrapper[A]] {
+        override def empty: Wrapper[A] = Wrapper(Monoid[A].empty)
+
+        override def combine(x: Wrapper[A], y: Wrapper[A]): Wrapper[A] =
+          Wrapper(Monoid[A].combine(x.value, y.value))
+      }
+    }
+  #+end_src
+
+** Wrappers of monoids are monoids
+
+- <1-> Since =IO= is a wrapper (in some sense), it =IO= can also be a monoid.
+  #+begin_src scala
+    def ioMonoid[A: Monoid]: Monoid[IO[A]] = ???
+  #+end_src
+- <2-> Which means that we can combine IO actions (in some new sense).
+- <3-> Functions are wrappers (in some sense), so they also can be monoids
+  #+begin_src scala
+    def functionMonoid[A, B: Monoid]: Monoid[Function[A, B]] = ???
+  #+end_src
+- <4-> Which means that we can combine functions (in some new sense).
+
+** Logger
+
+- <1-> What is logger?
+- <2-> =Logger= is basically a function from =String= to =IO[Unit]=.
+  #+begin_src scala
+    type Logger = String => IO[Unit]
+  #+end_src
+- <3-> =Unit= forms a monoid.
+- <4-> So =IO[Unit]= forms a monoid.
+- <5-> So =String => IO[Unit]= forms a monoid.
+- <6-> So =Logger= forms a monoid.
+- <7-> So we can combine loggers
+  - =fileLogger |+| consoleLogger= - logs both into file and to console
+
+** Logger
+
+#+begin_src scala
+  def consoleLogger: IO[Logger] = IO { input =>
+      IO {
+        print(input)
+      }
+    }
+#+end_src
+
+#+BEAMER: \pause
+
+#+begin_src scala
+  def fileLogger(filePath: String): IO[Logger] = IO {
+    val stream = new FileOutputStream(filePath)
+    input => IO(stream.write(input.getBytes))
+  }
+#+end_src
+
+#+BEAMER: \pause
+
+#+begin_src scala
+  val program: IO[Unit] = for {
+    logger <- consoleLogger |+| fileLogger("logging.log")
+    _      <- logger("I am the log")
+  } yield ()
+#+end_src
+
+** Logger
+
+- <1-> Open =wax.exercise.logging.Logging= object.
+- <2-> Fill missing implementations.
+- <3-> Make sure to run =LoggingSpec= and make it green.
+- <4-> Run =Main= to see it in action.
+- <5-> Check =logging.log= file in the root of the project.
+- <6-> Have fun!
+
+** Bonus questions
+
+- <1-> Is it possible to define several different semigroups for function?
+- <2-> What about monoids?
+- <3-> What about =Unit=?
+
+** Outcome
+
+- <1-> If you have a monoid, it's easy to form a new monoid (of a higher rank).
+- <2-> Function can also be monoid. This is really cool by itself.
+- <3-> Some of you probably gonna write new =colog= lib (but for Scala).
+
+* Final words
+:PROPERTIES:
+:UNNUMBERED:             t
+:END:
+
+** Recap (recup?)
+
+- <1-> Semigroup is something with means of combining these somethings.
+- <2-> Monoid is semigroup that also has neutral element that doesn't affect a combination.
+- <3-> Laws are really important.
+- <4-> Associativity is a powerful property giving us an ability to solve some tasks.
+  - $a^n$ in $\log n$
+  - =mapReduce=
+- <5-> Monoids are everywhere. They act like a plague, once something forms a monoid,
+  something else also begins to form a monoid.
+- <6-> We want some rest after a long session of forkshop.
+
+* Questions?
+
+* Thank you very much!
