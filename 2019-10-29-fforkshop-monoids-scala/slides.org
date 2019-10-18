@@ -105,6 +105,7 @@ explain why.
   4. Readers.
   5. Comonads.
 - Theory and practice. Make sure that you are ready to write the code.
+- Target audience is Scala developers learning FP.
 
 ** Whys
 
@@ -1125,8 +1126,8 @@ here):
   \end{gather*}
   #+end_export
 
-- <2-> Examples:
-  - Arithmetic operations likes $-$, $/$, $^$.
+- <2-> Examples of non-commutative operations:
+  - Arithmetic operations likes $a - b$, $a^b$.
   - Diagram drawing.
   - Combining blocks in Minecraft™ (as shown by Tim Williams).
 
