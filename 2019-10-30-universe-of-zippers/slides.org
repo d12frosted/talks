@@ -70,11 +70,9 @@
 
 ** Agenda
 
-- <1-> Cellular Automata
-  - Elementary CA
-  - Conway's game of life
-- <2-> Bomberman
-- <3-> Secret abstraction
+- <1-> Elementary Cellular Automata
+- <2-> Conway's Game of Life
+- <3-> Bomberman
 
 * Act 1: Elementary Cellular Automata
 
@@ -100,24 +98,24 @@ The rules are then applied /iteratively/ for as many time steps as desired.
 :BEAMER_opt:             t
 :END:
 
-*** Definition                                                  :B_onlyenv:
+*** Cells                                                       :B_onlyenv:
 :PROPERTIES:
 :BEAMER_env:             onlyenv
 :BEAMER_act:             <1->
 :END:
 
-The simplest class of one-dimensional cellular automata.
+Each cell has a value $a \in \lbrace 0, 1 \rbrace = \lbrace \square, \blacksquare
+\rbrace$
 
-*** Cells                                                       :B_onlyenv:
+*** Grid                                                        :B_onlyenv:
 :PROPERTIES:
 :BEAMER_env:             onlyenv
 :BEAMER_act:             <2->
 :END:
 
-Each cell has a value $a \in \lbrace 0, 1 \rbrace = \lbrace \square, \blacksquare
-\rbrace$
+Grid is endless one-dimensional strip/line.
 
-*** Example of grid                                             :B_onlyenv:
+*** Grid example                                                :B_onlyenv:
 :PROPERTIES:
 :BEAMER_env:             onlyenv
 :BEAMER_act:             <3->
@@ -125,16 +123,91 @@ Each cell has a value $a \in \lbrace 0, 1 \rbrace = \lbrace \square, \blacksquar
 :END:
 
 #+begin_export latex
-\hfill \dots
+\begin{equation*}
+\dots
 \square \blacksquare \blacksquare \square \square \square \blacksquare
-\dots \hfill
+\dots
+\end{equation*}
 #+end_export
 
 *** Rule                                                        :B_onlyenv:
 :PROPERTIES:
 :BEAMER_env:             onlyenv
 :BEAMER_act:             <4->
-:BEAMER_opt:             center
+:END:
+
+Next value of the cell is based on it's current value and the values of it's two
+neighbours (left and right).
+
+#+begin_export latex
+\begin{equation*}
+  r : (a, a, a) \rightarrow a
+\end{equation*}
+#+end_export
+
+** ECA: specifying the rule
+
+*** Left                                                   :B_column:BMCOL:
+:PROPERTIES:
+:BEAMER_env:             column
+:BEAMER_col:             0.2
+:END:
+
+| $l$ | $c$ | $r$ | $c'$   |
+|-----+-----+-----+--------|
+|   0 |   0 |   0 | $c'_1$ |
+|   0 |   0 |   1 | $c'_2$ |
+|   0 |   1 |   0 | $c'_3$ |
+|   0 |   1 |   1 | $c'_4$ |
+|   1 |   0 |   0 | $c'_5$ |
+|   1 |   0 |   1 | $c'_6$ |
+|   1 |   1 |   0 | $c'_7$ |
+|   1 |   1 |   1 | $c'_8$ |
+
+*** Right                                                  :B_column:BMCOL:
+:PROPERTIES:
+:BEAMER_env:             column
+:BEAMER_col:             0.8
+:END:
+
+- <1-> Cover all possible inputs:
+  - $l$ - value of the left neighbour;
+  - $c$ - value of the evolving cell;
+  - $r$ - value of the right neighbour.
+- <2-> $c'_i$ - next value of the evolving cell.
+- <3-> To specify a rule, we need to fix $c'_i, \forall i: 1 \leq i \leq 8$.
+- <4-> There are in total $2^8 = 256$ different rules.
+
+** ECA: rule example
+
+
+*** Left                                                   :B_column:BMCOL:
+:PROPERTIES:
+:BEAMER_env:             column
+:BEAMER_col:             0.2
+:END:
+
+| $l$ | $c$ | $r$ | $c'$ |
+|-----+-----+-----+------|
+|   0 |   0 |   0 |    0 |
+|   0 |   0 |   1 |    1 |
+|   0 |   1 |   0 |    1 |
+|   0 |   1 |   1 |    1 |
+|   1 |   0 |   0 |    0 |
+|   1 |   0 |   1 |    1 |
+|   1 |   1 |   0 |    1 |
+|   1 |   1 |   1 |    0 |
+
+*** Right                                                  :B_column:BMCOL:
+:PROPERTIES:
+:BEAMER_env:             column
+:BEAMER_col:             0.8
+:END:
+
+**** One                                                       :B_onlyenv:
+:PROPERTIES:
+:BEAMER_env:             onlyenv
+:BEAMER_act:             <1->
 :END:
 
 #+begin_export latex
@@ -178,6 +251,20 @@ Each cell has a value $a \in \lbrace 0, 1 \rbrace = \lbrace \square, \blacksquar
 \end{equation*}
 #+end_export
 
+**** Two                                                       :B_onlyenv:
+:PROPERTIES:
+:BEAMER_env:             onlyenv
+:BEAMER_act:             <2>
+:END:
+
+#+begin_export latex
+\begin{equation*}
+  01101110_2 = 110_{10}
+\end{equation*}
+#+end_export
+
+Hence the name, $\text{rule}_{110}$
+
 ** Evolution example
 :PROPERTIES:
 :BEAMER_opt:             t
@@ -213,7 +300,7 @@ Current automation contents
 :BEAMER_act:             <2-3>
 :END:
 
-Rule $110$ ($01101110$)
+$\text{rule}_{110}$
 
 #+begin_export latex
 \begin{equation*}
@@ -296,7 +383,7 @@ Current automation contents
 \end{equation*}
 #+end_export
 
-Rule $110$ ($01101110$)
+$\text{rule}_{110}$
 
 #+begin_export latex
 \begin{equation*}
@@ -381,7 +468,7 @@ Current automation contents
 \end{equation*}
 #+end_export
 
-Rule $110$ ($01101110$)
+$\text{rule}_{110}$
 
 #+begin_export latex
 \begin{equation*}
@@ -466,7 +553,7 @@ Current automation contents
 \end{equation*}
 #+end_export
 
-Rule $110$ ($01101110$)
+$\text{rule}_{110}$
 
 #+begin_export latex
 \begin{equation*}
@@ -550,7 +637,7 @@ Current automation contents
 \end{equation*}
 #+end_export
 
-Rule $110$ ($01101110$)
+$\text{rule}_{110}$
 
 #+begin_export latex
 \begin{equation*}
@@ -635,7 +722,7 @@ Current automation contents
 \end{equation*}
 #+end_export
 
-Rule $110$ ($01101110$)
+$\text{rule}_{110}$
 
 #+begin_export latex
 \begin{equation*}
@@ -720,7 +807,7 @@ Current automation contents
 \end{equation*}
 #+end_export
 
-Rule $110$ ($01101110$)
+$\text{rule}_{110}$
 
 #+begin_export latex
 \begin{equation*}
@@ -805,7 +892,7 @@ Current automation contents
 \end{equation*}
 #+end_export
 
-Rule $110$ ($01101110$)
+$\text{rule}_{110}$
 
 #+begin_export latex
 \begin{equation*}
@@ -888,7 +975,7 @@ Current automation contents
 \end{equation*}
 #+end_export
 
-Rule $110$ ($01101110$)
+$\text{rule}_{110}$
 
 #+begin_export latex
 \begin{equation*}
@@ -945,10 +1032,9 @@ The next generation of the automation
 \dots \hfill
 #+end_export
 
-** There is more about ECA
+** There is more
 
-- There are $256$ possible rules.
-- Rule 110 is Turing complete.
+- $\text{rule}_{110}$ is Turing complete.
 - There are many ways to encode the rules.
 - There are many ways to program ECA.
 
@@ -994,27 +1080,6 @@ The next generation of the automation
   [..., 0, 0, 0] (1) [2, 3, 0, 0, ...]
 #+end_src
 
-** Clearly a =Functor=
-
-#+begin_src haskell
-  instance Functor U where
-    fmap f (U l c r) = U (fmap f l) (f c) (fmap f r)
-#+end_src
-
-#+BEAMER: \pause
-
-=DeriveFunctor= can do it for us.
-
-#+BEAMER: \pause
-
-#+begin_src haskell
-  > abs <$> U [-1, -2, -3] 0 [1, 2, 3, 4]
-  [3, 2, 1] (0) [1, 2, 3, 4]
-
-  > (/0) <$> U [-1, -2, -3] 0 [1, 2, 3, 4]
-  [-Infinity, -Infinity, -Infinity] (NaN) [Infinity, Infinity, Infinity, Infinity]
-#+end_src
-
 ** =extract=
 
 #+begin_src haskell
@@ -1037,6 +1102,30 @@ The next generation of the automation
 #+begin_src haskell
   > extract $ U [(-1)..] 0 [1..]
   0
+#+end_src
+
+** =Functor=
+
+#+begin_src haskell
+  instance Functor U where
+    fmap f (U l c r) = U (fmap f l) (f c) (fmap f r)
+#+end_src
+
+#+BEAMER: \pause
+
+#+begin_src haskell
+  > abs <$> U [-1, -2, -3] 0 [1, 2, 3, 4]
+  [3, 2, 1] (0) [1, 2, 3, 4]
+
+  > (/0) <$> U [-1, -2, -3] 0 [1, 2, 3, 4]
+  [-Infinity, -Infinity, -Infinity] (NaN) [Infinity, Infinity, Infinity, Infinity]
+#+end_src
+
+#+BEAMER: \pause
+
+#+begin_src haskell
+  > extract . fmap show $ fromList 0 [1]
+  "1"
 #+end_src
 
 ** Moving left
@@ -1179,9 +1268,6 @@ Why do you say that?
 And he is damn right! We can do it.
 
 ** All possible shifts
-:PROPERTIES:
-:BEAMER_opt:             t
-:END:
 
 *** Signature                                                   :B_onlyenv:
 :PROPERTIES:
@@ -1204,7 +1290,7 @@ And he is damn right! We can do it.
   duplicate u = U (tail $ iterate left u) u (tail $ iterate right u)
 #+end_src
 
-*** Iterate                                                     :B_onlyenv:
+*** Iterate                                            :noexport:B_onlyenv:
 :PROPERTIES:
 :BEAMER_env:             onlyenv
 :BEAMER_act:             <3->
@@ -1289,7 +1375,7 @@ $$\forall f: head\ .\ iterate\ f = id$$
 \end{gather*}
 #+end_export
 
-** Where's focus
+** Where's the focus
 
 #+begin_export latex
 \begin{gather*}
@@ -1299,12 +1385,12 @@ $$\forall f: head\ .\ iterate\ f = id$$
   \begin{matrix}
     \vdots & \vdots & \vdots      & \vdots & \vdots & \vdots \\
            &        & \smallfrown &        &        &        \\
-    (0)    & 0      & 0           & 0      & 0      & 0      \\
-    1      & (1)    & (1)         & 1      & 1      & 1      \\
-    2      & 2      & 2           & 2      & 2      & 2      \\
-    3      & 3      & 3           & (3)    & 3      & 3      \\
-    4      & 4      & 4           & 4      & (4)    & 4      \\
-    5      & 5      & 5           & 5      & 5      & (5)    \\
+    0      & (0)    & 0           & 0      & 0      & 0      \\
+    1      & 1      & (1)         & 1      & 1      & 1      \\
+    2      & 2      & 2           & (2)    & 2      & 2      \\
+    3      & 3      & 3           & 3      & (3)    & 3      \\
+    4      & 4      & 4           & 4      & 4      & (4)    \\
+    5      & 5      & 5           & 5      & 5      & 5      \\
            &        & \smallsmile &        &        &        \\
     \vdots & \vdots & \vdots      & \vdots & \vdots & \vdots \\
   \end{matrix}\
@@ -1324,9 +1410,12 @@ $$\forall f: head\ .\ iterate\ f = id$$
 :END:
 
 #+begin_src haskell
-  extend :: (U a -> a)
+  duplicate :: U a
+            -> U (U a)
+
+  extend :: (U a -> b)
          ->  U a
-         ->  U a
+         ->  U b
 #+end_src
 
 *** Definition                                                  :B_onlyenv:
@@ -1336,9 +1425,12 @@ $$\forall f: head\ .\ iterate\ f = id$$
 :END:
 
 #+begin_src haskell
-  extend :: (U a -> a)
+  duplicate :: U a
+            -> U (U a)
+
+  extend :: (U a -> b)
          ->  U a
-         ->  U a
+         ->  U b
   extend f = fmap f . duplicate
 #+end_src
 
@@ -2003,7 +2095,7 @@ But we need =extend2 :: (U (U a) -> b) - U (U a) -> U (U b)=.
 
 fmap-fu can't always save you, functor-kun!
 
-** Extending 2D Universe
+** Actually extending 2D Universe
 
 #+begin_src haskell
 newtype U2 a
@@ -2323,7 +2415,7 @@ isSafe = L.null . getDangers
 - <3-> Now you understand the last bit of the title.
 - <4-> Do you think we are done?
 
-* Act 4: Comonads
+* Act 4: Builder pattern                                           :noexport:
 
 ** Builder
 
@@ -2501,23 +2593,13 @@ This looks better than promoted version:
   MkConfig ["-Wall","-boris","-O2","-prof","-auto-all"]
 #+end_src
 
+* Finale
+
 ** Commonalities (1)
 
 #+begin_src haskell
   extract :: U a  -> a
   extract :: U2 a -> a
-#+end_src
-
-#+BEAMER: \pause
-
-#+begin_src haskell
-  extract :: ([Option] -> Config) -> Config
-#+end_src
-
-#+BEAMER: \pause
-
-#+begin_src haskell
-  extract :: ((->) [Option]) Config -> Config
 #+end_src
 
 #+BEAMER: \pause
@@ -2531,21 +2613,6 @@ This looks better than promoted version:
 #+begin_src haskell
   extend :: (U a -> b) -> U a  -> U a
   extend :: (U2 a -> b) -> U2 a -> U2 b
-#+end_src
-
-#+BEAMER: \pause
-
-#+begin_src haskell
-  extend :: (([Option] -> Config) ->              Config)
-         ->  ([Option] -> Config) -> ([Option] -> Config)
-#+end_src
-
-#+BEAMER: \pause
-
-#+begin_src haskell
-  extend :: (((->) [Option]) Config -> Config)
-         ->  ((->) [Option]) Config
-         ->  ((->) [Option]) Config
 #+end_src
 
 #+BEAMER: \pause
@@ -2600,6 +2667,23 @@ This looks better than promoted version:
 ** Universe is Comonad
 
 That should be obvious by now.
+
+#+BEAMER: \pause
+
+#+begin_src haskell
+  instance Comonad U where
+    extract (U _ x _) = x
+    duplicate u = U (tail $ iterate left u) u (tail $ iterate right u)
+
+  instance Comonad U2 where
+    extract = extract . extract . getUniverse
+    duplicate = fmap U2 . U2 . shifted . shifted . getUniverse
+      where shifted :: U (U a) -> U (U (U a))
+            shifted u@(U _ (U ls _ rs) _) = U
+              (tail $ iterate (fmap left) u)
+              u
+              (tail $ iterate (fmap right) u)
+#+end_src
 
 ** Store
 
