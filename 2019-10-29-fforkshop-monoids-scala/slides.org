@@ -1115,6 +1115,23 @@ here):
 
 - =BigNumber= practically doesn’t have identity element for =min=.
 
+** Commutativity
+
+- <1-> Semigroup and Monoid doesn't require operation to be commutative.
+  #+begin_export latex
+  \begin{gather*}
+    \neg(\forall a, b \in S : a \cdot b = b \cdot c) \\
+    \exists a, b \in S : a \cdot b \ne b \cdot c
+  \end{gather*}
+  #+end_export
+
+- <2-> Examples:
+  - Arithmetic operations likes $-$, $/$, $^$.
+  - Diagram drawing.
+  - Combining blocks in Minecraft™ (as shown by Tim Williams).
+
+- <3-> Order matters.
+
 ** The most important question
 
 #+BEAMER: \pause
