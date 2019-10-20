@@ -5,7 +5,7 @@
 
 --------------------------------------------------------------------------------
 
-module Data.GOF where
+module Data.GOL where
 
 --------------------------------------------------------------------------------
 
@@ -77,8 +77,8 @@ I chose more obvious way :D
 
 --------------------------------------------------------------------------------
 
-gof1 :: U2 Cell
-gof1
+gol1 :: U2 Cell
+gol1
   = fromList2 Dead
   [ [ Dead, Dead, Dead, Dead, Dead, Dead, Dead ]
   , [ Dead, Alive, Alive, Alive, Alive, Alive, Dead ]
@@ -89,16 +89,16 @@ gof1
   , [ Dead, Dead, Dead, Dead, Dead, Dead, Dead ]
   ]
 
-gof2 :: U2 Cell
-gof2
+gol2 :: U2 Cell
+gol2
   = fromList2 Dead
   [ [ Dead, Alive, Dead ]
   , [ Alive, Dead, Dead ]
   , [ Alive, Alive, Alive ]
   ]
 
-gof3 :: U2 Cell
-gof3
+gol3 :: U2 Cell
+gol3
   = fromList2 Dead
   [ [ Dead, Dead, Dead, Dead, Dead ]
   , [ Dead, Dead, Alive, Dead, Dead ]
@@ -107,8 +107,8 @@ gof3
   , [ Dead, Dead, Dead, Dead, Dead ]
   ]
 
-gof4 :: U2 Cell
-gof4
+gol4 :: U2 Cell
+gol4
   = fromList2 Dead
   [ [ Dead, Dead, Dead, Dead, Dead, Dead, Dead, Dead, Dead, Dead, Dead, Dead, Dead, Dead, Dead, Dead, Dead ]
   , [ Dead, Dead, Dead, Dead, Dead, Dead, Dead, Dead, Dead, Dead, Dead, Dead, Dead, Dead, Dead, Dead, Dead ]
@@ -131,8 +131,8 @@ gof4
 
 {-
 
-someGOF :: U2 Cell
-someGOF
+someGOL :: U2 Cell
+someGOL
   = fromList2 Dead
   [ [ Dead, Dead, Dead, Dead, Dead ]
   , [ Dead, Dead, Alive, Dead, Dead ]
@@ -141,11 +141,11 @@ someGOF
   , [ Dead, Dead, Dead, Dead, Dead ]
   ]
 
-λ mapM_ (print . narrow2' 0 4 0 4) . take 10 . iterate (extend rule) $ someGOF
+λ mapM_ (print . narrow2' 0 4 0 4) . take 10 . iterate (extend rule) $ someGOL
 -}
 
 --------------------------------------------------------------------------------
--- Broken GOF
+-- Broken GOL
 
 rule' :: U (U Cell) -> Cell
 rule' u | ns == 3   = Alive

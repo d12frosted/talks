@@ -1930,7 +1930,7 @@ iTunes anyone?
 
 #+ATTR_LATEX: :options escapeinside=||,mathescape=true
 #+begin_src haskell
-  > print' DisplayFocused . narrow2 3 $ gof1
+  > print' DisplayFocused . narrow2 3 $ gol1
   |$\ \square\square\square[\square]\square\square\square$|
   |$\ \square\square\square[\square]\square\square\square$|
   |$\ \square\square\square[\square]\square\square\square$|
@@ -1954,7 +1954,7 @@ iTunes anyone?
 
 #+ATTR_LATEX: :options escapeinside=||,mathescape=true
 #+begin_src haskell
-  > (...) . shift North $ gof1
+  > (...) . shift North $ gol1
   |$\ \square\square\square[\square]\square\square\square$|
   |$\ \square\square\square[\square]\square\square\square$|
   |$\ \square\square\square[\square]\square\square\square$|
@@ -1972,7 +1972,7 @@ iTunes anyone?
 
 #+ATTR_LATEX: :options escapeinside=||,mathescape=true
 #+begin_src haskell
-  > (...) . shiftn 3 South . shiftn 3 East $ gof1
+  > (...) . shiftn 3 South . shiftn 3 East $ gol1
   |$\ \square\square\square[\square]\square\square\square$|
   |$\ \square\blacksquare\blacksquare[\blacksquare]\blacksquare\blacksquare\square$|
   |$\ \square\blacksquare\blacksquare[\square]\blacksquare\blacksquare\square$|
@@ -2010,21 +2010,21 @@ iTunes anyone?
 ** Was easy, right?
 
 #+begin_src haskell
-  > let someGof = undefined :: U (U Cell)
+  > let someGol = undefined :: U (U Cell)
 #+end_src
 
 #+BEAMER: \pause
 
 #+begin_src haskell
-  > :t rule someGof
-  rule someGof :: Cell
+  > :t rule someGol
+  rule someGol :: Cell
 #+end_src
 
 #+BEAMER: \pause
 
 #+begin_src haskell
-  > :t extend rule someGof
-  extend rule someGof :: U Cell
+  > :t extend rule someGol
+  extend rule someGol :: U Cell
 #+end_src
 
 #+BEAMER: \pause
@@ -2122,7 +2122,7 @@ extend f = fmap f . duplicate
 
 #+ATTR_LATEX: :options escapeinside=||,mathescape=true
 #+begin_src haskell
-  > mapM_ (print . narrow2' 0 4 0 4) . take 2 . iterate (extend rule) $ gof3
+  > mapM_ (print . narrow2' 0 4 0 4) . take 2 . iterate (extend rule) $ gol3
   |$\square\square\square\square\square$|
   |$\square\square\blacksquare\square\square$|
   |$\square\square\blacksquare\square\square$|
@@ -2697,7 +2697,7 @@ That should be obvious by now.
 
 #+BEAMER: \pause
 
-/Homework:/ solve ECA and GOF using =Store= data type.
+/Homework:/ solve ECA and GoL using =Store= data type.
 
 ** Many uses
 
