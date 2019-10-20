@@ -19,3 +19,19 @@ file (Act 4) and in the =Data.Builder= module of the =demo=
 
 Please feel free to contact me if you have any questions or troubles with
 running the examples.
+
+** References
+
+- [[https://www.st.cs.uni-saarland.de/edu/seminare/2005/advanced-fp/docs/huet-zipper.pdf][Functional Perl: The Zipper by Gerard Huet]] - short white paper describing
+  zipper data type. =Universe= is somewhat simplified zipper.
+- [[http://mathworld.wolfram.com/CellularAutomaton.html][Cellular Automaton on MathWorld]]
+- [[http://mathworld.wolfram.com/ElementaryCellularAutomaton.html][Elementary Cellular Automaton on MathWorld]]
+- [[http://mathworld.wolfram.com/GameofLife.html][Game of Life on MathWorld]]
+- [[https://hackage.haskell.org/package/comonad][Comonad package]]
+- [[https://bartoszmilewski.com/2017/01/02/comonads/][Comonads by Bartosz Milewski]] - a blog post describing comonads. This is part
+  of his book [[https://bartoszmilewski.com/2014/10/28/category-theory-for-programmers-the-preface/][Category Theory for Programmers]]. You can grab a PDF copy from [[https://github.com/hmemcpy/milewski-ctfp-pdf][Igal
+  Tabachnik]].
+- [[http://blog.sigfpe.com/2006/12/evaluating-cellular-automata-is.html][Evaluating cellular automata is comonadic by Dan Piponi]] - blog post describing
+  on how to use =U= data type to evaluate Cellular Automata.
+- [[http://www.haskellforall.com/2013/02/you-could-have-invented-comonads.html][Comonads are objects by Gabriel Gonzalez]] - great post describing Builder,
+  Iterator and Command patterns and their implementation in Haskell.
