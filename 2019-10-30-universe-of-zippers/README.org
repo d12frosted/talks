@@ -1,0 +1,21 @@
+* Universe of Zippers (or how to plant a bomb)
+
+This is a talk for [[https://www.meetup.com/functional-vilnius/events/265528343/][Functional Vilnius #13]] meetup.
+
+In this talk we discover a pointed list data type (here it's called =Universe=,
+it's a zipper like list) to solve three different problems:
+
+- Elemental Cellular Automata
+- Game of Life
+- Bot for Bomberman
+
+The =demo= contains all the code from the talk and even more, so you can play
+with =Universe= by yourself. For this to work you should have =stack= installed.
+By intend, you should load the interested module into =ghci=.
+
+There are some additional materials related to =Builder= pattern which are not
+part of the final PDF file, so if you are interested - take a look at the ORG
+file (Act 4) and in the =Data.Builder= module of the =demo=
+
+Please feel free to contact me if you have any questions or troubles with
+running the examples.
