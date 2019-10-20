@@ -9,3 +9,5 @@ three problems exposing powers of monoids:
 - Fibonacci numbers.
 - Top used words across many books.
 - Logging.
+
+The tasks are located in a separate repository: [[https://gitlab.com/wax-org/fforkshop-monoids-scala][wax-org/fforkshop-monoids-scala]].
