@@ -1,0 +1,2554 @@
+#+TITLE: Functional Forkshop: Part 2
+#+AUTHOR: Boris Buliga, Valentyn Vakatsiienko
+#+EMAIL: boris@d12frosted.io
+#+STARTUP: beamer
+#+LATEX_CLASS: beamer
+#+LATEX_CLASS_OPTIONS: [presentation,aspectratio=169,smaller]
+#+LATEX_HEADER: \usepackage[utf8]{inputenc}
+#+LATEX_HEADER: \usepackage{soul}
+#+LATEX_HEADER: \usepackage{unicode-math}
+#+LATEX_HEADER: \usepackage{mathtools}
+#+LATEX_HEADER: \usepackage[mathletters]{ucs}
+#+LATEX_HEADER: \usemintedstyle{tango}
+#+LATEX_HEADER: \setminted{fontsize=\scriptsize}
+#+LATEX_HEADER: \setminted{mathescape=true}
+#+LATEX_HEADER: \setbeamertemplate{itemize items}[circle]
+#+LATEX_HEADER: \setbeamertemplate{enumerate items}[default]
+#+LATEX_HEADER: \setlength{\parskip}{\baselineskip}%
+#+LATEX_HEADER: \setlength{\parindent}{0pt}%
+#+LATEX_HEADER: \setbeamertemplate{navigation symbols}{}%remove navigation symbols
+#+LATEX_HEADER: \newcommand{\hlyellow}[1]{\colorbox{yellow!50}{$\displaystyle#1$}}
+#+LATEX_HEADER: \newcommand{\hlfancy}[2]{\sethlcolor{#1}\hl{#2}}
+#+OPTIONS: H:2 toc:nil num:t
+
+#+begin_export latex
+\newcommand{\mathcolorbox}[2]{%
+  \begingroup
+  \setlength{\fboxsep}{2pt}%
+  \colorbox{#1}{$\displaystyle #2$}%
+  \endgroup
+}
+
+\AtBeginSection[]{
+  \begin{frame}
+  \vfill
+  \centering
+  \begin{beamercolorbox}[sep=8pt,center,shadow=true,rounded=true]{title}
+    \usebeamerfont{title}\insertsectionhead\par%
+  \end{beamercolorbox}
+  \vfill
+  \end{frame}
+}
+#+end_export
+
+* Intro
+:PROPERTIES:
+:UNNUMBERED:             t
+:END:
+** About us
+
+#+begin_export latex
+\vspace*{20px}
+#+end_export
+
+*** Valik
+**** About                                                      :B_column:
+:PROPERTIES:
+:BEAMER_env:             column
+:BEAMER_col:             0.75
+:END:
+
+Server guild manager in Kyiv. Formerly forced people to use functional
+programming style in the Domains (Premium) team. Now works on Tagless Infra to
+provide you with the best tools for your daily needs. Which are all functional,
+of course.
+
+**** Photo                                                      :B_column:
+:PROPERTIES:
+:BEAMER_env:             column
+:BEAMER_col:             0.25
+:END:
+
+#+ATTR_LATEX: :height 2.5cm
+[[file:images/valik.png]]
+
+#+BEAMER: \pause
+
+*** Boris
+
+**** About                                                      :B_column:
+:PROPERTIES:
+:BEAMER_env:             column
+:BEAMER_col:             0.75
+:END:
+
+Developer at Payments by Wix team. Jumps between two extremes - Emacs Lisp and
+Haskell. Wants to force people around to use both languages, but fails to
+explain why.
+
+**** Photo                                                      :B_column:
+:PROPERTIES:
+:BEAMER_env:             column
+:BEAMER_col:             0.25
+:END:
+
+#+ATTR_LATEX: :height 2.5cm
+[[file:images/boris.jpg]]
+
+** About the Forkshop
+
+- Basic forkshop is split into several parts:
+  1. Type classes, Semigroups and Monoids.
+  2. Functors and Applicative Functors.
+  3. Monads.
+  4. Readers.
+  5. Comonads.
+- Theory and practice. Make sure that you are ready to write the code.
+- Target audience is Scala developers learning FP.
+
+** Whys
+
+- <1-> Functional programming roams (a bit).
+  - More projects are using functional programming techniques and idioms (at
+    different scale).
+- <2-> Some people are still confused by all these functional talks (~OptionT~, type
+  lambdas etc).
+- <3-> Having a common language and understanding of some fundamental stuff is
+  important.
+
+* Today
+:PROPERTIES:
+:UNNUMBERED:             t
+:END:
+
+** Agenda
+
+- Values vs Types
+- Functor
+- Applicative Functor
+- Parsing
+- Validation
+
+** Before we start
+
+#+begin_src bash
+  $ git clone git@gitlab.com:wax-org/fforkshop-functors-scala.git
+#+end_src
+
+And import it as sbt project.
+
+* Type theory
+** Values and types
+
+In every$^{?}$ program we write there are two notable levels:
+
+- Value level.
+- Type level.
+
+#+BEAMER: \pause
+
+And so, there are two types of constructors:
+
+- *Value constructor* - expressions that can be applied to value arguments to
+  produce values.
+- *Type constructor* - expressions that can be applied to type arguments to
+  produce types.
+
+#+BEAMER: \pause
+
+*Arity* of constructor is a number of arguments that needs to be applied in
+order to construct a value/type.
+
+** Nullary value constructors
+
+Here are some examples of value constructors with arity of zero, e.g. they
+produce values without any other values.
+
+- ~42~
+- ~"hello"~
+
+** Unary value constructors: function
+
+#+begin_src scala
+  def spacify: String => String =
+    value => " " + value + " "
+#+end_src
+
+Functions are also value constructors. In this case, ~spacify~ is an unary value
+constructor, producing a value of type ~String~ once applied to a value of type
+~String~.
+
+** Unary value constructors: class
+
+Class constructors are another example of value constructors:
+
+#+begin_src scala
+  case class Hero(name: String)
+#+end_src
+
+~Hero~ is an unary value constructor, producing a value of type ~Hero~, once
+applied to a value of type ~String~.
+
+** Higher arity
+
+There are constructors of even higher arity. For example,
+
+#+begin_src scala
+  def sum3: Int => Int => Int => Int =
+    x => y => z => x + y + z
+#+end_src
+
+#+BEAMER: \pause
+
+- <2-> It's a /ternary/ value constructor.
+- <3-> If we provide only one value, it becomes /binary/ value constructor.
+- <4-> Type of ~sum(300)~ is ~Int => Int => Int~.
+- <5-> *Partial application* - is when not all arguments are provided to a
+  function. So we get another function.
+
+** Nullary type constructors
+
+Type constructors also can be of different arity. Here are some examples of
+nullary type constructors:
+
+- ~Int~
+- ~String~
+- ~String => String~
+- ~Function[String, String]~
+- ~String => Hero~
+
+** Unary type constructors
+
+#+begin_src scala
+  case class Wrapper[A](value: A, reason: String)
+#+end_src
+
+#+BEAMER: \pause
+
+- <2-> ~Wrapper~ is a binary /value constructor/.
+- <3-> ~Wrapper~ is an unary /type constructor/.
+  - ~A~ is a type variable
+  - ~Wrapper[Int]~ is nullary /type constructor/.
+
+** Higher arity
+
+#+begin_src scala
+  case class TrickOrTreat[A, B](trick: A, treat: B)
+  case class PostModernMatrix[A, B, C](pillA: A, pillB: B, pillC: C)
+#+end_src
+
+- ~TrickOrTreat~ is binary type constructor.
+- ~PostModernMatrix~ is ternary type constructor.
+
+** Kinds
+
+Arrows allow to describe value constructors (functions on value level).
+
+#+begin_src scala
+  val someConstructor: Int => String => Float => Hero
+#+end_src
+
+#+BEAMER: \pause
+
+Type constructors can be seen as functions on the type level.
+
+#+BEAMER: \pause
+
+*Kind* is the type of type constructor.
+
+** Examples
+
+- $*$ - /concrete/ type, kind of all nullary type constructors (e.g. ~Int~).
+
+#+BEAMER: \pause
+- $* \rightarrow *$ - is kind of unary type constructors (e.g. ~Wrapper~).
+
+#+BEAMER: \pause
+- $* \rightarrow * \rightarrow *$ - is kind of binary type constructors (e.g.
+  ~TrickOrTreat~).
+
+#+BEAMER: \pause
+- $* \rightarrow * \rightarrow * \rightarrow *$ - is kind of ternary type
+  constructors (e.g. ~PostModernMatrix~).
+
+** Higher-order functions
+
+Now let's define the following function:
+
+#+begin_src scala
+  def modify(f: Int => Int)(v: Int): Int
+
+  // or in other words
+
+  def modify: (Int => Int) => Int => Int
+#+end_src
+
+#+BEAMER: \pause
+
+Arrow ~=>~ is right-associative, ~A => B => C~ is ~A => (B => C)~. Naturally, we
+pass first argument of type ~A~, not a function ~A => B~.
+
+#+BEAMER: \pause
+
+~modify~ is different, because it requires a function as an argument.
+
+#+BEAMER: \pause
+
+Functions that take other functions as arguments are called *higher-order
+functions*.
+
+** Higher-order types
+
+#+begin_src scala
+  case class WickedWrapper[F[_]](level: F[Int], desc: String)
+  case class WickedDoubleWrapper[F[_], A](value: F[A])
+#+end_src
+
+#+BEAMER: \pause
+
+~WickedWrapper~ takes one type ~F~ to produce new type ~WickedWrapper[F[_]]~.
+But ~F~ here is not a concrete type, it's also a type constructor.
+
+#+BEAMER: \pause
+
+- ~F~ has kind $* \rightarrow *$.
+- ~WickedWrapper~ has kind $(* \rightarrow *) \rightarrow *$ and is unary.
+- ~WickedDoubleWrapper~ has kind $(* \rightarrow *) \rightarrow * \rightarrow *$
+  and is binary.
+- $\rightarrow$ is right-associative, so $* \rightarrow * \rightarrow *
+  \rightarrow *$ is the same as $* \rightarrow (* \rightarrow (* \rightarrow
+  *))$.
+
+#+BEAMER: \pause
+
+Type constructors that take other type constructors as arguments are called
+*higher-order types* or *higher-kinded types*.
+
+** The most important question
+
+#+ATTR_LATEX: :height 5cm
+[[file:images/whyyy.png]]
+
+Why did we learn this?
+
+* Functor
+** Function Application
+
+*Function* is one of the most important pillars of the functional programming.
+Naturally, we can manipulate functions in two ways:
+
+1. Create function (abstraction).
+2. Apply function to an argument (application).
+
+** Function Application
+
+We know how to apply functions.
+
+#+begin_src scala
+  def inc: Int => Int = v => v + 1
+  def add: Int => Int => Int = a => b => a + b
+
+  inc(42)      // => 43
+  add(100)     // => function of type Int => Int
+  add(100)(42) // => 142
+#+end_src
+
+#+BEAMER: \pause
+
+We can define a special function that will apply first argument to second.
+
+#+begin_src scala
+  def apply[A, B]: (A => B) => A => B =
+    f => v => f(v)
+
+  apply(inc)(42)      // => 43
+  apply(add)(100)     // => function of type Int => Int
+  apply(add)(100)(42) // => 142
+#+end_src
+
+** Function Application
+
+While this doesn't seem to be useful, it's important to understand type
+signature of ~apply~ function:
+
+#+begin_src scala
+  apply :   (A => B)    => A        => B
+  //        function    argument    result
+#+end_src
+
+#+BEAMER: \pause
+
+It's higher-order function.
+
+** Context: optional value
+
+~Option~ (or ~Maybe~) is used to represent a context of value that may be
+absent.
+
+*** Scala                                                        :B_column:
+:PROPERTIES:
+:BEAMER_col:             0.5
+:BEAMER_opt:             [t]
+:BEAMER_env:             column
+:END:
+
+#+begin_src scala
+  trait Option[+A]
+  case object None extends Option[Nothing]
+  case class Some[+A](value: A) extends Option[A]
+#+end_src
+
+*** Haskell                                                      :B_column:
+:PROPERTIES:
+:BEAMER_col:             0.5
+:BEAMER_opt:             [t]
+:BEAMER_env:             column
+:END:
+
+#+begin_src haskell
+  data Maybe a = Nothing | Just a
+#+end_src
+
+*** Regular                                                      :B_column:
+:PROPERTIES:
+:BEAMER_opt:             [t]
+:BEAMER_env:             column
+:END:
+
+~Option~ is unary type constructor with kind $* \rightarrow *$.
+
+** Context: optional value
+
+- ~Option(42)~ is a value of type ~Option[Int]~.
+- ~apply~ can't be used to apply ~inc~ to ~42~ in that context.
+  #+begin_src scala
+    apply: (A => B) => A => B
+    inc: Int => Int
+    apply(inc)(Option(42))
+      type mismatch;
+       found   : Option[Int]
+       required: Int
+  #+end_src
+- <2-> But we can define custom ~apply~ function.
+
+** Context: optional value
+
+#+begin_src scala
+  //  apply        : (A => B) =>        A  =>        B
+  def applyToOption: (A => B) => Option[A] => Option[B] = f => maybeV => match maybeV {
+    case None    => None
+    case Some(v) => Some(f(v))
+  }
+
+  applyToOption(inc)(Some(42))            // => Some(43)
+  applyToOption(inc)(None)                // => None
+#+end_src
+
+** Many contexts
+
+- ~Either~ - a context of values with two possibilities. We mostly use it as a
+  context of a value that may be absent with some reason (error).
+- ~List~ - a context of non-deterministic choice.
+- ~Future~ - a context of value that is not yet computed.
+- ~WIO~ - a context of value with some possible side-effect.
+- ...
+
+** Many applies
+
+#+begin_src scala
+  def apply           : (A => B) =>        A  =>        B
+  def applyToOption   : (A => B) => Option[A] => Option[B]
+  def applyToFuture   : (A => B) => Future[A] => Future[B]
+  def applyToWI       : (A => B) =>    WIO[A] =>    WIO[B]
+#+end_src
+
+#+BEAMER: \pause
+
+#+begin_src scala
+  def applyToContext  : (A => B) =>      F[A] =>      F[B]
+#+end_src
+
+** Repetition is
+
+#+ATTR_LATEX: :height 5cm
+[[file:images/cucumber.jpg]]
+
+Cucumbersome
+
+** Functoriana
+
+#+begin_src scala
+  trait Functor[F[_]] {
+    def fmap[A, B]: (A => B) => F[A] => F[B]
+  }
+#+end_src
+
+#+BEAMER: \pause
+
+#+begin_src scala
+  object OptionImpl {
+    implicit val optionFunctor: Functor[Option] = {
+      def fmap[A, B]: (A => B) => Option[A] => Option[B] =
+        f => fa => fa match {
+          case None    => None
+          case Some(v) => Some(f(v))
+        }
+    }
+  }
+#+end_src
+
+** Code responsibly, know the laws
+
+1. <1-> =fmap id = id=
+2. <2-> =fmap (g . f) = fmap g . fmap f=
+3. <3-> Functor doesn't change the context nor it's shape.
+   1. ~Option~ - failure to failure, success to success
+   2. ~List~ - length is unchanged
+   3. Value constructor defines the shape.
+
+** Sum type: Option
+
+#+begin_src dot :file .dot/functor-option.png :cmdline -Kdot -Tpng -Gdpi=180
+  digraph {
+    rankdir=LR;
+
+    c1[label="None"];
+    r1[label="None"];
+    c1 -> r1[label="f"];
+
+    c2[label="Some(v)"];
+    r2[label="Some(f(v))"];
+    c2 -> r2[label="f"];
+  }
+#+end_src
+
+#+ATTR_LATEX: :height 3.5cm
+#+RESULTS:
+[[file:.dot/functor-option.png]]
+
+- Failure to failure.
+- Success to success.
+- Shape is unchanged.
+- Constructor is not changed.
+
+** Product type: List
+
+*** Left                                                         :B_column:
+:PROPERTIES:
+:BEAMER_env:             column
+:BEAMER_col:             0.5
+:BEAMER_opt:             [t]
+:END:
+
+#+begin_src dot :file .dot/functor-list-1.png :cmdline -Kdot -Tpng -Gdpi=180
+  digraph {
+    v1[label="a1"];
+    v2[label="a2"];
+    v3[label="a3"];
+    v4[label="a4"];
+
+    c1[label="::"];
+    c2[label="::"];
+    c3[label="::"];
+    c4[label="::"];
+    c5[label="[]"];
+
+    c1 -> v1
+    c1 -> c2
+
+    c2 -> v2
+    c2 -> c3
+
+    c3 -> v3
+    c3 -> c4
+
+    c4 -> v4
+    c4 -> c5
+  }
+#+end_src
+
+#+ATTR_LATEX: :height 4.5cm
+#+RESULTS:
+[[file:.dot/functor-list-1.png]]
+
+*** Right                                                        :B_column:
+:PROPERTIES:
+:BEAMER_env:             column
+:BEAMER_col:             0.5
+:BEAMER_opt:             [t]
+:END:
+
+#+begin_src dot :file .dot/functor-list-2.png :cmdline -Kdot -Tpng -Gdpi=180
+  digraph {
+    v1[label="f(a1)"];
+    v2[label="f(a2)"];
+    v3[label="f(a3)"];
+    v4[label="f(a4)"];
+
+    c1[label="::"];
+    c2[label="::"];
+    c3[label="::"];
+    c4[label="::"];
+    c5[label="[]"];
+
+    c1 -> v1
+    c1 -> c2
+
+    c2 -> v2
+    c2 -> c3
+
+    c3 -> v3
+    c3 -> c4
+
+    c4 -> v4
+    c4 -> c5
+  }
+#+end_src
+
+#+ATTR_LATEX: :height 4.5cm
+#+RESULTS:
+[[file:.dot/functor-list-2.png]]
+
+*** Center                                                       :B_column:
+:PROPERTIES:
+:BEAMER_env:             column
+:BEAMER_opt:             [t]
+:END:
+
+- Shape is unchanged.
+- Length remains the same.
+- Spine remains the same.
+- Length is amount of ~::~ constructors.
+
+** Coding time
+
+- Open =wax.typeclass.functor.cats.package= file.
+- Task is to add missing implementations (no =???=).
+- Run =FunctorSpec= to test your implementation.
+
+** Breaking the first rule
+
+#+begin_src scala
+  object OptionImpl {
+    implicit val optionFunctor: Functor[Option] = {
+      def fmap[A, B]: (A => B) => Option[A] => Option[B] =
+        f => fa => fa match {
+          case None    => None
+          case Some(v) => None
+        }
+    }
+  }
+
+  // Breaks identity rule, but not composition
+
+  fmap(identity)(None) => None     // == None
+  fmap(indentity(Some(42)) => None // != Some 42
+
+  // Shape was destroyed
+#+end_src
+
+** Breaking the second rule
+
+As a result of the Free Theorem (Wadler), it's impossible to break the second
+rule in Haskell without breaking the first one.
+
+If you are interested in details, let's talk after the forkshop.
+
+** Outcome
+
+- Function application is very important.
+- =Functor= provides us with means to apply regular function to value in a
+  context, without changing the shape of the context.
+- Laws make it impossible to provide multiple different functor instances.
+- Do you dare to dream of something more?
+  - <2-> (hopefully yes)
+
+* Applicative Functor
+
+** Next step
+
+#+begin_src scala
+  val v1 = Option(42)
+  val v2 = Option(100)
+
+  def add: Int => Int => Int =
+    a => b => a + b
+  // add: Int => (Int => Int)
+#+end_src
+
+#+BEAMER: \pause
+
+#+begin_src scala
+  val result = v1.fmap(add)
+  // result: Option[Int => Int]
+#+end_src
+
+#+BEAMER: \pause
+
+Now we have:
+
+- =result= of type =Option[Int => Int]=
+- =v2= of type =Option[Int]=
+
+And we want to apply that function and get resulting =Option[Int]=.
+
+** Next step
+
+#+begin_src scala
+  def apply :  (A => B) =>   A  =>   B
+  def fmap  :  (A => B) => F[A] => F[B]
+#+end_src
+
+#+BEAMER: \pause
+
+#+begin_src scala
+  def ???   : F[A => B] => F[A] => F[B]
+#+end_src
+
+** Solution
+
+#+begin_src scala
+  val v1 = Option(42)
+  val v2 = Option(100)
+
+  def applyOptionF[A, B]: Option[A => B] => Option[A] => Option[B] =
+    ff => fv => ff match {
+      case None    => None
+      case Some(f) => fv.fmap(f)
+    }
+
+  applyOptionF(v1.fmap(add))(v2)
+#+end_src
+
+** Following the same idea
+
+*** Definition                                                   :B_column:
+:PROPERTIES:
+:BEAMER_opt:             [t]
+:BEAMER_env:             column
+:END:
+
+#+begin_src scala
+  trait Applicative[F[_]] extends Functor[F] {
+    def ap[A, B]: F[A => B] => F[A] => F[B]
+
+    def pure[A](a: A): A => F[A]
+  }
+#+end_src
+
+#+BEAMER: \pause
+
+*** Scala                                                        :B_column:
+:PROPERTIES:
+:BEAMER_col:             0.46
+:BEAMER_opt:             [t]
+:BEAMER_env:             column
+:END:
+
+#+begin_src scala
+  v1.fmap(add).ap(v2)
+  // v1 `add` v2
+  // <*> = ap
+#+end_src
+
+#+BEAMER: \pause
+
+*** Haskell                                                      :B_column:
+:PROPERTIES:
+:BEAMER_col:             0.46
+:BEAMER_opt:             [t]
+:BEAMER_env:             column
+:END:
+
+#+begin_src haskell
+  f <$> v1 <*> v2
+  -- much like a simple function application
+  -- f v1 v2
+#+end_src
+
+** What's about pure?
+
+1. It abstracts the value constructor.
+2. Ties ~Functor~ and ~Applicative~.
+   1. ~fmap f x = pure f <*> x~
+3. Important for ~Applicative~ laws.
+4. By itself it doesn't have much importance without ~ap~.
+5. But it's useful in practice.
+
+** Another perspective
+
+*** Main                                                         :B_column:
+:PROPERTIES:
+:BEAMER_opt:             [t]
+:BEAMER_env:             column
+:END:
+
+=Applicative= interface is useful in day-to-day development.
+
+#+BEAMER: \pause
+
+=Applicative= has equivalent type class =Monoidal= functor:
+
+*** Left                                                         :B_column:
+:PROPERTIES:
+:BEAMER_opt:             [t]
+:BEAMER_col:             0.5
+:BEAMER_env:             column
+:END:
+
+#+begin_src scala
+  trait Applicative[F[_]] extends Functor[F] {
+    def pure[A](a: A): F[A]
+    def ap[A, B](f: F[A => B])(fa: F[A]): F[B]
+  }
+#+end_src
+
+*** Right                                                        :B_column:
+:PROPERTIES:
+:BEAMER_opt:             [t]
+:BEAMER_col:             0.5
+:BEAMER_env:             column
+:END:
+
+#+begin_src scala
+  trait Monoidal[F[_]] extends Functor[F] {
+    def unit: F[Unit]
+    def comb[A, B](fa: F[A], fb: F[B]): F[(A, B)]
+  }
+#+end_src
+
+** From =Applicative= to =Monoidal=
+
+*** Left                                                         :B_column:
+:PROPERTIES:
+:BEAMER_opt:             [t]
+:BEAMER_col:             0.5
+:BEAMER_env:             column
+:END:
+
+#+begin_src scala
+  trait Applicative[F[_]] extends Functor[F] {
+    def pure[A](a: A): F[A]
+    def ap[A, B](f: F[A => B])(fa: F[A]): F[B]
+  }
+#+end_src
+
+*** Right                                                        :B_column:
+:PROPERTIES:
+:BEAMER_opt:             [t]
+:BEAMER_col:             0.5
+:BEAMER_env:             column
+:END:
+
+#+begin_src scala
+  trait Monoidal[F[_]] extends Functor[F] {
+    def unit: F[Unit]
+    def comb[A, B](fa: F[A], fb: F[B]): F[(A, B)]
+  }
+#+end_src
+
+*** Main                                                         :B_column:
+:PROPERTIES:
+:BEAMER_opt:             [t]
+:BEAMER_env:             column
+:END:
+
+#+begin_src scala
+  class ApplicativeToMonoida[F[_]: Applicative]() extends Monoidal[F] {
+    override def unit: F[Unit] = ???
+
+    override def comb[A, B](fa: F[A], fb: F[B]): F[(A, B)] = ???
+  }
+#+end_src
+
+** From =Applicative= to =Monoidal=
+
+*** Left                                                         :B_column:
+:PROPERTIES:
+:BEAMER_opt:             [t]
+:BEAMER_col:             0.5
+:BEAMER_env:             column
+:END:
+
+#+begin_src scala
+  trait Applicative[F[_]] extends Functor[F] {
+    def pure[A](a: A): F[A]
+    def ap[A, B](f: F[A => B])(fa: F[A]): F[B]
+  }
+#+end_src
+
+*** Right                                                        :B_column:
+:PROPERTIES:
+:BEAMER_opt:             [t]
+:BEAMER_col:             0.5
+:BEAMER_env:             column
+:END:
+
+#+begin_src scala
+  trait Monoidal[F[_]] extends Functor[F] {
+    def unit: F[Unit]
+    def comb[A, B](fa: F[A], fb: F[B]): F[(A, B)]
+  }
+#+end_src
+
+*** Main                                                         :B_column:
+:PROPERTIES:
+:BEAMER_opt:             [t]
+:BEAMER_env:             column
+:END:
+
+#+begin_src scala
+  class ApplicativeToMonoida[F[_]: Applicative]() extends Monoidal[F] {
+    override def unit: F[Unit] = Applicative[F].pure(())
+
+    override def comb[A, B](fa: F[A], fb: F[B]): F[(A, B)] = ???
+  }
+#+end_src
+
+** From =Applicative= to =Monoidal=
+
+*** Left                                                         :B_column:
+:PROPERTIES:
+:BEAMER_opt:             [t]
+:BEAMER_col:             0.5
+:BEAMER_env:             column
+:END:
+
+#+begin_src scala
+  trait Applicative[F[_]] extends Functor[F] {
+    def pure[A](a: A): F[A]
+    def ap[A, B](f: F[A => B])(fa: F[A]): F[B]
+  }
+#+end_src
+
+*** Right                                                        :B_column:
+:PROPERTIES:
+:BEAMER_opt:             [t]
+:BEAMER_col:             0.5
+:BEAMER_env:             column
+:END:
+
+#+begin_src scala
+  trait Monoidal[F[_]] extends Functor[F] {
+    def unit: F[Unit]
+    def comb[A, B](fa: F[A], fb: F[B]): F[(A, B)]
+  }
+#+end_src
+
+*** Main                                                         :B_column:
+:PROPERTIES:
+:BEAMER_opt:             [t]
+:BEAMER_env:             column
+:END:
+
+#+begin_src scala
+  class ApplicativeToMonoida[F[_]: Applicative]() extends Monoidal[F] {
+    override def unit: F[Unit] = Applicative[F].pure(())
+
+    override def comb[A, B](fa: F[A], fb: F[B]): F[(A, B)] =
+      fa.fmap((a: A) => (b: B) => (a, b)).ap(fb)
+  }
+#+end_src
+
+** From =Monoidal= to =Applicative=
+
+*** Left                                                         :B_column:
+:PROPERTIES:
+:BEAMER_opt:             [t]
+:BEAMER_col:             0.5
+:BEAMER_env:             column
+:END:
+
+#+begin_src scala
+  trait Applicative[F[_]] extends Functor[F] {
+    def pure[A](a: A): F[A]
+    def ap[A, B](f: F[A => B])(fa: F[A]): F[B]
+  }
+#+end_src
+
+*** Right                                                        :B_column:
+:PROPERTIES:
+:BEAMER_opt:             [t]
+:BEAMER_col:             0.5
+:BEAMER_env:             column
+:END:
+
+#+begin_src scala
+  trait Monoidal[F[_]] extends Functor[F] {
+    def unit: F[Unit]
+    def comb[A, B](fa: F[A], fb: F[B]): F[(A, B)]
+  }
+#+end_src
+
+*** Main                                                         :B_column:
+:PROPERTIES:
+:BEAMER_opt:             [t]
+:BEAMER_env:             column
+:END:
+
+#+begin_src scala
+  class MonoidalToApplicative[F[_]: Monoidal]() extends Applicative[F] {
+    override def pure[A](a: A): F[A] = ???
+
+    override def ap[A, B](ff: F[A => B])(fa: F[A]): F[B] = ???
+  }
+#+end_src
+
+** From =Monoidal= to =Applicative=
+
+*** Left                                                         :B_column:
+:PROPERTIES:
+:BEAMER_opt:             [t]
+:BEAMER_col:             0.5
+:BEAMER_env:             column
+:END:
+
+#+begin_src scala
+  trait Applicative[F[_]] extends Functor[F] {
+    def pure[A](a: A): F[A]
+    def ap[A, B](f: F[A => B])(fa: F[A]): F[B]
+  }
+#+end_src
+
+*** Right                                                        :B_column:
+:PROPERTIES:
+:BEAMER_opt:             [t]
+:BEAMER_col:             0.5
+:BEAMER_env:             column
+:END:
+
+#+begin_src scala
+  trait Monoidal[F[_]] extends Functor[F] {
+    def unit: F[Unit]
+    def comb[A, B](fa: F[A], fb: F[B]): F[(A, B)]
+  }
+#+end_src
+
+*** Main                                                         :B_column:
+:PROPERTIES:
+:BEAMER_opt:             [t]
+:BEAMER_env:             column
+:END:
+
+#+begin_src scala
+  class MonoidalToApplicative[F[_]: Monoidal]() extends Applicative[F] {
+    override def pure[A](a: A): F[A] = Monoidal[F].unit.fmap(_ => a)
+
+    override def ap[A, B](ff: F[A => B])(fa: F[A]): F[B] = ???
+  }
+#+end_src
+
+** From =Monoidal= to =Applicative=
+
+*** Left                                                         :B_column:
+:PROPERTIES:
+:BEAMER_opt:             [t]
+:BEAMER_col:             0.5
+:BEAMER_env:             column
+:END:
+
+#+begin_src scala
+  trait Applicative[F[_]] extends Functor[F] {
+    def pure[A](a: A): F[A]
+    def ap[A, B](f: F[A => B])(fa: F[A]): F[B]
+  }
+#+end_src
+
+*** Right                                                        :B_column:
+:PROPERTIES:
+:BEAMER_opt:             [t]
+:BEAMER_col:             0.5
+:BEAMER_env:             column
+:END:
+
+#+begin_src scala
+  trait Monoidal[F[_]] extends Functor[F] {
+    def unit: F[Unit]
+    def comb[A, B](fa: F[A], fb: F[B]): F[(A, B)]
+  }
+#+end_src
+
+*** Main                                                         :B_column:
+:PROPERTIES:
+:BEAMER_opt:             [t]
+:BEAMER_env:             column
+:END:
+
+#+begin_src scala
+  class MonoidalToApplicative[F[_]: Monoidal]() extends Applicative[F] {
+    override def pure[A](a: A): F[A] = Monoidal[F].unit.fmap(_ => a)
+
+    override def ap[A, B](ff: F[A => B])(fa: F[A]): F[B] = Monoidal[F].comb(ff, fa).fmap { case (f, a) => f(a) }
+  }
+#+end_src
+
+** From =Monoidal= to =Applicative=
+
+#+begin_src scala
+  class MonoidalToApplicative[F[_]: Monoidal]() extends Applicative[F] {
+    override def pure[A](a: A): F[A] = Monoidal[F].unit.fmap(_ => a)
+
+    override def ap[A, B](ff: F[A => B])(fa: F[A]): F[B] = Monoidal[F].comb(ff, fa).fmap { case (f, a) => f(a) }
+  }
+#+end_src
+
+Path from =Monoidal= to =Applicative= is through function application. Function
+application is a practical thing.
+
+** Monoid part of =Monoidal=
+
+*** Left                                                         :B_column:
+:PROPERTIES:
+:BEAMER_opt:             [t]
+:BEAMER_col:             0.5
+:BEAMER_env:             column
+:END:
+
+#+begin_src scala
+  trait Monoid[A] {
+    def empty: A
+    def combine(x: A, y: A): A
+  }
+#+end_src
+
+*** Right                                                        :B_column:
+:PROPERTIES:
+:BEAMER_opt:             [t]
+:BEAMER_col:             0.5
+:BEAMER_env:             column
+:END:
+
+#+begin_src scala
+  trait Monoidal[F[_]] extends Functor[F] {
+    def unit: F[Unit]
+    def comb[A, B](fa: F[A], fb: F[B]): F[(A, B)]
+  }
+#+end_src
+
+*** Main                                                         :B_column:
+:PROPERTIES:
+:BEAMER_opt:             [t]
+:BEAMER_env:             column
+:END:
+
+- <2-> =Monoidal= is =Monoid= for =Functors=.
+- <3-> =Applicative= is =Monoidal=.
+- <4-> =Applicative= is =Monoid= for =Functors=.
+
+** Applicative laws                                                   :SKIP:
+
+1. Identity: ~pure id <*> v = v~
+   - Identity in context does nothing. Like regular identity.
+2. Homomorphism: ~pure f <*> pure x = pure (f x)~
+   - ~pure~ preserves function application.
+3. Interchange: ~u <*> pure y = pure ($ y) <*> u~
+   - Applying function in a context to a value in a context is the same as
+     applying a pure function of argument application to a function in a context.
+   - Don't think to much about this.
+4. Composition: ~pure (.) <*> u <*> v <*> w = u <*> (v <*> w)~
+   - Says that function composition 'holds' in the applicative context.
+
+** Coding time
+
+- Open =src/main/scala/wax/typeclass/applicative/cats/implicits/package.scala=
+- Task is to add missing implementations (no =???=).
+- Run =ApplicativeSpec= to test your ~cats~ implementation.
+
+** Outcome
+
+- <1-> =Monoid= and =Functor= are two fundamental objects.
+- <2-> We can apply regular function to multiple values in context.
+
+* Parsing
+
+** Parsing
+:PROPERTIES:
+:BEAMER_opt:             t
+:END:
+
+#+begin_export latex
+\vspace*{20px}
+#+end_export
+
+Parsing is the process of transforming input data (frequently text) to data
+structure.
+
+*** Parser definition                                           :B_onlyenv:
+:PROPERTIES:
+:BEAMER_env:             onlyenv
+:BEAMER_act:             <2->
+:END:
+
+#+begin_src scala
+  case class Parser[A](parse: String => ParserResult[A])
+#+end_src
+
+*** Result definition                                           :B_onlyenv:
+:PROPERTIES:
+:BEAMER_env:             onlyenv
+:BEAMER_act:             <3->
+:END:
+
+#+begin_src scala
+  sealed trait ParserResult[A]
+  case class ParserFailure[A]() extends ParserResult[A]
+  case class ParserSuccess[A](value: A, remainder: String) extends ParserResult[A]
+#+end_src
+
+#+BEAMER: \pause
+
+*** Run Step 1                                                  :B_onlyenv:
+:PROPERTIES:
+:BEAMER_env:             onlyenv
+:BEAMER_act:             <4>
+:END:
+
+#+begin_src scala
+  def run[A](parser: Parser[A])(input: String): Either[String, A] = parser.parse(input) match {
+    case ParserFailure()                   => Left("parser error")
+
+
+  }
+#+end_src
+
+*** Run Step 2                                                  :B_onlyenv:
+:PROPERTIES:
+:BEAMER_env:             onlyenv
+:BEAMER_act:             <5>
+:END:
+
+#+begin_src scala
+  def run[A](parser: Parser[A])(input: String): Either[String, A] = parser.parse(input) match {
+    case ParserFailure()                   => Left("parser error")
+    case ParserSuccess(_, s) if s.nonEmpty => Left("parser did not consume entire stream: '" ++ s ++ "'")
+
+  }
+#+end_src
+
+*** Run Step 3                                                  :B_onlyenv:
+:PROPERTIES:
+:BEAMER_env:             onlyenv
+:BEAMER_act:             <6>
+:END:
+
+#+begin_src scala
+  def run[A](parser: Parser[A])(input: String): Either[String, A] = parser.parse(input) match {
+    case ParserFailure()                   => Left("parser error")
+    case ParserSuccess(_, s) if s.nonEmpty => Left("parser did not consume entire stream: '" ++ s ++ "'")
+    case ParserSuccess(v, _)               => Right(v)
+  }
+#+end_src
+
+** Simple parser
+:PROPERTIES:
+:BEAMER_opt:             t
+:END:
+
+#+begin_export latex
+\vspace*{20px}
+#+end_export
+
+*** Left                                                         :B_column:
+:PROPERTIES:
+:BEAMER_opt:             [t]
+:BEAMER_col:             0.5
+:BEAMER_env:             column
+:END:
+
+**** Step 1                                                    :B_onlyenv:
+:PROPERTIES:
+:BEAMER_env:             onlyenv
+:BEAMER_act:             <1>
+:END:
+
+#+begin_src scala
+  def char(c: Char): Parser[Char] = Parser { s =>
+    ???
+  }
+#+end_src
+
+**** Step 2                                                    :B_onlyenv:
+:PROPERTIES:
+:BEAMER_env:             onlyenv
+:BEAMER_act:             <2>
+:END:
+
+#+begin_src scala
+  def char(c: Char): Parser[Char] = Parser { s =>
+    if (s.isEmpty) ???
+    else ???
+  }
+#+end_src
+
+**** Step 3                                                    :B_onlyenv:
+:PROPERTIES:
+:BEAMER_env:             onlyenv
+:BEAMER_act:             <3-4>
+:END:
+
+#+begin_src scala
+  def char(c: Char): Parser[Char] = Parser { s =>
+    if (s.isEmpty) ParserFailure()
+    else ???
+  }
+#+end_src
+
+**** Step 3                                                    :B_onlyenv:
+:PROPERTIES:
+:BEAMER_env:             onlyenv
+:BEAMER_act:             <5>
+:END:
+
+#+begin_src scala
+  def char(c: Char): Parser[Char] = Parser { s =>
+    if (s.isEmpty) ParserFailure()
+    else if (s.head != c) ???
+    else ???
+  }
+#+end_src
+
+**** Step 4                                                    :B_onlyenv:
+:PROPERTIES:
+:BEAMER_env:             onlyenv
+:BEAMER_act:             <6-7>
+:END:
+
+#+begin_src scala
+  def char(c: Char): Parser[Char] = Parser { s =>
+    if (s.isEmpty) ParserFailure()
+    else if (s.head != c) ParserFailure()
+    else ???
+  }
+#+end_src
+
+**** Step 5                                                    :B_onlyenv:
+:PROPERTIES:
+:BEAMER_env:             onlyenv
+:BEAMER_act:             <8->
+:END:
+
+#+begin_src scala
+  def char(c: Char): Parser[Char] = Parser { s =>
+    if (s.isEmpty) ParserFailure()
+    else if (s.head != c) ParserFailure()
+    else ParserSuccess(s.head,        s.tail)
+    //                 ^ parsed char  ^ remaining stream
+  }
+#+end_src
+
+*** Right                                                        :B_column:
+:PROPERTIES:
+:BEAMER_opt:             [t]
+:BEAMER_col:             0.5
+:BEAMER_env:             column
+:END:
+
+**** Example 1                                                 :B_onlyenv:
+:PROPERTIES:
+:BEAMER_env:             onlyenv
+:BEAMER_act:             <4->
+:END:
+
+#+begin_src scala
+  > char('c').run("")
+  Left("parse error")
+#+end_src
+
+**** Example 2                                                 :B_onlyenv:
+:PROPERTIES:
+:BEAMER_env:             onlyenv
+:BEAMER_act:             <7->
+:END:
+
+#+begin_src scala
+  > char('c').run("C")
+  Left("parse error")
+#+end_src
+
+**** Example 3                                                 :B_onlyenv:
+:PROPERTIES:
+:BEAMER_env:             onlyenv
+:BEAMER_act:             <9->
+:END:
+
+#+begin_src scala
+  > char('c').run("c")
+  Right('c')
+#+end_src
+
+**** Example 4                                                 :B_onlyenv:
+:PROPERTIES:
+:BEAMER_env:             onlyenv
+:BEAMER_act:             <10->
+:END:
+
+#+begin_src scala
+  > char('c').run("comelette")
+  Left("parser did not consume entire stream: 'omelette'")
+#+end_src
+
+**** Omelette                                                   :B_onlyenv:
+:PROPERTIES:
+:BEAMER_env:             onlyenv
+:BEAMER_act:             <11->
+:END:
+
+#+ATTR_LATEX: :height 3cm
+[[file:images/omelette.jpg]]
+
+** Abstracting =char=
+
+#+begin_src scala
+  def satisfy(pred: Char => Boolean): Parser[Char] = Parser { s =>
+    if (s.nonEmpty && pred(s.head)) ParserSuccess(s.head, s.tail)
+    else ParserFailure()
+  }
+#+end_src
+
+#+BEAMER: \pause
+
+#+begin_src scala
+  def char(a: Char): Parser[Char] = satisfy(_ == a)
+
+  def notChar(a: Char): Parser[Char] = satisfy(_ != a)
+
+  def anyChar: Parser[Char] = satisfy(_ => true)
+
+  def space: Parser[Char] = char(' ')
+#+end_src
+
+** Repeating the parser
+:PROPERTIES:
+:BEAMER_opt:             t
+:END:
+
+*** Step 1                                                      :B_onlyenv:
+:PROPERTIES:
+:BEAMER_env:             onlyenv
+:BEAMER_act:             <1>
+:END:
+
+#+begin_src scala
+  def many[A](parser: Parser[A]): Parser[List[A]] = Parser { s =>
+    ???
+  }
+#+end_src
+
+*** Step 2                                                      :B_onlyenv:
+:PROPERTIES:
+:BEAMER_env:             onlyenv
+:BEAMER_act:             <2>
+:END:
+
+#+begin_src scala
+  def many[A](parser: Parser[A]): Parser[List[A]] = Parser { s =>
+    parser.parse(s) match {
+      case ParserSuccess(v, s1) => ???
+      case ParserFailure()      => ???
+    }
+  }
+#+end_src
+
+*** Step 3                                                      :B_onlyenv:
+:PROPERTIES:
+:BEAMER_env:             onlyenv
+:BEAMER_act:             <3>
+:END:
+
+#+begin_src scala
+  def many[A](parser: Parser[A]): Parser[List[A]] = Parser { s =>
+    parser.parse(s) match {
+      case ParserSuccess(v, s1) =>
+        many(parser)           // recursivelly create a Parser[List[A]]
+
+      case ParserFailure()      => ???
+    }
+  }
+#+end_src
+
+*** Step 4                                                      :B_onlyenv:
+:PROPERTIES:
+:BEAMER_env:             onlyenv
+:BEAMER_act:             <4>
+:END:
+
+#+begin_src scala
+  def many[A](parser: Parser[A]): Parser[List[A]] = Parser { s =>
+    parser.parse(s) match {
+      case ParserSuccess(v, s1) =>
+        many(parser)           // recursivelly create a Parser[List[A]]
+          .parse(s1)           // run it on the remaining stream to get ParserResult[List[A]]
+
+      case ParserFailure()      => ???
+    }
+  }
+#+end_src
+
+*** Step 5                                                      :B_onlyenv:
+:PROPERTIES:
+:BEAMER_env:             onlyenv
+:BEAMER_act:             <5>
+:END:
+
+#+begin_src scala
+  def many[A](parser: Parser[A]): Parser[List[A]] = Parser { s =>
+    parser.parse(s) match {
+      case ParserSuccess(v, s1) =>
+        many(parser)           // recursivelly create a Parser[List[A]]
+          .parse(s1)           // run it on the remaining stream to get ParserResult[List[A]]
+          .fmap(xs => v :: xs) // append parsed value to the list
+
+      case ParserFailure()      => ???
+    }
+  }
+#+end_src
+
+*** Step 6                                                      :B_onlyenv:
+:PROPERTIES:
+:BEAMER_env:             onlyenv
+:BEAMER_act:             <6>
+:END:
+
+#+begin_src scala
+  def many[A](parser: Parser[A]): Parser[List[A]] = Parser { s =>
+    parser.parse(s) match {
+      case ParserSuccess(v, s1) =>
+        many(parser)           // recursivelly create a Parser[List[A]]
+          .parse(s1)           // run it on the remaining stream to get ParserResult[List[A]]
+          .fmap(xs => v :: xs) // append parsed value to the list
+
+      case ParserFailure()      => ParserSuccess(List.empty, s)
+      // We can't return Failure, otherwise whole parser will fail
+    }
+  }
+#+end_src
+
+** Repeating the parser
+:PROPERTIES:
+:BEAMER_opt:             t
+:END:
+
+*** Step 1                                                      :B_onlyenv:
+:PROPERTIES:
+:BEAMER_env:             onlyenv
+:BEAMER_act:             <1>
+:END:
+
+#+begin_src scala
+  many(satisfy(_.isLetter)).parse("brânză")
+#+end_src
+
+*** Step 2                                                      :B_onlyenv:
+:PROPERTIES:
+:BEAMER_env:             onlyenv
+:BEAMER_act:             <2>
+:END:
+
+#+begin_src scala
+  satisfy(_.isLetter).parse("brânză") match {
+    case ParserSuccess(v, s1) =>
+      many(satisfy(_.isLetter)).parse(s1).fmap(xs => v :: xs)
+    case ParserFailure() => ParserSuccess(List.empty, s)
+  }
+#+end_src
+
+*** Step 3                                                      :B_onlyenv:
+:PROPERTIES:
+:BEAMER_env:             onlyenv
+:BEAMER_act:             <3>
+:END:
+
+#+begin_src scala
+  case ParserSuccess('b', "rânză") match {
+    case ParserSuccess(v, s1) =>
+      many(satisfy(_.isLetter)).parse(s1).fmap(xs => v :: xs)
+    case ParserFailure() => ParserSuccess(List.empty, s)
+  }
+#+end_src
+
+*** Step 4                                                      :B_onlyenv:
+:PROPERTIES:
+:BEAMER_env:             onlyenv
+:BEAMER_act:             <4>
+:END:
+
+#+begin_src scala
+  many(satisfy(_.isLetter)).parse("rânză")
+    .fmap(xs => 'b' :: xs)
+#+end_src
+
+*** Step 5                                                      :B_onlyenv:
+:PROPERTIES:
+:BEAMER_env:             onlyenv
+:BEAMER_act:             <5>
+:END:
+
+#+begin_src scala
+  val res = satisfy(_.isLetter).parse("rânză") match {
+    case ParserSuccess(v, s1) =>
+      many(satisfy(_.isLetter)).parse(s1).fmap(xs => v :: xs)
+    case ParserFailure() => ParserSuccess(List.empty, s)
+  }
+
+  res.fmap(xs => 'b' :: xs)
+#+end_src
+
+*** Step 6                                                      :B_onlyenv:
+:PROPERTIES:
+:BEAMER_env:             onlyenv
+:BEAMER_act:             <6>
+:END:
+
+#+begin_src scala
+  val res = ParserSuccess("r", "ânză") match {
+    case ParserSuccess(v, s1) =>
+      many(satisfy(_.isLetter)).parse(s1).fmap(xs => v :: xs)
+    case ParserFailure() => ParserSuccess(List.empty, s)
+  }
+
+  res.fmap(xs => 'b' :: xs)
+#+end_src
+
+*** Step 7                                                      :B_onlyenv:
+:PROPERTIES:
+:BEAMER_env:             onlyenv
+:BEAMER_act:             <7>
+:END:
+
+#+begin_src scala
+  val res = many(satisfy(_.isLetter)).parse("ânză").fmap(xs => 'r' :: xs)
+  res.fmap(xs => 'b' :: xs)
+#+end_src
+
+*** Step 8                                                      :B_onlyenv:
+:PROPERTIES:
+:BEAMER_env:             onlyenv
+:BEAMER_act:             <8>
+:END:
+
+#+begin_src scala
+  many(satisfy(_.isLetter)).parse("ânză")
+    .fmap(xs => 'r' :: xs)
+    .fmap(xs => 'b' :: xs)
+#+end_src
+
+*** Few hours later...                                          :B_onlyenv:
+:PROPERTIES:
+:BEAMER_env:             onlyenv
+:BEAMER_act:             <9>
+:END:
+
+[[file:images/one-eternity-later.jpg]]
+
+*** Step 9                                                      :B_onlyenv:
+:PROPERTIES:
+:BEAMER_env:             onlyenv
+:BEAMER_act:             <10>
+:END:
+
+#+begin_src scala
+  many(satisfy(_.isLetter)).parse("")
+    .fmap(xs => 'ă' :: xs)
+    .fmap(xs => 'z' :: xs)
+    .fmap(xs => 'n' :: xs)
+    .fmap(xs => 'â' :: xs)
+    .fmap(xs => 'r' :: xs)
+    .fmap(xs => 'b' :: xs)
+#+end_src
+
+*** Step 10                                                     :B_onlyenv:
+:PROPERTIES:
+:BEAMER_env:             onlyenv
+:BEAMER_act:             <11>
+:END:
+
+#+begin_src scala
+  val res = satisfy(_.isLetter).parse("") match {
+    case ParserSuccess(v, s1) =>
+      many(satisfy(_.isLetter)).parse(s1).fmap(xs => v :: xs)
+    case ParserFailure() => ParserSuccess(List.empty, s)
+  }
+
+
+  res
+    .fmap(xs => 'ă' :: xs)
+    .fmap(xs => 'z' :: xs)
+    .fmap(xs => 'n' :: xs)
+    .fmap(xs => 'â' :: xs)
+    .fmap(xs => 'r' :: xs)
+    .fmap(xs => 'b' :: xs)
+#+end_src
+
+*** Step 11                                                     :B_onlyenv:
+:PROPERTIES:
+:BEAMER_env:             onlyenv
+:BEAMER_act:             <12>
+:END:
+
+#+begin_src scala
+  val res = ParserFailure() match {
+    case ParserSuccess(v, s1) =>
+      many(satisfy(_.isLetter)).parse(s1).fmap(xs => v :: xs)
+    case ParserFailure() => ParserSuccess(List.empty, s)
+  }
+
+
+  res
+    .fmap(xs => 'ă' :: xs)
+    .fmap(xs => 'z' :: xs)
+    .fmap(xs => 'n' :: xs)
+    .fmap(xs => 'â' :: xs)
+    .fmap(xs => 'r' :: xs)
+    .fmap(xs => 'b' :: xs)
+#+end_src
+
+*** Step 12                                                     :B_onlyenv:
+:PROPERTIES:
+:BEAMER_env:             onlyenv
+:BEAMER_act:             <13>
+:END:
+
+#+begin_src scala
+  val res = ParserSuccess(List.empty, "")
+
+  res
+    .fmap(xs => 'ă' :: xs)
+    .fmap(xs => 'z' :: xs)
+    .fmap(xs => 'n' :: xs)
+    .fmap(xs => 'â' :: xs)
+    .fmap(xs => 'r' :: xs)
+    .fmap(xs => 'b' :: xs)
+#+end_src
+
+*** Step 13                                                     :B_onlyenv:
+:PROPERTIES:
+:BEAMER_env:             onlyenv
+:BEAMER_act:             <14>
+:END:
+
+#+begin_src scala
+  ParserSuccess(List.empty, "")
+    .fmap(xs => 'ă' :: xs)
+    .fmap(xs => 'z' :: xs)
+    .fmap(xs => 'n' :: xs)
+    .fmap(xs => 'â' :: xs)
+    .fmap(xs => 'r' :: xs)
+    .fmap(xs => 'b' :: xs)
+#+end_src
+
+*** Step 14                                                     :B_onlyenv:
+:PROPERTIES:
+:BEAMER_env:             onlyenv
+:BEAMER_act:             <15>
+:END:
+
+#+begin_src scala
+  ParserSuccess(List('ă'), "")
+    .fmap(xs => 'z' :: xs)
+    .fmap(xs => 'n' :: xs)
+    .fmap(xs => 'â' :: xs)
+    .fmap(xs => 'r' :: xs)
+    .fmap(xs => 'b' :: xs)
+#+end_src
+
+*** Step 15                                                     :B_onlyenv:
+:PROPERTIES:
+:BEAMER_env:             onlyenv
+:BEAMER_act:             <16>
+:END:
+
+#+begin_src scala
+  ParserSuccess(List('z', 'ă'), "")
+    .fmap(xs => 'n' :: xs)
+    .fmap(xs => 'â' :: xs)
+    .fmap(xs => 'r' :: xs)
+    .fmap(xs => 'b' :: xs)
+#+end_src
+
+*** Few hours later...                                          :B_onlyenv:
+:PROPERTIES:
+:BEAMER_env:             onlyenv
+:BEAMER_act:             <17>
+:END:
+
+[[file:images/one-eternity-later.jpg]]
+
+*** Step 16                                                     :B_onlyenv:
+:PROPERTIES:
+:BEAMER_env:             onlyenv
+:BEAMER_act:             <18>
+:END:
+
+#+begin_src scala
+  ParserSuccess(List('b', 'r', 'â', 'n', 'z', 'ă'), "")
+#+end_src
+
+** (invalid) UUID parser
+:PROPERTIES:
+:BEAMER_opt:             t
+:END:
+
+*** Step 1                                                      :B_onlyenv:
+:PROPERTIES:
+:BEAMER_env:             onlyenv
+:BEAMER_act:             <1>
+:END:
+
+#+begin_src scala
+  def uuid: Parser[String] = ???
+#+end_src
+
+*** Step 2                                                      :B_onlyenv:
+:PROPERTIES:
+:BEAMER_env:             onlyenv
+:BEAMER_act:             <2>
+:END:
+
+#+begin_src scala
+  def uuid: Parser[String] =
+    satisfy(c => c.isLetterOrDigit || c == '-')
+#+end_src
+
+*** Step 2 - error                                              :B_onlyenv:
+:PROPERTIES:
+:BEAMER_env:             onlyenv
+:BEAMER_act:             <3>
+:END:
+
+#+begin_src scala
+  def uuid: Parser[String] =
+    satisfy(c => c.isLetterOrDigit || c == '-')
+    // Required: Parser [ String ]
+    // Found:    Parser [ Char   ]
+#+end_src
+
+*** Step 3                                                      :B_onlyenv:
+:PROPERTIES:
+:BEAMER_env:             onlyenv
+:BEAMER_act:             <4>
+:END:
+
+#+begin_src scala
+  def uuid: Parser[String] =
+    many(satisfy(c => c.isLetterOrDigit || c == '-'))
+#+end_src
+
+*** Step 3 - error                                              :B_onlyenv:
+:PROPERTIES:
+:BEAMER_env:             onlyenv
+:BEAMER_act:             <5>
+:END:
+
+#+begin_src scala
+  def uuid: Parser[String] =
+    many(satisfy(c => c.isLetterOrDigit || c == '-'))
+    // Required: Parser [ String     ]
+    // Found:    Parser [ List[Char] ]
+#+end_src
+
+*** Step 4                                                      :B_onlyenv:
+:PROPERTIES:
+:BEAMER_env:             onlyenv
+:BEAMER_act:             <6->
+:END:
+
+#+begin_src scala
+  def uuid: Parser[String] =
+    satisfy(c => c.isLetterOrDigit || c == '-').map(_.mkString)
+#+end_src
+
+*** Usage 1                                                     :B_onlyenv:
+:PROPERTIES:
+:BEAMER_env:             onlyenv
+:BEAMER_act:             <7->
+:END:
+
+#+begin_src scala
+  > uuid.run("0517b093-b49a-447a-ad66-96ac2b244859")
+  Right("0517b093-b49a-447a-ad66-96ac2b244859")
+#+end_src
+
+*** Usage 2                                                     :B_onlyenv:
+:PROPERTIES:
+:BEAMER_env:             onlyenv
+:BEAMER_act:             <8->
+:END:
+
+#+begin_src scala
+  > uuid.run("   0517b093-b49a-447a-ad66-96ac2b244859       ")
+  Left("parser error")
+#+end_src
+
+*** Realisation                                                 :B_onlyenv:
+:PROPERTIES:
+:BEAMER_env:             onlyenv
+:BEAMER_act:             <9->
+:END:
+
+Damn...
+
+** Space invaders
+:PROPERTIES:
+:BEAMER_opt:             t
+:END:
+
+#+begin_src scala
+  def uuid: Parser[String] = /* ... */
+  def many[A](parser: Parser[A]): Parser[List[A]] = /* ... */
+  def space: Parser[Char] = /* ... */
+#+end_src
+
+*** Tokenize - 1                                                :B_onlyenv:
+:PROPERTIES:
+:BEAMER_env:             onlyenv
+:BEAMER_act:             <1>
+:END:
+
+#+begin_src scala
+  def tokenize[A](parser: Parser[A]): Parser[A] =
+    ???
+#+end_src
+
+*** Tokenize - 2                                                :B_onlyenv:
+:PROPERTIES:
+:BEAMER_env:             onlyenv
+:BEAMER_act:             <2>
+:END:
+
+#+begin_src scala
+  def tokenize[A](parser: Parser[A]): Parser[A] =
+    many(space)
+#+end_src
+
+*** Tokenize - 2 - error                                        :B_onlyenv:
+:PROPERTIES:
+:BEAMER_env:             onlyenv
+:BEAMER_act:             <3>
+:END:
+
+#+begin_src scala
+  def tokenize[A](parser: Parser[A]): Parser[A] =
+    many(space)
+    // Required: Parser [ A          ]
+    // Found:    Parser [ List[Char] ]
+#+end_src
+
+*** Tokenize - 3                                                :B_onlyenv:
+:PROPERTIES:
+:BEAMER_env:             onlyenv
+:BEAMER_act:             <4>
+:END:
+
+#+begin_src scala
+  def tokenize[A](parser: Parser[A]): Parser[A] =
+    many(space) *> parser
+#+end_src
+
+*** Tokenize - 3 - explanation                                  :B_onlyenv:
+:PROPERTIES:
+:BEAMER_env:             onlyenv
+:BEAMER_act:             <5,6>
+:END:
+
+#+begin_src scala
+  def tokenize[A](parser: Parser[A]): Parser[A] =
+    many(space) *> parser
+    // def *> : F[A] => F[B] => F[B]
+#+end_src
+
+*** Tokenize - 3 - example                                      :B_onlyenv:
+:PROPERTIES:
+:BEAMER_env:             onlyenv
+:BEAMER_act:             <6>
+:END:
+
+#+begin_src scala
+  > tokenize(uuid).run("0517b093-b49a-447a-ad66-96ac2b244859")
+  Right("0517b093-b49a-447a-ad66-96ac2b244859")
+
+  > tokenize(uuid).run("    0517b093-b49a-447a-ad66-96ac2b244859")
+  Right("0517b093-b49a-447a-ad66-96ac2b244859")
+#+end_src
+
+*** Tokenize - 4                                                :B_onlyenv:
+:PROPERTIES:
+:BEAMER_env:             onlyenv
+:BEAMER_act:             <7->
+:END:
+
+#+begin_src scala
+  def tokenize[A](parser: Parser[A]): Parser[A] =
+    many(space) *> parser <* many(space)
+#+end_src
+
+*** Example                                                     :B_onlyenv:
+:PROPERTIES:
+:BEAMER_env:             onlyenv
+:BEAMER_act:             <8>
+:END:
+
+#+begin_src scala
+  > tokenize(uuid).run("             0517b093-b49a-447a-ad66-96ac2b244859 ")
+  Right("0517b093-b49a-447a-ad66-96ac2b244859")
+#+end_src
+
+** Improving UUID parser :noexport:
+
+1. It's possible to define a function =exactly :: Int -> Parser a -> Parser a=
+   that runs specified parser exactly =N= times.
+2. We can use either tuple or a special product type to represent parts of the
+   UUID and use applicative application to extract UUID parts. Then it can be
+   converted into valid UUID.
+
+** Improving tokenize :noexport:
+
+1. Obviously, we don't need to store all spaces in memory, so we can implement a
+   more efficient version of =many= that ignores whatever it parses.
+
+** So...
+
+#+ATTR_LATEX: :height 5cm
+[[file:images/applicative-confusion.jpg]]
+
+** String parser :noexport:
+:PROPERTIES:
+:BEAMER_opt:             t
+:END:
+
+#+begin_export latex
+\vspace*{20px}
+#+end_export
+
+*** Definition 1                                                :B_onlyenv:
+:PROPERTIES:
+:BEAMER_env:             onlyenv
+:BEAMER_act:             <1>
+:END:
+
+#+begin_src scala
+  def string(str: String): Parser[String] = ???
+#+end_src
+
+*** Definition 2                                                :B_onlyenv:
+:PROPERTIES:
+:BEAMER_env:             onlyenv
+:BEAMER_act:             <2>
+:END:
+
+#+begin_src scala
+  def string(str: String): Parser[String] =
+    if (str.nonEmpty) ???
+    else ???
+#+end_src
+
+*** Definition 3                                                :B_onlyenv:
+:PROPERTIES:
+:BEAMER_env:             onlyenv
+:BEAMER_act:             <3>
+:END:
+
+#+begin_src scala
+  def string(str: String): Parser[String] =
+    if (str.nonEmpty)
+      char(str.head) // Parser[Char]
+    else ???
+#+end_src
+
+*** Definition 4                                                :B_onlyenv:
+:PROPERTIES:
+:BEAMER_env:             onlyenv
+:BEAMER_act:             <4>
+:END:
+
+#+begin_src scala
+  def string(str: String): Parser[String] =
+    if (str.nonEmpty)
+      char(str.head) *> string(str.tail)
+  //  Parser[Char]   *> Parser[String]   = Parser[String]
+  //  ^ result is discarded
+  //  first char of input stream is consumed
+    else ???
+#+end_src
+
+*** Definition 5                                                :B_onlyenv:
+:PROPERTIES:
+:BEAMER_env:             onlyenv
+:BEAMER_act:             <5>
+:END:
+
+#+begin_src scala
+  def string(str: String): Parser[String] =
+    if (str.nonEmpty)
+      char(str.head) *>
+        string(str.tail) *>
+        Parser(s => ParserSuccess(str, s))
+    else ???
+#+end_src
+
+*** Definition 6                                                :B_onlyenv:
+:PROPERTIES:
+:BEAMER_env:             onlyenv
+:BEAMER_act:             <6-7>
+:END:
+
+#+begin_src scala
+  def string(str: String): Parser[String] =
+    if (str.nonEmpty)
+      char(str.head) *>
+        string(str.tail) *>
+        Parser(s => ParserSuccess(str, s))
+    else
+      Parser(s => ParserSuccess(str, s))
+#+end_src
+
+*** pure                                                        :B_onlyenv:
+:PROPERTIES:
+:BEAMER_env:             onlyenv
+:BEAMER_act:             <7-8>
+:END:
+
+- Every =Applicative= has =pure=
+  - 'constructor'
+  - lifts a value to a context
+- =Parser(s => ParserSuccess(str, s))= is a =pure= for =Parser=
+
+*** Definition 7                                                :B_onlyenv:
+:PROPERTIES:
+:BEAMER_env:             onlyenv
+:BEAMER_act:             <8->
+:END:
+
+#+begin_src scala
+  def string(str: String): Parser[String] =
+    if (str.nonEmpty) char(str.head) *> string(str.tail) *> str.pure[Parser]
+    else str.pure[Parser]
+#+end_src
+
+*** Usage 1                                                     :B_onlyenv:
+:PROPERTIES:
+:BEAMER_env:             onlyenv
+:BEAMER_act:             <9-11>
+:END:
+
+#+begin_src scala
+  > string("cheese").run("")
+#+end_src
+
+**** step 1                                                    :B_onlyenv:
+:PROPERTIES:
+:BEAMER_env:             onlyenv
+:BEAMER_act:             <10>
+:END:
+
+#+begin_src scala
+  = (char('c') *> string("heese") *> "cheese".pure[Parser]).parse("")
+#+end_src
+
+**** step 2                                                    :B_onlyenv:
+:PROPERTIES:
+:BEAMER_env:             onlyenv
+:BEAMER_act:             <11>
+:END:
+
+#+begin_src scala
+  = (char('c') *> string("heese") *> "cheese".pure[Parser]).parse("")
+  // char('c').run("") fails because of empty stream
+  = ParserFailure
+#+end_src
+
+*** Usage 2                                                     :B_onlyenv:
+:PROPERTIES:
+:BEAMER_env:             onlyenv
+:BEAMER_act:             <12-14>
+:END:
+
+#+begin_src scala
+  > string("cheese").run("cheese")
+#+end_src
+
+**** step 1                                                    :B_onlyenv:
+:PROPERTIES:
+:BEAMER_env:             onlyenv
+:BEAMER_act:             <13>
+:END:
+
+#+begin_src scala
+  = (char('c') *> string("heese") *> "cheese".pure[Parser]).parse("cheese")
+#+end_src
+
+**** step 2                                                    :B_onlyenv:
+:PROPERTIES:
+:BEAMER_env:             onlyenv
+:BEAMER_act:             <14>
+:END:
+
+#+begin_src scala
+  = (char('c') *> string("heese") *> "cheese".pure[Parser]).parse("cheese")
+
+  > char('c').parse("cheese")
+  ParserSuccess('c', "heese")
+
+  > string("heese").parse("heese")
+  = (char('h') *> string("eese") *> "heese".pure[Parser]).parse("heese")
+
+  ...
+
+  = "e".pure *> "se".pure *> ... *> "cheese".pure.parse("")
+  = "cheese".pure.parse("")
+  ParserSuccess("cheese", "")
+#+end_src
+
+** Simple case class example
+:PROPERTIES:
+:BEAMER_opt:             t
+:END:
+
+*** Data type declaration                                       :B_onlyenv:
+:PROPERTIES:
+:BEAMER_env:             onlyenv
+:BEAMER_act:             <1->
+:END:
+
+#+begin_src scala
+  case class Person(name: String, age: Int)
+#+end_src
+
+*** Name parser                                                 :B_onlyenv:
+:PROPERTIES:
+:BEAMER_env:             onlyenv
+:BEAMER_act:             <2->
+:END:
+
+#+begin_src scala
+  val name: Parser[String] = some(letter).map(_.mkString)
+#+end_src
+
+*** Person parser - step 1                                      :B_onlyenv:
+:PROPERTIES:
+:BEAMER_env:             onlyenv
+:BEAMER_act:             <3>
+:END:
+
+#+begin_src scala
+  val person: Parser[Person] =
+
+#+end_src
+
+*** Person parser - step 2                                      :B_onlyenv:
+:PROPERTIES:
+:BEAMER_env:             onlyenv
+:BEAMER_act:             <4>
+:END:
+
+#+begin_src scala
+  val person: Parser[Person] =
+    name
+
+#+end_src
+
+*** Person parser - step 2 - error                              :B_onlyenv:
+:PROPERTIES:
+:BEAMER_env:             onlyenv
+:BEAMER_act:             <5>
+:END:
+
+#+begin_src scala
+  val person: Parser[Person] =
+    name
+    // Expected: Parser [ Person ]
+    // Found:    Parser [ String ]
+#+end_src
+
+*** Person parser - step 2                                      :B_onlyenv:
+:PROPERTIES:
+:BEAMER_env:             onlyenv
+:BEAMER_act:             <6>
+:END:
+
+#+begin_src scala
+  val person: Parser[Person] =
+    name.fmap(Parser.curried).ap(int)
+#+end_src
+
+*** Person parser - step 2 - more                               :B_onlyenv:
+:PROPERTIES:
+:BEAMER_env:             onlyenv
+:BEAMER_act:             <7,8>
+:END:
+
+**** Scala                                                      :B_column:
+:PROPERTIES:
+:BEAMER_env:             column
+:BEAMER_col:             0.5
+:BEAMER_opt:             [t]
+:END:
+
+#+begin_src scala
+  val person: Parser[Person] =
+    name.fmap(Parser.curried).ap(int)
+
+  val person: Parser[Person] =
+    name.fmap(Parser.curried) <*> int
+
+  val person: Parser[Person] =
+    (name, int).mapN(Person)
+#+end_src
+
+**** Haskell                                                    :B_column:
+:PROPERTIES:
+:BEAMER_env:             column
+:BEAMER_col:             0.5
+:BEAMER_opt:             [t]
+:END:
+
+#+begin_src haskell
+  person :: Parser Person
+  person = Person <$> name <*> int
+
+  person :: Parser Person
+  person = liftA2 Person name int
+#+end_src
+
+*** But no separator                                            :B_onlyenv:
+:PROPERTIES:
+:BEAMER_env:             onlyenv
+:BEAMER_act:             <8>
+:END:
+
+#+begin_src scala
+  > person.run("boris42")
+  Right(Person("boris", 42))
+
+  > person.run("boris,42")
+  Left("parser error")
+#+end_src
+
+We forgot the separator!
+
+*** Person parser - step 2 - more                               :B_onlyenv:
+:PROPERTIES:
+:BEAMER_env:             onlyenv
+:BEAMER_act:             <9->
+:END:
+
+**** Scala                                                      :B_column:
+:PROPERTIES:
+:BEAMER_env:             column
+:BEAMER_col:             0.5
+:BEAMER_opt:             [t]
+:END:
+
+#+begin_src scala
+  val person: Parser[Person] =
+    name.fmap(Parser.curried).ap(char ',' *> int)
+
+  val person: Parser[Person] =
+    name.fmap(Parser.curried) <*> (char ',' *> int)
+#+end_src
+
+**** Haskell                                                    :B_column:
+:PROPERTIES:
+:BEAMER_env:             column
+:BEAMER_col:             0.5
+:BEAMER_opt:             [t]
+:END:
+
+#+begin_src haskell
+  person :: Parser Person
+  person = Person <$> name <*> (char ',' *> int)
+#+end_src
+
+*** Usage                                                       :B_onlyenv:
+:PROPERTIES:
+:BEAMER_env:             onlyenv
+:BEAMER_act:             <10->
+:END:
+
+#+begin_src scala
+  > person.run("boris,42")
+  Right(Person("boris", 42))
+#+end_src
+
+** Coding time
+
+- Open =src/main/scala/wax/exercise/parser/ConfigParser.scala=
+- Task is to add missing implementations (no =???=).
+- Run the following tests:
+  1. =ParserResultSpec= - to test your =ParserResult=.
+  2. =ParserSpec= - to test your =Parser=.
+  3. =ConfigParserSpec= - to test your =Config= parser.
+
+** Outcome
+
+- <1-> It's easy to write parser combinators, if you
+  - don't care about error reporting
+  - don't care about performance
+- <2-> Applicative gives a good interface for combining simple bits.
+- <3-> Function composition is one of the pillars of eternity.
+
+* Validation
+
+** Validation
+
+#+begin_src scala
+  def validate[E, A](value: A): Either[E, A]
+#+end_src
+
+#+BEAMER: \pause
+
+#+begin_src scala
+  def positiveInt(value: Int): Either[String, Int] =
+    if (value >= 0) Right(value)
+    else Left(s"$value must be >= 0")
+#+end_src
+
+#+BEAMER: \pause
+
+#+begin_src scala
+  > positiveInt(42)
+  Right(42)
+
+  > positiveInt(-100)
+  Left("-100 must be >= 0")
+#+end_src
+
+** Person
+
+#+begin_src scala
+  case class Person(name: String, age: Int)
+#+end_src
+
+#+BEAMER: \pause
+
+#+begin_src scala
+  def validateName(name: String): Either[String, String] =
+    if (name.isEmpty) Left("name must be non-empty")
+    else Right(name)
+
+  def validateAge(age: Int): Either[String, Int] =
+    if (age >= 0) Right(age)
+    else Left(s"Age must be positive, got: $age")
+#+end_src
+
+#+BEAMER: \pause
+
+#+begin_src scala
+  def validatePerson(person: Person): Either[String, Person] =
+    (validateName(person.name),
+     validateAge(person.age)
+    ).mapN(Person)
+#+end_src
+
+** Person
+
+#+begin_src scala
+  > validatePerson(Person("Boris", 42))
+  Right(Person("Boris",42))
+#+end_src
+
+#+BEAMER: \pause
+
+#+begin_src scala
+  > validatePerson(Person("", -42))
+  Left("name must be non-empty")
+#+end_src
+
+#+BEAMER: \pause
+
+#+begin_src scala
+  > validatePerson(Person("Boris", -42))
+  Left("Age must be positive, got: -42")
+#+end_src
+
+#+BEAMER: \pause
+
+It works, but iterative error fixing annoys.
+
+** Quest for 'all errors'
+
+#+begin_src scala
+  def validateName(name: String): Either[NonEmptyList[String], String] =
+    if (name.isEmpty) Left(NonEmptyList.one("name must be non-empty"))
+    else Right(name)
+
+  def validateAge(age: Int): Either[NonEmptyList[String], Int] =
+    if (age >= 0) Right(age)
+    else Left(NonEmptyList.one(s"Age must be positive, got: $age"))
+
+  def validatePerson(person: Person): Either[NonEmptyList[String], Person] =
+    (validateName(person.name),
+     validateAge(person.age)
+    ).mapN(Person)
+#+end_src
+
+#+BEAMER: \pause
+
+#+begin_src scala
+  > validatePerson(Person("", -42))
+  Left(NonEmptyList("name must be non-empty"))
+#+end_src
+
+** What's wrong with Either?
+
+Either has 'fail-fast' implementation of `ap`.
+
+#+BEAMER: \pause
+
+#+begin_src scala
+  def ap[A, B](ff: Either[E, A => B])(fa: Either[E, A]): Either[E, B] = ff match {
+    case Right(f) => fa.fmap(f)
+    case Left(e) => Left(e)
+  }
+#+end_src
+
+We completely ignore =fa= when =ff= is =Left=.
+
+** Doing as much as we can
+
+#+begin_src scala
+  sealed trait Validated[+E, +A]
+  case class Valid[+A](a: A) extends Validated[Nothing, A]
+  case class Invalid[+E](e: E) extends Validated[E, Nothing]
+#+end_src
+
+#+BEAMER: \pause
+
+How to combine errors?
+
+#+BEAMER: \pause
+
+#+begin_src scala
+  implicit def validatedApplicative[E: Semigroup]: Applicative[Validated[E, ?]] = ???
+#+end_src
+
+** Coding time
+
+- Open =src/main/scala/wax/exercise/parser/ConfigValidator.scala= file.
+- Task is to add missing implementations (no =???=).
+- Run =ValidatedSpec= to test your implementation.
+- Open =ConfigReader= and add missing implementations (using applicative and
+  =readFile= function).
+- Run =wax.exercise.parser.Application= to run load configurations from file and
+  validate them.
+
+* Final words
+:PROPERTIES:
+:UNNUMBERED:             t
+:END:
+
+** Recap
+
+- <1-> Three kinds of function application so far
+  #+begin_src haskell
+      (a -> b) ->   a ->   b
+      (a -> b) -> f a -> f b
+    f (a -> b) -> f a -> f b
+  #+end_src
+
+- <2-> Monoids and Functors are fundamental.
+
+- <3-> Applicatives have enough power to write expressive applications.
+
+* Questions?
+
+* Thank you very much!

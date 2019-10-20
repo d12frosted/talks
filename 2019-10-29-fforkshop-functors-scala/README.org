@@ -1,0 +1,22 @@
+* Functional Forkshop: Part 2 - Monoids (Scala edition)
+
+This is the second part of the Functional Forkshop - a series of introduction
+workshops to the functional programming.
+
+In this workshop we cover the following topics:
+
+- Value constructors.
+- Type constructors.
+- Arity.
+- Higher-order functions.
+- Higher-order types.
+- Functors.
+- Applicative Functors.
+
+Afterwards we solve two problems:
+
+- Parsing combinators.
+- Validation.
+
+The tasks are located in a separate repository:
+[[https://gitlab.com/wax-org/fforkshop-functors-scala][wax-org/fforkshop-functors-scala]].
