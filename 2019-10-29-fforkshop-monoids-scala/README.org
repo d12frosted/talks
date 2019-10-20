@@ -1,0 +1,11 @@
+* Functional Forkshop: Part 1 - Monoids (Scala edition)
+
+This is the first part of the Functional Forkshop - a series of introduction
+workshops to the functional programming.
+
+In this workshop we cover type classes, semigroups and monoids. And the we solve
+three problems exposing powers of monoids:
+
+- Fibonacci numbers.
+- Top used words across many books.
+- Logging.
