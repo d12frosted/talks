@@ -297,29 +297,29 @@ pass first argument of type ~A~, not a function ~A => B~.
 Functions that take other functions as arguments are called *higher-order
 functions*.
 
-** Higher-order types
+** Higher-order types (1)
 
 #+begin_src scala
-  case class WickedWrapper[F[_]](level: F[Int], desc: String)
-  case class WickedDoubleWrapper[F[_], A](value: F[A])
+  case class Data[F[_]](level: F[Int], desc: String)
 #+end_src
 
-#+BEAMER: \pause
+- <2-> =F[_]= is like a type level function =X => F[X]=.
+- <3-> ~F~ has kind $* \rightarrow *$.
+- <4-> ~F[Int]~ has kind $*$.
+- <5-> =Data[F[_]]= is like a type level function =(X => F[X]) => Data[F[X]]=.
+- <6-> ~Data~ has kind $(* \rightarrow *) \rightarrow *$ and is unary.
 
-~WickedWrapper~ takes one type ~F~ to produce new type ~WickedWrapper[F[_]]~.
-But ~F~ here is not a concrete type, it's also a type constructor.
+** Higher-order types (2)
 
-#+BEAMER: \pause
+#+begin_src scala
+  case class Wrapper[F[_], A](value: F[A])
+#+end_src
 
-- ~F~ has kind $* \rightarrow *$.
-- ~WickedWrapper~ has kind $(* \rightarrow *) \rightarrow *$ and is unary.
-- ~WickedDoubleWrapper~ has kind $(* \rightarrow *) \rightarrow * \rightarrow *$
-  and is binary.
-- $\rightarrow$ is right-associative, so $* \rightarrow * \rightarrow *
-  \rightarrow *$ is the same as $* \rightarrow (* \rightarrow (* \rightarrow
-  *))$.
+- <1-> =F[_]= is like =X => F[X]=.
+- <2-> =Wrapper[F[_], A]= is like =(X => F[X]) => A => Data[F[X], A]=.
+- <3-> ~Wrapper~ has kind $(* \rightarrow *) \rightarrow *$ and is unary.
 
-#+BEAMER: \pause
+** Higher-order types (3)
 
 Type constructors that take other type constructors as arguments are called
 *higher-order types* or *higher-kinded types*.
