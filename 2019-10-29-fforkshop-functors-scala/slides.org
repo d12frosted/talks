@@ -459,7 +459,7 @@ absent.
   def apply           : (A => B) =>        A  =>        B
   def applyToOption   : (A => B) => Option[A] => Option[B]
   def applyToFuture   : (A => B) => Future[A] => Future[B]
-  def applyToWI       : (A => B) =>    WIO[A] =>    WIO[B]
+  def applyToWIO      : (A => B) =>    WIO[A] =>    WIO[B]
 #+end_src
 
 #+BEAMER: \pause
