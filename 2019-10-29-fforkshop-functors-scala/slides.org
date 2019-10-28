@@ -2380,9 +2380,8 @@ We forgot the separator!
 
 ** Outcome
 
-- <1-> It's easy to write parser combinators, if you
-  - don't care about error reporting
-  - don't care about performance
+- <1-> It's easy to write parser combinators. And you can make them performant
+  and add error reporting.
 - <2-> Applicative gives a good interface for combining simple bits.
 - <3-> Function composition is one of the pillars of eternity.
 
