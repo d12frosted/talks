@@ -315,9 +315,9 @@ functions*.
   case class Wrapper[F[_], A](value: F[A])
 #+end_src
 
-- <1-> =F[_]= is like =X => F[X]=.
-- <2-> =Wrapper[F[_], A]= is like =(X => F[X]) => A => Data[F[X], A]=.
-- <3-> ~Wrapper~ has kind $(* \rightarrow *) \rightarrow *$ and is unary.
+- <2-> =F[_]= is like =X => F[X]=.
+- <3-> =Wrapper[F[_], A]= is like =(X => F[X]) => A => Data[F[X], A]=.
+- <4-> ~Wrapper~ has kind $(* \rightarrow *) \rightarrow * \rightarrow *$ and is binary.
 
 ** Higher-order types (3)
 
