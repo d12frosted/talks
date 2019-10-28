@@ -763,7 +763,8 @@ rule in Haskell without breaking the first one.
 
 If you are interested in details, let's talk after the forkshop.
 
-https://www.schoolofhaskell.com/user/edwardk/snippets/fmap
+- https://ttic.uchicago.edu/~dreyer/course/papers/wadler.pdf
+- https://www.schoolofhaskell.com/user/edwardk/snippets/fmap
 
 ** Coding time
 
