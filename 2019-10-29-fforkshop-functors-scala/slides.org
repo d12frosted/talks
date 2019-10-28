@@ -665,9 +665,9 @@ Shape is destroyed!
 
 #+begin_src scala
   implicit val listFunctor: Functor[List] = new Functor[List] {
-    override def map[A, B](fa: List[A])(f: A => B): List[B] = fa match {
+    override def fmap[A, B](f: A => B)(fa: List[A]): List[B] = fa match {
       case Nil => Nil
-      case x :: xs => f(x) :: f(x) :: map(xs)(f)
+      case x :: xs => f(x) :: f(x) :: fmap(f)(xs)
       //              ^ extra concatenation
     }
   }
@@ -1976,7 +1976,7 @@ structure.
 
 #+begin_src scala
   def uuid: Parser[String] =
-    satisfy(c => c.isLetterOrDigit || c == '-').map(_.mkString)
+    satisfy(c => c.isLetterOrDigit || c == '-').fmap(_.mkString)
 #+end_src
 
 *** Usage 1                                                     :B_onlyenv:
