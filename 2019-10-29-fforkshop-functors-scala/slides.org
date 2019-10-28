@@ -542,14 +542,12 @@ Cucumbersome
 #+BEAMER: \pause
 
 #+begin_src scala
-  object OptionImpl {
-    implicit val optionFunctor: Functor[Option] = {
-      def fmap[A, B]: (A => B) => Option[A] => Option[B] =
-        f => fa => fa match {
-          case None    => None
-          case Some(v) => None
-        }
-    }
+  implicit val optionFunctor: Functor[Option] = {
+    def fmap[A, B]: (A => B) => Option[A] => Option[B] =
+      f => fa => fa match {
+        case None    => None
+        case Some(v) => None
+      }
   }
 #+end_src
 
@@ -651,6 +649,112 @@ Cucumbersome
 - Length remains the same.
 - Spine remains the same.
 - Length is amount of ~::~ constructors.
+
+** Breaking the List
+:PROPERTIES:
+:BEAMER_opt:             t
+:END:
+
+*** Code                                                        :B_onlyenv:
+:PROPERTIES:
+:BEAMER_env:             onlyenv
+:BEAMER_act:             <1-2>
+:END:
+
+#+begin_src scala
+  implicit val listFunctor: Functor[List] = new Functor[List] {
+    override def map[A, B](fa: List[A])(f: A => B): List[B] = fa match {
+      case Nil => Nil
+      case x :: xs => f(x) :: f(x) :: map(xs)(f)
+      //              ^ extra concatenation
+    }
+  }
+#+end_src
+
+*** Graph                                                       :B_onlyenv:
+:PROPERTIES:
+:BEAMER_env:             onlyenv
+:BEAMER_act:             <2-3>
+:END:
+
+**** Left                                                       :B_column:
+:PROPERTIES:
+:BEAMER_env:             column
+:BEAMER_col:             0.5
+:BEAMER_opt:             [t]
+:END:
+
+#+begin_src dot :file .dot/functor-list-broken-1.png :cmdline -Kdot -Tpng -Gdpi=180
+  digraph {
+    v1[label="a1"];
+    v2[label="a2"];
+
+    c1[label="::"];
+    c2[label="::"];
+    c3[label="[]"];
+
+    c1 -> v1
+    c1 -> c2
+
+    c2 -> v2
+    c2 -> c3
+  }
+#+end_src
+
+#+ATTR_LATEX: :height 4.5cm
+#+RESULTS:
+[[file:.dot/functor-list-broken-1.png]]
+
+**** Right                                                      :B_column:
+:PROPERTIES:
+:BEAMER_env:             column
+:BEAMER_col:             0.5
+:BEAMER_opt:             [t]
+:END:
+
+#+begin_src dot :file .dot/functor-list-broken-2.png :cmdline -Kdot -Tpng -Gdpi=180
+  digraph {
+    v1[label="a1"];
+    v2[label="a1"];
+    v3[label="a2"];
+    v4[label="a2"];
+
+    c1[label="::"];
+    c2[label="::"];
+    c3[label="::"];
+    c4[label="::"];
+    c5[label="[]"];
+
+    c1 -> v1
+    c1 -> c2
+
+    c2 -> v2
+    c2 -> c3
+
+    c3 -> v3
+    c3 -> c4
+
+    c4 -> v4
+    c4 -> c5
+  }
+#+end_src
+
+#+ATTR_LATEX: :height 4.5cm
+#+RESULTS:
+[[file:.dot/functor-list-broken-2.png]]
+
+*** Example                                                     :B_onlyenv:
+:PROPERTIES:
+:BEAMER_env:             onlyenv
+:BEAMER_act:             <3>
+:END:
+
+#+begin_src scala
+    fmap(identity)(List(a1, a2))
+  = identity(a1) :: identity(a1) :: identity(a2) :: identity(a2) :: Nil
+  = a1 :: a1 :: a2 :: a2 :: Nil
+  = List(a1, a1, a2, a2) != List(a1, a2)
+#+end_src
 
 ** What about the second rule?
 
