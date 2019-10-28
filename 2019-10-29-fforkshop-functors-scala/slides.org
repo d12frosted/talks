@@ -531,6 +531,38 @@ Cucumbersome
 - Shape is unchanged.
 - Constructor is not changed.
 
+** Breaking the Option
+
+#+begin_src scala
+    fmap(identity)(value)
+  = identity(value)
+  = value
+#+end_src
+
+#+BEAMER: \pause
+
+#+begin_src scala
+  object OptionImpl {
+    implicit val optionFunctor: Functor[Option] = {
+      def fmap[A, B]: (A => B) => Option[A] => Option[B] =
+        f => fa => fa match {
+          case None    => None
+          case Some(v) => None
+        }
+    }
+  }
+#+end_src
+
+#+BEAMER: \pause
+
+#+begin_src scala
+    fmap(identity)(None)
+  = None == None
+
+    fmap(indentity(Some(42))
+  = None != Some(42)
+#+end_src
+
 ** Product type: List
 
 *** Left                                                         :B_column:
@@ -620,39 +652,20 @@ Cucumbersome
 - Spine remains the same.
 - Length is amount of ~::~ constructors.
 
-** Coding time
-
-- Open =wax.typeclass.functor.cats.package= file.
-- Task is to add missing implementations (no =???=).
-- Run =FunctorSpec= to test your implementation.
-
-** Breaking the first rule
-
-#+begin_src scala
-  object OptionImpl {
-    implicit val optionFunctor: Functor[Option] = {
-      def fmap[A, B]: (A => B) => Option[A] => Option[B] =
-        f => fa => fa match {
-          case None    => None
-          case Some(v) => None
-        }
-    }
-  }
-
-  // Breaks identity rule, but not composition
-
-  fmap(identity)(None) => None     // == None
-  fmap(indentity(Some(42)) => None // != Some 42
-
-  // Shape was destroyed
-#+end_src
-
-** Breaking the second rule
+** What about the second rule?
 
 As a result of the Free Theorem (Wadler), it's impossible to break the second
 rule in Haskell without breaking the first one.
 
 If you are interested in details, let's talk after the forkshop.
+
+https://www.schoolofhaskell.com/user/edwardk/snippets/fmap
+
+** Coding time
+
+- Open =wax.typeclass.functor.cats.package= file.
+- Task is to add missing implementations (no =???=).
+- Run =FunctorSpec= to test your implementation.
 
 ** Outcome
 
