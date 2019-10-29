@@ -890,12 +890,47 @@ And we want to apply that function and get resulting =Option[Int]=.
 
 ** What's about pure?
 
-1. It abstracts the value constructor.
-2. Ties ~Functor~ and ~Applicative~.
-   1. ~fmap f x = pure f <*> x~
-3. Important for ~Applicative~ laws.
-4. By itself it doesn't have much importance without ~ap~.
-5. But it's useful in practice.
+
+*** Functor                                                :B_column:BMCOL:
+:PROPERTIES:
+:BEAMER_env:             column
+:BEAMER_col:             0.4
+:BEAMER_opt:             [t]
+:END:
+
+#+begin_src scala
+  trait Functor[F[_]] {
+    def fmap[A, B]: (A => B) => F[A] => F[B]
+  }
+#+end_src
+
+*** Applicative                                            :B_column:BMCOL:
+:PROPERTIES:
+:BEAMER_env:             column
+:BEAMER_col:             0.4
+:BEAMER_opt:             [t]
+:END:
+
+#+begin_src scala
+  trait Applicative[F[_]] extends Functor[F] {
+    def ap[A, B]: F[A => B] => F[A] => F[B]
+
+    def pure[A](a: A): A => F[A]
+  }
+#+end_src
+
+*** Points                                                       :B_column:
+:PROPERTIES:
+:BEAMER_env:             column
+:END:
+
+1. <1-> It abstracts the value constructor.
+2. <2-> By itself it doesn't have much importance without ~ap~.
+3. <3-> Important for ~Applicative~ laws.
+4. <4-> Ties ~Functor~ and ~Applicative~.
+   - ~fmap(f)(x) == ap(pure(f))(x)~
+   - ~fmap f x = pure f <*> x~
+5. <5-> Useful in practice.
 
 ** Another perspective
 
