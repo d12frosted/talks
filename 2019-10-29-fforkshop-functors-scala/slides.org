@@ -2659,15 +2659,43 @@ How to combine errors?
 
 ** Recap
 
+*** List                                                        :B_onlyenv:
+:PROPERTIES:
+:BEAMER_env:             onlyenv
+:END:
+
 - <1-> Three kinds of function application so far
+
+*** Haskell                                                :B_column:BMCOL:
+:PROPERTIES:
+:BEAMER_env:             column
+:BEAMER_col:             0.5
+:END:
+
   #+begin_src haskell
-      (a -> b) ->   a ->   b
-      (a -> b) -> f a -> f b
-    f (a -> b) -> f a -> f b
+    apply ::   (a -> b) ->   a ->   b
+    fmap  ::   (a -> b) -> f a -> f b
+    ap    :: f (a -> b) -> f a -> f b
   #+end_src
 
-- <2-> Monoids and Functors are fundamental.
+*** Scala                                                  :B_column:BMCOL:
+:PROPERTIES:
+:BEAMER_env:             column
+:BEAMER_col:             0.5
+:END:
 
+  #+begin_src scala
+    def apply[A, B]: (A => B) =>   A  =>   B
+    def fmap[A, B]:  (A => B) => F[A] => F[B]
+    def ap[A, B]:   F[A => B) => F[A] => F[B]
+  #+end_src
+
+*** List                                                        :B_onlyenv:
+:PROPERTIES:
+:BEAMER_env:             onlyenv
+:END:
+
+- <2-> Monoids and Functors are fundamental.
 - <3-> Applicatives have enough power to write expressive applications.
 
 * Questions?
