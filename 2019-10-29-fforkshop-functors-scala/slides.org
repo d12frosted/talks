@@ -1405,9 +1405,9 @@ structure.
 :BEAMER_opt:             t
 :END:
 
-#+begin_export latex
-\vspace*{20px}
-#+end_export
+#+begin_src scala
+  case class Parser[A](parse: String => ParserResult[A])
+#+end_src
 
 *** Left                                                         :B_column:
 :PROPERTIES:
