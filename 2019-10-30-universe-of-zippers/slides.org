@@ -1476,7 +1476,7 @@ $$\forall f: head\ .\ iterate\ f = id$$
   |$\square\blacksquare\blacksquare\square\blacksquare\square\square\square\square\blacksquare\blacksquare\blacksquare\square\blacksquare\blacksquare\blacksquare\blacksquare\square\square\square\blacksquare\square\square\square\square\square\square\square\square\square\square\square\square\square\square\square\square\square\square\square\square$|
 #+end_src
 
-** Final words
+** (not so) Final words
 
 - <1-> Great abstraction of 1D Universe with operations:
   - =extract=
@@ -2136,7 +2136,7 @@ extend f = fmap f . duplicate
   |$\square\square\square\square\square$|
 #+end_src
 
-** Final words
+** (not so) Final words
 
 - <1-> Moving from 1D to 2D is really simple (not counting the wasted time on the
   wrong idea).
@@ -2404,7 +2404,7 @@ isSafe = L.null . getDangers
 
 /Live demos are subject to fail. Accept and forgive. Move on./
 
-** Final words
+** (not so) Final words
 
 - <1-> Great abstraction for our task. Again.
   - We care about elements surrounding player.

@@ -1,4 +1,4 @@
-% Created 2019-10-20 Sun 12:37
+% Created 2019-10-29 Tue 08:37
 % Intended LaTeX compiler: pdflatex
 \documentclass[presentation,aspectratio=169,smaller]{beamer}
 \usepackage[utf8x]{inputenc}
@@ -64,8 +64,8 @@
 }
 
 \section*{Intro}
-\label{sec:org7ab00d2}
-\begin{frame}[label={sec:orgd7a6742}]{About me}
+\label{sec:orgb6fa97c}
+\begin{frame}[label={sec:org7d5f070}]{About me}
 \begin{columns}
 \begin{column}{0.75\columnwidth}
 \begin{itemize}
@@ -84,7 +84,7 @@
 \end{columns}
 \end{frame}
 
-\begin{frame}[label={sec:orgd4f9fe1}]{Agenda}
+\begin{frame}[label={sec:orgb96a00b}]{Agenda}
 \begin{itemize}
 \item <1-> Elementary Cellular Automata
 \item <2-> Conway's Game of Life
@@ -93,9 +93,9 @@
 \end{frame}
 
 \section{Act 1: Elementary Cellular Automata}
-\label{sec:orga7568bf}
+\label{sec:orgbd97adb}
 
-\begin{frame}[label={sec:org3a267ea}]{Cellular Automaton}
+\begin{frame}[label={sec:org9f43873}]{Cellular Automaton}
 A cellular automaton is a collection of "colored" \alert{cells} on a \alert{grid} of
 specified shape that evolves through a number of discrete time \alert{steps} according
 to a set of \alert{rules} based on the states of neighboring cells.
@@ -103,7 +103,7 @@ to a set of \alert{rules} based on the states of neighboring cells.
 The rules are then applied \emph{iteratively} for as many time steps as desired.
 \end{frame}
 
-\begin{frame}[label={sec:org850ebc9}]{Many grids}
+\begin{frame}[label={sec:org920f11f}]{Many grids}
 \begin{enumerate}
 \item one-dimensional line;
 \item rectangle grid;
@@ -114,7 +114,7 @@ The rules are then applied \emph{iteratively} for as many time steps as desired.
 \end{enumerate}
 \end{frame}
 
-\begin{frame}[label={sec:orgc553a79},t]{Elementary Cellular Automata}
+\begin{frame}[label={sec:org975ba28},t]{Elementary Cellular Automata}
 \begin{onlyenv}<1->
 Each cell has a value \(a \in \lbrace 0, 1 \rbrace = \lbrace \square, \blacksquare
 \rbrace\)
@@ -142,7 +142,7 @@ neighbours (left and right).
 \end{onlyenv}
 \end{frame}
 
-\begin{frame}[label={sec:org22b3b87}]{ECA: specifying the rule}
+\begin{frame}[label={sec:org9b74e1c}]{ECA: specifying the rule}
 \begin{columns}
 \begin{column}{0.2\columnwidth}
 \begin{center}
@@ -177,7 +177,7 @@ neighbours (left and right).
 \end{columns}
 \end{frame}
 
-\begin{frame}[label={sec:org8660eb8}]{ECA: rule example}
+\begin{frame}[label={sec:org132b203}]{ECA: rule example}
 \begin{columns}
 \begin{column}{0.2\columnwidth}
 \begin{center}
@@ -249,7 +249,7 @@ Hence the name, \(\text{rule}_{110}\)
 \end{columns}
 \end{frame}
 
-\begin{frame}[label={sec:org812e2ea},t]{Evolution example}
+\begin{frame}[label={sec:org3545853},t]{Evolution example}
 \begin{onlyenv}<1-3>
 Current automation contents
 
@@ -915,7 +915,7 @@ The next generation of the automation
 \end{onlyenv}
 \end{frame}
 
-\begin{frame}[label={sec:orgbd45cea}]{There is more}
+\begin{frame}[label={sec:orgac15324}]{There is more}
 \begin{itemize}
 \item \(\text{rule}_{110}\) is Turing complete.
 \item There are many ways to encode the rules.
@@ -923,7 +923,7 @@ The next generation of the automation
 \end{itemize}
 \end{frame}
 
-\begin{frame}[label={sec:orgfe2af4f},fragile]{Universe}
+\begin{frame}[label={sec:orge5d0d53},fragile]{Universe}
  \begin{minted}[]{haskell}
 data U a = U [a] a [a]
 --            |  |  |
@@ -948,7 +948,7 @@ data U a = U [a] a [a]
 \end{minted}
 \end{frame}
 
-\begin{frame}[label={sec:org6a5c54d}]{Reversed left?}
+\begin{frame}[label={sec:org850d612}]{Reversed left?}
 \begin{itemize}
 \item Fast access. We care about focused element and its neighbours.
 \item Fast focus shifts.
@@ -956,7 +956,7 @@ data U a = U [a] a [a]
 \end{itemize}
 \end{frame}
 
-\begin{frame}[label={sec:org46316da},fragile]{\texttt{fromList}}
+\begin{frame}[label={sec:org2044dde},fragile]{\texttt{fromList}}
  \begin{minted}[]{haskell}
 fromList :: a -> [a] -> U a
 fromList d []     = U (repeat d) d (repeat d)
@@ -967,7 +967,7 @@ fromList d (x:xs) = U (repeat d) x (xs ++ repeat d)
 \end{minted}
 \end{frame}
 
-\begin{frame}[label={sec:org926d1bd},fragile]{\texttt{extract}}
+\begin{frame}[label={sec:org8677fdb},fragile]{\texttt{extract}}
  \begin{minted}[]{haskell}
 extract :: U a -> a
 extract (U _ a _) = a
@@ -991,7 +991,7 @@ extract (U _ a _) = a
 \end{minted}
 \end{frame}
 
-\begin{frame}[label={sec:org2b4b05e},fragile]{\texttt{Functor}}
+\begin{frame}[label={sec:orgc5ca4a4},fragile]{\texttt{Functor}}
  \begin{minted}[]{haskell}
 instance Functor U where
   fmap f (U l c r) = U (fmap f l) (f c) (fmap f r)
@@ -1015,7 +1015,7 @@ instance Functor U where
 \end{minted}
 \end{frame}
 
-\begin{frame}[label={sec:orgb76db2a},fragile]{Moving left}
+\begin{frame}[label={sec:org2e94b67},fragile]{Moving left}
  \begin{minted}[]{haskell}
 left :: U a -> U a
 left (U (l:ls) c rs) = U ls l (c:rs)
@@ -1032,7 +1032,7 @@ left (U (l:ls) c rs) = U ls l (c:rs)
 \end{minted}
 \end{frame}
 
-\begin{frame}[label={sec:orge92e475},fragile]{Moving right}
+\begin{frame}[label={sec:orgea8e361},fragile]{Moving right}
  \begin{minted}[]{haskell}
 right :: U a -> U a
 right right (U ls c (r:rs)) = U (c:ls) r rs
@@ -1049,7 +1049,7 @@ right right (U ls c (r:rs)) = U (c:ls) r rs
 \end{minted}
 \end{frame}
 
-\begin{frame}[label={sec:org686ebb4},fragile]{Non-totality}
+\begin{frame}[label={sec:orgf708a43},fragile]{Non-totality}
  \begin{minted}[]{haskell}
 > extract . right . right $ U ["drunk", "hello"] "folks" ["!"]
 "*** Exception: <interactive>:23:5-41: Non-exhaustive patterns in function right
@@ -1064,7 +1064,7 @@ in various ways:
 \end{enumerate}
 \end{frame}
 
-\begin{frame}[label={sec:org0b36325},fragile]{Defining ECA}
+\begin{frame}[label={sec:orgb350d2f},fragile]{Defining ECA}
  \begin{minted}[]{haskell}
 data Cell
   = Dead
@@ -1084,7 +1084,7 @@ type ECA = U Cell
 \end{minted}
 \end{frame}
 
-\begin{frame}[label={sec:org5f3d316},fragile]{Defining rule}
+\begin{frame}[label={sec:org4c2c89a},fragile]{Defining rule}
  Rule says how to evolve a cell with respect to it's context.
 
 \pause
@@ -1095,7 +1095,7 @@ type ECARule = U Cell -> Cell
 \end{minted}
 \end{frame}
 
-\begin{frame}[label={sec:orge7e19b6},fragile]{Rule 110}
+\begin{frame}[label={sec:orgf467f29},fragile]{Rule 110}
  \begin{minted}[]{haskell}
 rule110 :: U Cell -> Cell
 rule110 u = case extract3 Dead u of
@@ -1125,7 +1125,7 @@ extract3 c u = case maybe c extract . ($ u) <$> [maybeLeft, Just, maybeRight] of
 Damn\ldots{} That's the ultimate fate of the universe - to collapse.
 \end{frame}
 
-\begin{frame}[label={sec:orgc9f8bdd},fragile]{Possible solution}
+\begin{frame}[label={sec:orgf7d14f7},fragile]{Possible solution}
  \begin{enumerate}
 \item <1-> Apply the rule.
 \item <2-> Shift original tape left once, apply the rule.
@@ -1139,7 +1139,7 @@ Damn\ldots{} That's the ultimate fate of the universe - to collapse.
 \end{enumerate}
 \end{frame}
 
-\begin{frame}[label={sec:orgac6237a}]{M-x doctor}
+\begin{frame}[label={sec:orgcc4b46c}]{M-x doctor}
 \begin{verse}
 I am the psychotherapist.  Please, describe your problems.  Each time you are\\
 finished talking, type RET twice.\\
@@ -1156,7 +1156,7 @@ Why do you say that?\\
 And he is damn right! We can do it.
 \end{frame}
 
-\begin{frame}[label={sec:org4542d75},fragile]{All possible shifts}
+\begin{frame}[label={sec:orgbeaba1f},fragile]{All possible shifts}
  \begin{onlyenv}<1>
 \begin{minted}[]{haskell}
 duplicate :: U a -> U (U a)
@@ -1171,7 +1171,7 @@ duplicate u = U (tail $ iterate left u) u (tail $ iterate right u)
 \end{onlyenv}
 \end{frame}
 
-\begin{frame}[label={sec:org19a521c}]{All possible shifts}
+\begin{frame}[label={sec:org0fb17b2}]{All possible shifts}
 \begin{gather*}
   \dots\ 0\ 1\ (2)\ 3\ 4\ 5\ \dots \\
   \Downarrow \text{duplicate} \\
@@ -1192,7 +1192,7 @@ duplicate u = U (tail $ iterate left u) u (tail $ iterate right u)
 \end{gather*}
 \end{frame}
 
-\begin{frame}[label={sec:org8f2a6bf}]{Where's the focus?}
+\begin{frame}[label={sec:orge99f269}]{Where's the focus?}
 \begin{gather*}
   \dots\ 0\ 1\ (2)\ 3\ 4\ 5\ \dots \\
   \Downarrow \text{left . duplicate} \\
@@ -1213,7 +1213,7 @@ duplicate u = U (tail $ iterate left u) u (tail $ iterate right u)
 \end{gather*}
 \end{frame}
 
-\begin{frame}[label={sec:orgbfbb62e}]{Where's the focus?}
+\begin{frame}[label={sec:org5700e31}]{Where's the focus?}
 \begin{gather*}
   \dots\ 0\ 1\ (2)\ 3\ 4\ 5\ \dots \\
   \Downarrow \text{right . duplicate} \\
@@ -1234,7 +1234,7 @@ duplicate u = U (tail $ iterate left u) u (tail $ iterate right u)
 \end{gather*}
 \end{frame}
 
-\begin{frame}[label={sec:org0aa3f30}]{Where's the focus}
+\begin{frame}[label={sec:orgaafdb6b}]{Where's the focus}
 \begin{gather*}
   \dots\ 0\ 1\ (2)\ 3\ 4\ 5\ \dots \\
   \Downarrow \text{fmap left . duplicate} \\
@@ -1255,15 +1255,15 @@ duplicate u = U (tail $ iterate left u) u (tail $ iterate right u)
 \end{gather*}
 \end{frame}
 
-\begin{frame}[label={sec:org87135ba},fragile,t]{\texttt{extend}}
+\begin{frame}[label={sec:orgaf5b1d4},fragile,t]{\texttt{extend}}
  \begin{onlyenv}<1>
 \begin{minted}[]{haskell}
 duplicate :: U a
           -> U (U a)
 
-extend :: (U a -> a)
+extend :: (U a -> b)
        ->  U a
-       ->  U a
+       ->  U b
 \end{minted}
 \end{onlyenv}
 
@@ -1272,9 +1272,9 @@ extend :: (U a -> a)
 duplicate :: U a
           -> U (U a)
 
-extend :: (U a -> a)
+extend :: (U a -> b)
        ->  U a
-       ->  U a
+       ->  U b
 extend f = fmap f . duplicate
 \end{minted}
 \end{onlyenv}
@@ -1290,7 +1290,7 @@ extend f = fmap f . duplicate
 \end{onlyenv}
 \end{frame}
 
-\begin{frame}[label={sec:org966a2db},fragile]{Iteration}
+\begin{frame}[label={sec:orge2a38fd},fragile]{Iteration}
  \begin{minted}[,escapeinside=||,mathescape=true]{haskell}
 > mapM_ (print . narrow 20) . take 20 . iterate (extend rule110) $ fromList Dead [Alive]
 |$\square\square\square\square\square\square\square\square\square\square\square\square\square\square\square\square\square\square\square\square\blacksquare\square\square\square\square\square\square\square\square\square\square\square\square\square\square\square\square\square\square\square\square$|
@@ -1316,7 +1316,7 @@ extend f = fmap f . duplicate
 \end{minted}
 \end{frame}
 
-\begin{frame}[label={sec:orge4cbd1b},fragile]{Final words}
+\begin{frame}[label={sec:org9dfe46e},fragile]{(not so) Final words}
  \begin{itemize}
 \item <1-> Great abstraction of 1D Universe with operations:
 \begin{itemize}
@@ -1336,9 +1336,9 @@ extend f = fmap f . duplicate
 \end{frame}
 
 \section{Act 2: Conway's Game of Life}
-\label{sec:org444fdce}
+\label{sec:orgd8603cd}
 
-\begin{frame}[label={sec:org5c6a0ac}]{Definition}
+\begin{frame}[label={sec:org8c2039c}]{Definition}
 Two-dimensional cellular automata invented by John H. Conway.
 
 \pause
@@ -1366,7 +1366,7 @@ Grid is rectangle.
 \end{equation*}
 \end{frame}
 
-\begin{frame}[label={sec:orga191f82}]{Rules}
+\begin{frame}[label={sec:org65e51f7}]{Rules}
 \(S \in {0, 1}\) is status of the focus.
 
 \(A\) is amount of living cells around the focus (max \(8\)).
@@ -1378,7 +1378,7 @@ Grid is rectangle.
 \end{itemize}
 \end{frame}
 
-\begin{frame}[label={sec:org5f74294}]{Example of simulation (1)}
+\begin{frame}[label={sec:orgc3c3497}]{Example of simulation (1)}
 \begin{footnotesize}
   \begin{equation*}
     \begingroup
@@ -1507,7 +1507,7 @@ Grid is rectangle.
 \end{footnotesize}
 \end{frame}
 
-\begin{frame}[label={sec:orga18872b}]{Example of simulation (2)}
+\begin{frame}[label={sec:orgd0c2f44}]{Example of simulation (2)}
 \begin{equation*}
   \begingroup
   \setlength\arraycolsep{0.25pt}
@@ -1580,7 +1580,7 @@ Grid is rectangle.
 \end{equation*}
 \end{frame}
 
-\begin{frame}[label={sec:org1b09c8f}]{Example of simulation (3)}
+\begin{frame}[label={sec:org361d458}]{Example of simulation (3)}
 \begin{tiny}
   \begin{equation*}
     \begingroup
@@ -1716,7 +1716,7 @@ Grid is rectangle.
 \end{tiny}
 \end{frame}
 
-\begin{frame}[label={sec:orgb8bc350}]{\emph{untitled copy (1)(2) - final}}
+\begin{frame}[label={sec:orge139d53}]{\emph{untitled copy (1)(2) - final}}
 \begin{onlyenv}<1>
 iTunes anyone?
 \end{onlyenv}
@@ -1728,13 +1728,13 @@ iTunes anyone?
 \end{onlyenv}
 \end{frame}
 
-\begin{frame}[label={sec:org6ec9e2c},fragile]{Rolling out U2}
+\begin{frame}[label={sec:org89dd1ff},fragile]{Rolling out U2}
  \begin{minted}[]{haskell}
 type U2 a = U (U a)
 \end{minted}
 \end{frame}
 
-\begin{frame}[label={sec:orgf7facba},fragile]{Moving around in the \sout{complex} Universe}
+\begin{frame}[label={sec:org97e05a1},fragile]{Moving around in the \sout{complex} Universe}
  \begin{minted}[]{haskell}
 shift :: Direction -> U2 a -> U2 a
 shift North u = left      u
@@ -1747,7 +1747,7 @@ shift West  u = left  <$> u
 \begin{column}{0.45\columnwidth}
 \begin{onlyenv}<2->
 \begin{minted}[,escapeinside=||,mathescape=true]{haskell}
-> print' DisplayFocused . narrow2 3 $ gof1
+> print' DisplayFocused . narrow2 3 $ gol1
 |$\ \square\square\square[\square]\square\square\square$|
 |$\ \square\square\square[\square]\square\square\square$|
 |$\ \square\square\square[\square]\square\square\square$|
@@ -1762,7 +1762,7 @@ shift West  u = left  <$> u
 \begin{column}{0.45\columnwidth}
 \begin{onlyenv}<3>
 \begin{minted}[,escapeinside=||,mathescape=true]{haskell}
-> (...) . shift North $ gof1
+> (...) . shift North $ gol1
 |$\ \square\square\square[\square]\square\square\square$|
 |$\ \square\square\square[\square]\square\square\square$|
 |$\ \square\square\square[\square]\square\square\square$|
@@ -1775,7 +1775,7 @@ shift West  u = left  <$> u
 
 \begin{onlyenv}<4>
 \begin{minted}[,escapeinside=||,mathescape=true]{haskell}
-> (...) . shiftn 3 South . shiftn 3 East $ gof1
+> (...) . shiftn 3 South . shiftn 3 East $ gol1
 |$\ \square\square\square[\square]\square\square\square$|
 |$\ \square\blacksquare\blacksquare[\blacksquare]\blacksquare\blacksquare\square$|
 |$\ \square\blacksquare\blacksquare[\square]\blacksquare\blacksquare\square$|
@@ -1789,7 +1789,7 @@ shift West  u = left  <$> u
 \end{columns}
 \end{frame}
 
-\begin{frame}[label={sec:org752f951},fragile]{Game of Life rules}
+\begin{frame}[label={sec:orge257caf},fragile]{Game of Life rules}
  \begin{minted}[]{haskell}
 rule :: U (U Cell) -> Cell
 rule u | ns == 3   = Alive
@@ -1814,23 +1814,23 @@ neighbours c u
 \end{minted}
 \end{frame}
 
-\begin{frame}[label={sec:orgaf6b13c},fragile]{Was easy, right?}
+\begin{frame}[label={sec:org5b743dd},fragile]{Was easy, right?}
  \begin{minted}[]{haskell}
-> let someGof = undefined :: U (U Cell)
+> let someGol = undefined :: U (U Cell)
 \end{minted}
 
 \pause
 
 \begin{minted}[]{haskell}
-> :t rule someGof
-rule someGof :: Cell
+> :t rule someGol
+rule someGol :: Cell
 \end{minted}
 
 \pause
 
 \begin{minted}[]{haskell}
-> :t extend rule someGof
-extend rule someGof :: U Cell
+> :t extend rule someGol
+extend rule someGol :: U Cell
 \end{minted}
 
 \pause
@@ -1838,7 +1838,7 @@ extend rule someGof :: U Cell
 Wait\ldots{} WAT?
 \end{frame}
 
-\begin{frame}[label={sec:orgfd33c34},fragile]{Extending 2D Universe (1)}
+\begin{frame}[label={sec:org61126a2},fragile]{Extending 2D Universe (1)}
  \begin{minted}[]{haskell}
 > :t extend
 extend :: (U a -> b) -> U a -> U b
@@ -1856,7 +1856,7 @@ extend rule' :: U (U Cell) -> U Cell
 But we need \texttt{extend2 :: (U (U a) -> b) - U (U a) -> U (U b)}.
 \end{frame}
 
-\begin{frame}[label={sec:orgbcca934},fragile]{Extending 2D Universe (2)}
+\begin{frame}[label={sec:org680946b},fragile]{Extending 2D Universe (2)}
  \begin{minted}[]{haskell}
 duplicate2 :: U (U a) -> U (U (U (U a)))
 duplicate2 = fmap duplicate . duplicate
@@ -1900,7 +1900,7 @@ extend2 f = fmap (fmap f) . duplicate2
 fmap-fu can't always save you, functor-kun!
 \end{frame}
 
-\begin{frame}[label={sec:org5775ff0},fragile]{Actually extending 2D Universe}
+\begin{frame}[label={sec:org6417a60},fragile]{Actually extending 2D Universe}
  \begin{minted}[]{haskell}
 newtype U2 a
   = U2
@@ -1923,9 +1923,9 @@ extend f = fmap f . duplicate
 \end{minted}
 \end{frame}
 
-\begin{frame}[label={sec:org3ed5d2d},fragile]{Works}
+\begin{frame}[label={sec:orgbb56bbb},fragile]{Works}
  \begin{minted}[,escapeinside=||,mathescape=true]{haskell}
-> mapM_ (print . narrow2' 0 4 0 4) . take 2 . iterate (extend rule) $ gof3
+> mapM_ (print . narrow2' 0 4 0 4) . take 2 . iterate (extend rule) $ gol3
 |$\square\square\square\square\square$|
 |$\square\square\blacksquare\square\square$|
 |$\square\square\blacksquare\square\square$|
@@ -1940,7 +1940,7 @@ extend f = fmap f . duplicate
 \end{minted}
 \end{frame}
 
-\begin{frame}[label={sec:org556ebaf}]{Final words}
+\begin{frame}[label={sec:org38d81d4}]{(not so) Final words}
 \begin{itemize}
 \item <1-> Moving from 1D to 2D is really simple (not counting the wasted time on the
 wrong idea).
@@ -1954,33 +1954,33 @@ wrong idea).
 \end{frame}
 
 \section{Act 3: Bomberman}
-\label{sec:org81eaa86}
+\label{sec:org2d46492}
 
-\begin{frame}[label={sec:orgb0f9317}]{Definition}
+\begin{frame}[label={sec:orgb720045}]{Definition}
 \pause
 
 Do you really need a definition of Bomberman?
 \end{frame}
 
-\begin{frame}[label={sec:org9ee0f16}]{Definition}
+\begin{frame}[label={sec:orgc6a935e}]{Definition}
 \begin{center}
 \includegraphics[width=.9\linewidth]{images/bomberman-1.jpg}
 \end{center}
 \end{frame}
 
-\begin{frame}[label={sec:org57862bb}]{But we have a different one}
+\begin{frame}[label={sec:orgc2da4b7}]{But we have a different one}
 \begin{center}
 \includegraphics[height=8cm]{images/bomberman-2.png}
 \end{center}
 \end{frame}
 
-\begin{frame}[label={sec:org81c3fda}]{Bells and whistles}
+\begin{frame}[label={sec:org2a48c17}]{Bells and whistles}
 \begin{center}
 \includegraphics[height=8cm]{images/bomberman-3.png}
 \end{center}
 \end{frame}
 
-\begin{frame}[label={sec:org8fc809c},fragile]{Reusing U2}
+\begin{frame}[label={sec:org135905c},fragile]{Reusing U2}
  \begin{minted}[]{haskell}
 data Cell
   = Bomberman
@@ -2009,7 +2009,7 @@ data Cell
 \end{minted}
 \end{frame}
 
-\begin{frame}[label={sec:org4ec8a5e},fragile]{What is bot?}
+\begin{frame}[label={sec:orgd646070},fragile]{What is bot?}
  \begin{minted}[]{haskell}
 bot :: ( MonadIO m
        , MonadReader r m
@@ -2025,14 +2025,14 @@ bot = undefined
 What to \texttt{extend}?
 \end{frame}
 
-\begin{frame}[label={sec:org3cf96ed}]{What we care about}
+\begin{frame}[label={sec:org5655d9d}]{What we care about}
 \begin{itemize}
 \item <1-> Greed. What can be destroyed?
 \item <2-> Safety. What can kill us?
 \end{itemize}
 \end{frame}
 
-\begin{frame}[label={sec:orgef593a1},fragile]{Fatum of the Universe}
+\begin{frame}[label={sec:org0c96098},fragile]{Fatum of the Universe}
  \begin{minted}[]{haskell}
 data MarkedCell
   = MarkedCell
@@ -2057,7 +2057,7 @@ mark board = MarkedCell (extract board) dangers targets
 \end{minted}
 \end{frame}
 
-\begin{frame}[label={sec:org6cc7803},fragile]{Fatum of the Universe}
+\begin{frame}[label={sec:org11819a6},fragile]{Fatum of the Universe}
  \begin{minted}[]{haskell}
 > :t extend
 extend :: (U2 a -> b) -> U2 a -> U2 b
@@ -2067,7 +2067,7 @@ extend mark :: U2 Cell -> U2 MarkedCell
 \end{minted}
 \end{frame}
 
-\begin{frame}[label={sec:org1513365},fragile,t]{The bot}
+\begin{frame}[label={sec:orge55ad75},fragile,t]{The bot}
  \begin{onlyenv}<1>
 \begin{minted}[]{haskell}
 bot :: ( MonadIO m
@@ -2188,11 +2188,11 @@ isSafe = L.null . getDangers
 \end{onlyenv}
 \end{frame}
 
-\begin{frame}[label={sec:orga5799a6}]{Danger! Live demo}
+\begin{frame}[label={sec:org1372724}]{Danger! Live demo}
 \emph{Live demos are subject to fail. Accept and forgive. Move on.}
 \end{frame}
 
-\begin{frame}[label={sec:orgfb15453}]{Final words}
+\begin{frame}[label={sec:org285e596}]{(not so) Final words}
 \begin{itemize}
 \item <1-> Great abstraction for our task. Again.
 \begin{itemize}
@@ -2210,9 +2210,9 @@ isSafe = L.null . getDangers
 \end{frame}
 
 \section{Finale}
-\label{sec:org7f1c0a8}
+\label{sec:org1ea88df}
 
-\begin{frame}[label={sec:orgef5df5d},fragile]{Commonalities (1)}
+\begin{frame}[label={sec:org404ac4a},fragile]{Commonalities (1)}
  \begin{minted}[]{haskell}
 extract :: U a  -> a
 extract :: U2 a -> a
@@ -2225,7 +2225,7 @@ extract :: f a -> a
 \end{minted}
 \end{frame}
 
-\begin{frame}[label={sec:orgc9f020e},fragile]{Commonalities (2)}
+\begin{frame}[label={sec:orge877488},fragile]{Commonalities (2)}
  \begin{minted}[]{haskell}
 extend :: (U a -> b) -> U a  -> U a
 extend :: (U2 a -> b) -> U2 a -> U2 b
@@ -2238,7 +2238,7 @@ extend :: (f a -> b) -> f a -> f b
 \end{minted}
 \end{frame}
 
-\begin{frame}[label={sec:org3761249},fragile]{Comonad}
+\begin{frame}[label={sec:org6e1a0ea},fragile]{Comonad}
  \begin{minted}[]{haskell}
 class Functor f => Comonad f where
   extract :: f a -> a
@@ -2257,7 +2257,7 @@ extend f . extend g = extend (f . extend g)
 \end{minted}
 \end{frame}
 
-\begin{frame}[label={sec:orgfb43270},fragile]{Co-monad}
+\begin{frame}[label={sec:orgd6ac90f},fragile]{Co-monad}
  \begin{columns}
 \begin{column}{0.45\columnwidth}
 \begin{minted}[]{haskell}
@@ -2275,7 +2275,7 @@ return :: a -> f a
 \end{columns}
 \end{frame}
 
-\begin{frame}[label={sec:orga257ea1},fragile]{Universe is Comonad}
+\begin{frame}[label={sec:org8db009a},fragile]{Universe is Comonad}
  That should be obvious by now.
 
 \pause
@@ -2296,7 +2296,7 @@ instance Comonad U2 where
 \end{minted}
 \end{frame}
 
-\begin{frame}[label={sec:orgdc6634b},fragile]{Store}
+\begin{frame}[label={sec:org96ff442},fragile]{Store}
  \begin{minted}[]{haskell}
 data Store s a = Store (s -> a) s
 
@@ -2307,10 +2307,10 @@ duplicate (Store f s) = Store (Store f) s
 
 \pause
 
-\emph{Homework:} solve ECA and GOF using \texttt{Store} data type.
+\emph{Homework:} solve ECA and GoL using \texttt{Store} data type.
 \end{frame}
 
-\begin{frame}[label={sec:orgd56d18b}]{Many uses}
+\begin{frame}[label={sec:org14dce87}]{Many uses}
 \begin{itemize}
 \item <1-> Instances
 \begin{itemize}
@@ -2330,7 +2330,7 @@ duplicate (Store f s) = Store (Store f) s
 \end{itemize}
 \end{frame}
 
-\begin{frame}[label={sec:orgc46c443}]{Final words}
+\begin{frame}[label={sec:orgfafb35f}]{Final words}
 \begin{itemize}
 \item <1-> Comonads give us an interface for extracting and extending certain data
 types.
@@ -2340,13 +2340,13 @@ types.
 \end{itemize}
 \end{frame}
 
-\begin{frame}[label={sec:org8ad1059}]{Grab the code}
+\begin{frame}[label={sec:org67d0f64}]{Grab the code}
 \url{https://gitlab.com/d12frosted/talks}
 \end{frame}
 
 \section*{References}
-\label{sec:orgb04ffd3}
-\begin{frame}[label={sec:org0f508cd}]{References}
+\label{sec:org75b81a7}
+\begin{frame}[label={sec:org0807820}]{References}
 \begin{itemize}
 \item \url{https://www.st.cs.uni-saarland.de/edu/seminare/2005/advanced-fp/docs/huet-zipper.pdf}
 \item \url{http://mathworld.wolfram.com/CellularAutomaton.html}
@@ -2360,7 +2360,7 @@ types.
 \end{frame}
 
 \section{Questions?}
-\label{sec:org5ebf79e}
+\label{sec:orgcb9497e}
 \section{Thank you}
-\label{sec:org9c8de60}
+\label{sec:org7ff6da0}
 \end{document}
