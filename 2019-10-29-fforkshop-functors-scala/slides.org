@@ -2664,12 +2664,22 @@ How to combine errors?
 :BEAMER_env:             onlyenv
 :END:
 
-- <1-> Three kinds of function application so far
+- <1-> Function application (full vs partial).
+- <2-> Higher order functions.
+- <3-> Higher order types.
 
-*** Haskell                                                :B_column:BMCOL:
+*** Code                                                        :B_onlyenv:
+:PROPERTIES:
+:BEAMER_env:             onlyenv
+:BEAMER_act:             <4->
+:END:
+
+- Three kinds of function application so far
+
+**** Haskell                                              :B_column:BMCOL:
 :PROPERTIES:
 :BEAMER_env:             column
-:BEAMER_col:             0.5
+:BEAMER_col:             0.35
 :END:
 
   #+begin_src haskell
@@ -2678,10 +2688,10 @@ How to combine errors?
     ap    :: f (a -> b) -> f a -> f b
   #+end_src
 
-*** Scala                                                  :B_column:BMCOL:
+**** Scala                                                :B_column:BMCOL:
 :PROPERTIES:
 :BEAMER_env:             column
-:BEAMER_col:             0.5
+:BEAMER_col:             0.35
 :END:
 
   #+begin_src scala
@@ -2695,8 +2705,8 @@ How to combine errors?
 :BEAMER_env:             onlyenv
 :END:
 
-- <2-> Monoids and Functors are fundamental.
-- <3-> Applicatives have enough power to write expressive applications.
+- <5-> Monoids and Functors are fundamental.
+- <6-> Applicatives have enough power to write expressive applications.
 
 * Questions?
 
