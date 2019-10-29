@@ -2384,10 +2384,20 @@ Damn...
   val name: Parser[String] = some(letter).map(_.mkString)
 #+end_src
 
+*** Int parser                                                  :B_onlyenv:
+:PROPERTIES:
+:BEAMER_env:             onlyenv
+:BEAMER_act:             <3->
+:END:
+
+#+begin_src scala
+  val int: Parser[Int] = ???
+#+end_src
+
 *** Person parser - step 1                                      :B_onlyenv:
 :PROPERTIES:
 :BEAMER_env:             onlyenv
-:BEAMER_act:             <3>
+:BEAMER_act:             <4>
 :END:
 
 #+begin_src scala
@@ -2398,7 +2408,7 @@ Damn...
 *** Person parser - step 2                                      :B_onlyenv:
 :PROPERTIES:
 :BEAMER_env:             onlyenv
-:BEAMER_act:             <4>
+:BEAMER_act:             <5>
 :END:
 
 #+begin_src scala
@@ -2410,7 +2420,7 @@ Damn...
 *** Person parser - step 2 - error                              :B_onlyenv:
 :PROPERTIES:
 :BEAMER_env:             onlyenv
-:BEAMER_act:             <5>
+:BEAMER_act:             <6>
 :END:
 
 #+begin_src scala
@@ -2423,18 +2433,18 @@ Damn...
 *** Person parser - step 2                                      :B_onlyenv:
 :PROPERTIES:
 :BEAMER_env:             onlyenv
-:BEAMER_act:             <6>
+:BEAMER_act:             <7>
 :END:
 
 #+begin_src scala
   val person: Parser[Person] =
-    name.fmap(Parser.curried).ap(int)
+    name.fmap(n => a => Person(n, a)).ap(int)
 #+end_src
 
 *** Person parser - step 2 - more                               :B_onlyenv:
 :PROPERTIES:
 :BEAMER_env:             onlyenv
-:BEAMER_act:             <7,8>
+:BEAMER_act:             <8,9>
 :END:
 
 **** Scala                                                      :B_column:
@@ -2446,10 +2456,10 @@ Damn...
 
 #+begin_src scala
   val person: Parser[Person] =
-    name.fmap(Parser.curried).ap(int)
+    name.fmap(n => a => Person(n, a)).ap(int)
 
   val person: Parser[Person] =
-    name.fmap(Parser.curried) <*> int
+    name.fmap(n => a => Person(n, a)) <*> int
 
   val person: Parser[Person] =
     (name, int).mapN(Person)
@@ -2473,7 +2483,7 @@ Damn...
 *** But no separator                                            :B_onlyenv:
 :PROPERTIES:
 :BEAMER_env:             onlyenv
-:BEAMER_act:             <8>
+:BEAMER_act:             <9>
 :END:
 
 #+begin_src scala
@@ -2489,7 +2499,7 @@ We forgot the separator!
 *** Person parser - step 2 - more                               :B_onlyenv:
 :PROPERTIES:
 :BEAMER_env:             onlyenv
-:BEAMER_act:             <9->
+:BEAMER_act:             <10->
 :END:
 
 **** Scala                                                      :B_column:
@@ -2501,10 +2511,10 @@ We forgot the separator!
 
 #+begin_src scala
   val person: Parser[Person] =
-    name.fmap(Parser.curried).ap(char ',' *> int)
+    name.fmap(n => a => Person(n, a)).ap(char ',' *> int)
 
   val person: Parser[Person] =
-    name.fmap(Parser.curried) <*> (char ',' *> int)
+    name.fmap(n => a => Person(n, a)) <*> (char ',' *> int)
 #+end_src
 
 **** Haskell                                                    :B_column:
@@ -2522,7 +2532,7 @@ We forgot the separator!
 *** Usage                                                       :B_onlyenv:
 :PROPERTIES:
 :BEAMER_env:             onlyenv
-:BEAMER_act:             <10->
+:BEAMER_act:             <11->
 :END:
 
 #+begin_src scala
