@@ -131,9 +131,9 @@ explain why.
 
 ** Before we start
 
-#+begin_src bash
-  $ git clone git@gitlab.com:wax-org/fforkshop-functors-scala.git
-#+end_src
+#+BEGIN_SRC bash
+$ git clone git@gitlab.com:wax-org/fforkshop-functors-scala.git
+#+END_SRC
 
 And import it as sbt project.
 
@@ -169,10 +169,10 @@ produce values without any other values.
 
 ** Unary value constructors: function
 
-#+begin_src scala
-  def spacify: String => String =
-    value => " " + value + " "
-#+end_src
+#+BEGIN_SRC scala
+def spacify: String => String =
+  value => " " + value + " "
+#+END_SRC
 
 Functions are also value constructors. In this case, ~spacify~ is an unary value
 constructor, producing a value of type ~String~ once applied to a value of type
@@ -182,9 +182,9 @@ constructor, producing a value of type ~String~ once applied to a value of type
 
 Class constructors are another example of value constructors:
 
-#+begin_src scala
-  case class Hero(name: String)
-#+end_src
+#+BEGIN_SRC scala
+case class Hero(name: String)
+#+END_SRC
 
 ~Hero~ is an unary value constructor, producing a value of type ~Hero~, once
 applied to a value of type ~String~.
@@ -193,10 +193,10 @@ applied to a value of type ~String~.
 
 There are constructors of even higher arity. For example,
 
-#+begin_src scala
-  def sum3: Int => Int => Int => Int =
-    x => y => z => x + y + z
-#+end_src
+#+BEGIN_SRC scala
+def sum3: Int => Int => Int => Int =
+  x => y => z => x + y + z
+#+END_SRC
 
 #+BEAMER: \pause
 
@@ -219,9 +219,9 @@ nullary type constructors:
 
 ** Unary type constructors
 
-#+begin_src scala
-  case class Wrapper[A](value: A, reason: String)
-#+end_src
+#+BEGIN_SRC scala
+case class Wrapper[A](value: A, reason: String)
+#+END_SRC
 
 #+BEAMER: \pause
 
@@ -232,10 +232,10 @@ nullary type constructors:
 
 ** Higher arity
 
-#+begin_src scala
-  case class TrickOrTreat[A, B](trick: A, treat: B)
-  case class PostModernMatrix[A, B, C](pillA: A, pillB: B, pillC: C)
-#+end_src
+#+BEGIN_SRC scala
+case class TrickOrTreat[A, B](trick: A, treat: B)
+case class PostModernMatrix[A, B, C](pillA: A, pillB: B, pillC: C)
+#+END_SRC
 
 - ~TrickOrTreat~ is binary type constructor.
 - ~PostModernMatrix~ is ternary type constructor.
@@ -244,9 +244,9 @@ nullary type constructors:
 
 Arrows allow to describe value constructors (functions on value level).
 
-#+begin_src scala
-  val someConstructor: Int => String => Float => Hero
-#+end_src
+#+BEGIN_SRC scala
+val someConstructor: Int => String => Float => Hero
+#+END_SRC
 
 #+BEAMER: \pause
 
@@ -275,13 +275,13 @@ Type constructors can be seen as functions on the type level.
 
 Now let's define the following function:
 
-#+begin_src scala
-  def modify(f: Int => Int)(v: Int): Int
+#+BEGIN_SRC scala
+def modify(f: Int => Int)(v: Int): Int
 
-  // or in other words
+// or in other words
 
-  def modify: (Int => Int) => Int => Int
-#+end_src
+def modify: (Int => Int) => Int => Int
+#+END_SRC
 
 #+BEAMER: \pause
 
@@ -299,9 +299,9 @@ functions*.
 
 ** Higher-order types (1)
 
-#+begin_src scala
-  case class Data[F[_]](level: F[Int], desc: String)
-#+end_src
+#+BEGIN_SRC scala
+case class Data[F[_]](level: F[Int], desc: String)
+#+END_SRC
 
 - <2-> =F[_]= is like a type level function =X => F[X]=.
 - <3-> ~F~ has kind $* \rightarrow *$.
@@ -311,9 +311,9 @@ functions*.
 
 ** Higher-order types (2)
 
-#+begin_src scala
-  case class Wrapper[F[_], A](value: F[A])
-#+end_src
+#+BEGIN_SRC scala
+case class Wrapper[F[_], A](value: F[A])
+#+END_SRC
 
 - <2-> =F[_]= is like =X => F[X]=.
 - <3-> =Wrapper[F[_], A]= is like =(X => F[X]) => A => Data[F[X], A]=.
@@ -344,37 +344,37 @@ Naturally, we can manipulate functions in two ways:
 
 We know how to apply functions.
 
-#+begin_src scala
-  def inc: Int => Int = v => v + 1
-  def add: Int => Int => Int = a => b => a + b
+#+BEGIN_SRC scala
+def inc: Int => Int = v => v + 1
+def add: Int => Int => Int = a => b => a + b
 
-  inc(42)      // => 43
-  add(100)     // => function of type Int => Int
-  add(100)(42) // => 142
-#+end_src
+inc(42)      // => 43
+add(100)     // => function of type Int => Int
+add(100)(42) // => 142
+#+END_SRC
 
 #+BEAMER: \pause
 
 We can define a special function that will apply first argument to second.
 
-#+begin_src scala
-  def apply[A, B]: (A => B) => A => B =
-    f => v => f(v)
+#+BEGIN_SRC scala
+def apply[A, B]: (A => B) => A => B =
+  f => v => f(v)
 
-  apply(inc)(42)      // => 43
-  apply(add)(100)     // => function of type Int => Int
-  apply(add)(100)(42) // => 142
-#+end_src
+apply(inc)(42)      // => 43
+apply(add)(100)     // => function of type Int => Int
+apply(add)(100)(42) // => 142
+#+END_SRC
 
 ** Function Application
 
 While this doesn't seem to be useful, it's important to understand type
 signature of ~apply~ function:
 
-#+begin_src scala
-  apply :   (A => B)    => A        => B
-  //        function    argument    result
-#+end_src
+#+BEGIN_SRC scala
+apply :   (A => B)    => A        => B
+//        function    argument    result
+#+END_SRC
 
 #+BEAMER: \pause
 
@@ -392,11 +392,11 @@ absent.
 :BEAMER_env:             column
 :END:
 
-#+begin_src scala
-  trait Option[+A]
-  case object None extends Option[Nothing]
-  case class Some[+A](value: A) extends Option[A]
-#+end_src
+#+BEGIN_SRC scala
+trait Option[+A]
+case object None extends Option[Nothing]
+case class Some[+A](value: A) extends Option[A]
+#+END_SRC
 
 *** Haskell                                                      :B_column:
 :PROPERTIES:
@@ -405,9 +405,9 @@ absent.
 :BEAMER_env:             column
 :END:
 
-#+begin_src haskell
-  data Maybe a = Nothing | Just a
-#+end_src
+#+BEGIN_SRC haskell
+data Maybe a = Nothing | Just a
+#+END_SRC
 
 *** Regular                                                      :B_column:
 :PROPERTIES:
@@ -421,28 +421,28 @@ absent.
 
 - ~Option(42)~ is a value of type ~Option[Int]~.
 - ~apply~ can't be used to apply ~inc~ to ~42~ in that context.
-  #+begin_src scala
-    apply: (A => B) => A => B
-    inc: Int => Int
-    apply(inc)(Option(42))
-      type mismatch;
-       found   : Option[Int]
-       required: Int
-  #+end_src
+  #+BEGIN_SRC scala
+  apply: (A => B) => A => B
+  inc: Int => Int
+  apply(inc)(Option(42))
+    type mismatch;
+     found   : Option[Int]
+     required: Int
+  #+END_SRC
 - <2-> But we can define custom ~apply~ function.
 
 ** Context: optional value
 
-#+begin_src scala
-  //  apply        : (A => B) =>        A  =>        B
-  def applyToOption: (A => B) => Option[A] => Option[B] = f => maybeV => match maybeV {
-    case None    => None
-    case Some(v) => Some(f(v))
-  }
+#+BEGIN_SRC scala
+//  apply        : (A => B) =>        A  =>        B
+def applyToOption: (A => B) => Option[A] => Option[B] = f => maybeV => match maybeV {
+  case None    => None
+  case Some(v) => Some(f(v))
+}
 
-  applyToOption(inc)(Some(42))            // => Some(43)
-  applyToOption(inc)(None)                // => None
-#+end_src
+applyToOption(inc)(Some(42))            // => Some(43)
+applyToOption(inc)(None)                // => None
+#+END_SRC
 
 ** Many contexts
 
@@ -455,18 +455,18 @@ absent.
 
 ** Many applies
 
-#+begin_src scala
-  def apply           : (A => B) =>        A  =>        B
-  def applyToOption   : (A => B) => Option[A] => Option[B]
-  def applyToFuture   : (A => B) => Future[A] => Future[B]
-  def applyToWIO      : (A => B) =>    WIO[A] =>    WIO[B]
-#+end_src
+#+BEGIN_SRC scala
+def apply           : (A => B) =>        A  =>        B
+def applyToOption   : (A => B) => Option[A] => Option[B]
+def applyToFuture   : (A => B) => Future[A] => Future[B]
+def applyToWIO      : (A => B) =>    WIO[A] =>    WIO[B]
+#+END_SRC
 
 #+BEAMER: \pause
 
-#+begin_src scala
-  def applyToContext  : (A => B) =>      F[A] =>      F[B]
-#+end_src
+#+BEGIN_SRC scala
+def applyToContext  : (A => B) =>      F[A] =>      F[B]
+#+END_SRC
 
 ** Repetition is
 
@@ -477,25 +477,25 @@ Cucumbersome
 
 ** Functoriana
 
-#+begin_src scala
-  trait Functor[F[_]] {
-    def fmap[A, B]: (A => B) => F[A] => F[B]
-  }
-#+end_src
+#+BEGIN_SRC scala
+trait Functor[F[_]] {
+  def fmap[A, B]: (A => B) => F[A] => F[B]
+}
+#+END_SRC
 
 #+BEAMER: \pause
 
-#+begin_src scala
-  object OptionImpl {
-    implicit val optionFunctor: Functor[Option] = {
-      def fmap[A, B]: (A => B) => Option[A] => Option[B] =
-        f => fa => fa match {
-          case None    => None
-          case Some(v) => Some(f(v))
-        }
-    }
+#+BEGIN_SRC scala
+object OptionImpl {
+  implicit val optionFunctor: Functor[Option] = {
+    def fmap[A, B]: (A => B) => Option[A] => Option[B] =
+      f => fa => fa match {
+        case None    => None
+        case Some(v) => Some(f(v))
+      }
   }
-#+end_src
+}
+#+END_SRC
 
 ** Code responsibly, know the laws
 
@@ -769,6 +769,10 @@ If you are interested in details, let's talk after the forkshop.
 
 - https://ttic.uchicago.edu/~dreyer/course/papers/wadler.pdf
 - https://www.schoolofhaskell.com/user/edwardk/snippets/fmap
+
+** There can be only one
+
+There is only one lawful implementation of Functor for a given type.
 
 ** Coding time
 
@@ -2732,7 +2736,7 @@ How to combine errors?
   #+begin_src scala
     def apply[A, B]: (A => B) =>   A  =>   B
     def fmap[A, B]:  (A => B) => F[A] => F[B]
-    def ap[A, B]:   F[A => B) => F[A] => F[B]
+    def ap[A, B]:   F[A => B] => F[A] => F[B]
   #+end_src
 
 *** List                                                        :B_onlyenv:
