@@ -976,7 +976,7 @@ semigroup.
   */
 #+end_src
 
-** You're programmer after all
+** You're developer after all
 
 #+ATTR_LATEX: :height 7cm
 [[file:images/you-re-programmer.jpg]]
@@ -1574,7 +1574,7 @@ Fibonacci number can be defined in a different way.
 
 #+begin_export latex
 \begin{equation*}
-  x^n = \begin{cases} x(x^2)^{\frac{n-1}{2}}, & \mbox{if } n\mbox{ is odd} \\ (x^2)^{\frac{n}{2}}, & \mbox{if } n\mbox{ is even} \end{cases}
+  a^n = \begin{cases} a(a^2)^{\frac{n-1}{2}}, & \mbox{if } n\mbox{ is odd} \\ (a^2)^{\frac{n}{2}}, & \mbox{if } n\mbox{ is even} \end{cases}
 \end{equation*}
 #+end_export
 
