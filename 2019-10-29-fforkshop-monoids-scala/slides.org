@@ -1564,9 +1564,9 @@ Fibonacci number can be defined in a different way.
 - Open =wax.exercise.fibonacci.Main= object.
   - =Main= runs two implementations and profiles them.
   - =Fib= contains implementation of tailrec and matrix approaches.
-  - =ExpUtils= implements generic =exp= function.
-- Task is to implement monoid for =Matrix2x2= in the =Fib= object.
+- Implement monoid for =Matrix2x2= in the =Fib= object.
 - Run =MatrixSpec= to test your instance.
+- Implement =exp= function.
 - Run =FibSpec= to test implementation of =Fib=.
 - Run =Main= to see performance differences by yourself.
 
