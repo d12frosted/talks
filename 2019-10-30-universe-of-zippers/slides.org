@@ -1128,6 +1128,12 @@ Hence the name, $\text{rule}_{110}$
   "1"
 #+end_src
 
+** Movement
+
+#+BEAMER: \pause
+
+[[file:images/calendar.jpg]]
+
 ** Moving left
 
 #+begin_src haskell
@@ -1138,11 +1144,11 @@ Hence the name, $\text{rule}_{110}$
 #+BEAMER: \pause
 
 #+begin_src haskell
+  > U ["drunk", "hello"] "folks" ["!"]
+  [hello, drunk] (folks) [!]
+
   > left $ U ["drunk", "hello"] "folks" ["!"]
   [hello] (drunk) [folks, !]
-
-  > extract . left $ U ["drunk", "hello"] "folks" ["!"]
-  "drunk"
 #+end_src
 
 ** Moving right
@@ -1155,17 +1161,17 @@ Hence the name, $\text{rule}_{110}$
 #+BEAMER: \pause
 
 #+begin_src haskell
+  > U ["drunk", "hello"] "folks" ["!"]
+  [hello, drunk] (folks) [!]
+
   > right $ U ["drunk", "hello"] "folks" ["!"]
   [hello, drunk, folks] (!) []
-
-  > extract . right $ U ["drunk", "hello"] "folks" ["!"]
-  "!"
 #+end_src
 
 ** Non-totality
 
 #+begin_src haskell
-  > extract . right . right $ U ["drunk", "hello"] "folks" ["!"]
+  > right . right $ U ["drunk", "hello"] "folks" ["!"]
   "*** Exception: <interactive>:23:5-41: Non-exhaustive patterns in function right
 #+end_src
 
