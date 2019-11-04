@@ -145,126 +145,6 @@ neighbours (left and right).
 \end{equation*}
 #+end_export
 
-** ECA: specifying the rule
-
-*** Left                                                   :B_column:BMCOL:
-:PROPERTIES:
-:BEAMER_env:             column
-:BEAMER_col:             0.2
-:END:
-
-| $l$ | $c$ | $r$ | $c'$   |
-|-----+-----+-----+--------|
-|   0 |   0 |   0 | $c'_1$ |
-|   0 |   0 |   1 | $c'_2$ |
-|   0 |   1 |   0 | $c'_3$ |
-|   0 |   1 |   1 | $c'_4$ |
-|   1 |   0 |   0 | $c'_5$ |
-|   1 |   0 |   1 | $c'_6$ |
-|   1 |   1 |   0 | $c'_7$ |
-|   1 |   1 |   1 | $c'_8$ |
-
-*** Right                                                  :B_column:BMCOL:
-:PROPERTIES:
-:BEAMER_env:             column
-:BEAMER_col:             0.8
-:END:
-
-- <1-> Cover all possible inputs:
-  - $l$ - value of the left neighbour;
-  - $c$ - value of the evolving cell;
-  - $r$ - value of the right neighbour.
-- <2-> $c'_i$ - next value of the evolving cell.
-- <3-> To specify a rule, we need to fix $c'_i, \forall i: 1 \leq i \leq 8$.
-- <4-> There are in total $2^8 = 256$ different rules.
-
-** ECA: rule example
-
-
-*** Left                                                   :B_column:BMCOL:
-:PROPERTIES:
-:BEAMER_env:             column
-:BEAMER_col:             0.2
-:END:
-
-| $l$ | $c$ | $r$ | $c'$ |
-|-----+-----+-----+------|
-|   0 |   0 |   0 |    0 |
-|   0 |   0 |   1 |    1 |
-|   0 |   1 |   0 |    1 |
-|   0 |   1 |   1 |    1 |
-|   1 |   0 |   0 |    0 |
-|   1 |   0 |   1 |    1 |
-|   1 |   1 |   0 |    1 |
-|   1 |   1 |   1 |    0 |
-
-*** Right                                                  :B_column:BMCOL:
-:PROPERTIES:
-:BEAMER_env:             column
-:BEAMER_col:             0.8
-:END:
-
-**** One                                                       :B_onlyenv:
-:PROPERTIES:
-:BEAMER_env:             onlyenv
-:BEAMER_act:             <1->
-:END:
-
-#+begin_export latex
-\begin{equation*}
-  \begingroup
-  \setlength\arraycolsep{0.25pt}
-  \renewcommand{\arraystretch}{0.5}
-  \begin{matrix}
-    \blacksquare & \blacksquare & \blacksquare \\
-    & \square &
-  \end{matrix}\mspace{28mu}
-  \begin{matrix}
-    \blacksquare & \blacksquare & \square \\
-    & \blacksquare &
-  \end{matrix}\mspace{28mu}
-  \begin{matrix}
-    \blacksquare & \square & \blacksquare \\
-    & \blacksquare &
-  \end{matrix}\mspace{28mu}
-  \begin{matrix}
-    \blacksquare & \square & \square \\
-    & \square &
-  \end{matrix}\mspace{28mu}
-  \begin{matrix}
-    \square & \blacksquare & \blacksquare \\
-    & \blacksquare &
-  \end{matrix}\mspace{28mu}
-  \begin{matrix}
-    \square & \blacksquare & \square \\
-    & \blacksquare &
-  \end{matrix}\mspace{28mu}
-  \begin{matrix}
-    \square & \square & \blacksquare \\
-    & \blacksquare &
-  \end{matrix}\mspace{28mu}
-  \begin{matrix}
-    \square & \square & \square \\
-    & \square &
-  \end{matrix}
-  \endgroup
-\end{equation*}
-#+end_export
-
-**** Two                                                       :B_onlyenv:
-:PROPERTIES:
-:BEAMER_env:             onlyenv
-:BEAMER_act:             <2>
-:END:
-
-#+begin_export latex
-\begin{equation*}
-  01101110_2 = 110_{10}
-\end{equation*}
-#+end_export
-
-Hence the name, $\text{rule}_{110}$
-
 ** Evolution example
 :PROPERTIES:
 :BEAMER_opt:             t
@@ -1031,6 +911,126 @@ The next generation of the automation
 \blacksquare
 \dots \hfill
 #+end_export
+
+** ECA: specifying the rule
+
+*** Left                                                   :B_column:BMCOL:
+:PROPERTIES:
+:BEAMER_env:             column
+:BEAMER_col:             0.2
+:END:
+
+| $l$ | $c$ | $r$ | $c'$   |
+|-----+-----+-----+--------|
+|   0 |   0 |   0 | $c'_1$ |
+|   0 |   0 |   1 | $c'_2$ |
+|   0 |   1 |   0 | $c'_3$ |
+|   0 |   1 |   1 | $c'_4$ |
+|   1 |   0 |   0 | $c'_5$ |
+|   1 |   0 |   1 | $c'_6$ |
+|   1 |   1 |   0 | $c'_7$ |
+|   1 |   1 |   1 | $c'_8$ |
+
+*** Right                                                  :B_column:BMCOL:
+:PROPERTIES:
+:BEAMER_env:             column
+:BEAMER_col:             0.8
+:END:
+
+- <1-> Cover all possible inputs:
+  - $l$ - value of the left neighbour;
+  - $c$ - value of the evolving cell;
+  - $r$ - value of the right neighbour.
+- <2-> $c'_i$ - next value of the evolving cell.
+- <3-> To specify a rule, we need to fix $c'_i, \forall i: 1 \leq i \leq 8$.
+- <4-> There are in total $2^8 = 256$ different rules.
+
+** ECA: rule example
+
+
+*** Left                                                   :B_column:BMCOL:
+:PROPERTIES:
+:BEAMER_env:             column
+:BEAMER_col:             0.2
+:END:
+
+| $l$ | $c$ | $r$ | $c'$ |
+|-----+-----+-----+------|
+|   0 |   0 |   0 |    0 |
+|   0 |   0 |   1 |    1 |
+|   0 |   1 |   0 |    1 |
+|   0 |   1 |   1 |    1 |
+|   1 |   0 |   0 |    0 |
+|   1 |   0 |   1 |    1 |
+|   1 |   1 |   0 |    1 |
+|   1 |   1 |   1 |    0 |
+
+*** Right                                                  :B_column:BMCOL:
+:PROPERTIES:
+:BEAMER_env:             column
+:BEAMER_col:             0.8
+:END:
+
+**** One                                                       :B_onlyenv:
+:PROPERTIES:
+:BEAMER_env:             onlyenv
+:BEAMER_act:             <1->
+:END:
+
+#+begin_export latex
+\begin{equation*}
+  \begingroup
+  \setlength\arraycolsep{0.25pt}
+  \renewcommand{\arraystretch}{0.5}
+  \begin{matrix}
+    \blacksquare & \blacksquare & \blacksquare \\
+    & \square &
+  \end{matrix}\mspace{28mu}
+  \begin{matrix}
+    \blacksquare & \blacksquare & \square \\
+    & \blacksquare &
+  \end{matrix}\mspace{28mu}
+  \begin{matrix}
+    \blacksquare & \square & \blacksquare \\
+    & \blacksquare &
+  \end{matrix}\mspace{28mu}
+  \begin{matrix}
+    \blacksquare & \square & \square \\
+    & \square &
+  \end{matrix}\mspace{28mu}
+  \begin{matrix}
+    \square & \blacksquare & \blacksquare \\
+    & \blacksquare &
+  \end{matrix}\mspace{28mu}
+  \begin{matrix}
+    \square & \blacksquare & \square \\
+    & \blacksquare &
+  \end{matrix}\mspace{28mu}
+  \begin{matrix}
+    \square & \square & \blacksquare \\
+    & \blacksquare &
+  \end{matrix}\mspace{28mu}
+  \begin{matrix}
+    \square & \square & \square \\
+    & \square &
+  \end{matrix}
+  \endgroup
+\end{equation*}
+#+end_export
+
+**** Two                                                       :B_onlyenv:
+:PROPERTIES:
+:BEAMER_env:             onlyenv
+:BEAMER_act:             <2>
+:END:
+
+#+begin_export latex
+\begin{equation*}
+  01101110_2 = 110_{10}
+\end{equation*}
+#+end_export
+
+Hence the name, $\text{rule}_{110}$
 
 ** There is more
 
