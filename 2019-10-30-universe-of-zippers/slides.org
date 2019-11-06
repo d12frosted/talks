@@ -1482,6 +1482,14 @@ $$\forall f: head\ .\ iterate\ f = id$$
   |$\square\blacksquare\blacksquare\square\blacksquare\square\square\square\square\blacksquare\blacksquare\blacksquare\square\blacksquare\blacksquare\blacksquare\blacksquare\square\square\square\blacksquare\square\square\square\square\square\square\square\square\square\square\square\square\square\square\square\square\square\square\square\square$|
 #+end_src
 
+** Zipper
+
+A Zipper is essentially an updateable and yet pure functional cursor into a data
+structure.
+
+More in the paper:
+https://www.st.cs.uni-saarland.de/edu/seminare/2005/advanced-fp/docs/huet-zipper.pdf
+
 ** (not so) Final words
 
 - <1-> Great abstraction of 1D Universe with operations:
