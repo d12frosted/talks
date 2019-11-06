@@ -2722,6 +2722,7 @@ That should be obvious by now.
 - <2-> Problems
   - Cellular automata.
   - Discrete board games.
+  - Window manager (XMonad).
   - Builder patter.
   - Iterator pattern.
   - Command pattern.
