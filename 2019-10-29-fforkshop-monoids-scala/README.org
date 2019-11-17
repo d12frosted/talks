@@ -13,3 +13,11 @@ solve three problems exposing powers of monoids:
 The tasks are located in a separate repository: [[https://gitlab.com/wax-org/fforkshop-monoids-scala][wax-org/fforkshop-monoids-scala]].
 
 Authors: [[https://github.com/valentynv][Valentyn Vakatsiienko]] and [[https://d12frosted.io][Boris Buliga]].
+
+** References
+
+- [[https://people.csail.mit.edu/dnj/teaching/6898/papers/wadler88.pdf][How to make ad-hoc polymorphism less ad-hoc]] by Philip Wadler and Stephen
+  Blott.
+- [[http://mathworld.wolfram.com/Semigroup.html][Semigroup]]
+- [[http://mathworld.wolfram.com/Monoid.html][Monoid]]
+- [[http://mathworld.wolfram.com/FibonacciQ-Matrix.html][Fibonacci Q-Matrix]] (provable by induction)

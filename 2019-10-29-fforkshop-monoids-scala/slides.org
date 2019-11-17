@@ -1944,15 +1944,6 @@ Can function be monoid?
   something else also begins to form a monoid.
 - <6-> We want some rest after a long session of forkshop.
 
-* References
-:PROPERTIES:
-:UNNUMBERED:             t
-:END:
-
-** References
-
-- https://people.csail.mit.edu/dnj/teaching/6898/papers/wadler88.pdf
-
 * Questions?
 
 * Thank you very much!
