@@ -680,10 +680,10 @@ Shape is destroyed!
 :END:
 
 #+begin_src scala
-    fmap(identity)(List(a1, a2))
-  = identity(a1) :: identity(a1) :: identity(a2) :: identity(a2) :: Nil
-  = a1 :: a1 :: a2 :: a2 :: Nil
-  = List(a1, a1, a2, a2) != List(a1, a2)
+    fmap(identity)(List(a, b))
+  = identity(a) :: identity(a) :: identity(b) :: identity(b) :: Nil
+  = a :: a :: b :: b :: Nil
+  = List(a, a, b, b) != List(a, b)
 #+end_src
 
 *** Graph                                                       :B_onlyenv:
@@ -703,8 +703,8 @@ Shape is destroyed!
 
 #+begin_src dot :file .dot/functor-list-broken-1.png :cmdline -Kdot -Tpng -Gdpi=180
   digraph {
-    v1[label="a1"];
-    v2[label="a2"];
+    v1[label="a"];
+    v2[label="b"];
 
     c1[label="::"];
     c2[label="::"];
@@ -731,10 +731,10 @@ Shape is destroyed!
 
 #+begin_src dot :file .dot/functor-list-broken-2.png :cmdline -Kdot -Tpng -Gdpi=180
   digraph {
-    v1[label="a1"];
-    v2[label="a1"];
-    v3[label="a2"];
-    v4[label="a2"];
+    v1[label="a"];
+    v2[label="a"];
+    v3[label="b"];
+    v4[label="b"];
 
     c1[label="::"];
     c2[label="::"];
@@ -776,7 +776,7 @@ There is only one lawful implementation of Functor for a given type.
 
 ** Coding time
 
-- Open =wax.typeclass.functor.cats.package= file.
+- Open =wax.typeclass.functor.cats.package.implicits.scala= file.
 - Task is to add missing implementations (no =???=).
 - Run =FunctorSpec= to test your implementation.
 
@@ -1761,7 +1761,7 @@ structure.
 :END:
 
 #+begin_src scala
-  val res = ParserSuccess("r", "ânză") match {
+  val res = ParserSuccess('r', "ânză") match {
     case ParserSuccess(v, s1) =>
       many(satisfy(_.isLetter)).parse(s1).fmap(xs => v :: xs)
     case ParserFailure() => ParserSuccess(List.empty, s)
