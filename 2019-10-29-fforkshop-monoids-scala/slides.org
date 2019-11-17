@@ -1495,7 +1495,7 @@ All this means that we can define a function =exp=:
 
 ** Back to Fibonacci
 
-Fibonacci number can be defined in a different way.
+Fibonacci number can be calculated in a different way.
 
 #+begin_export latex
 \begin{equation*}
@@ -1534,6 +1534,14 @@ Fibonacci number can be defined in a different way.
     3 & 2 \\
     2 & 1
   \end{pmatrix}
+\end{equation*}
+#+end_export
+
+#+BEAMER: \pause
+
+#+begin_export latex
+\begin{equation*}
+  F_3 = 2
 \end{equation*}
 #+end_export
 
@@ -1935,6 +1943,15 @@ Can function be monoid?
 - <5-> Monoids are everywhere. They act like a plague, once something forms a monoid,
   something else also begins to form a monoid.
 - <6-> We want some rest after a long session of forkshop.
+
+* References
+:PROPERTIES:
+:UNNUMBERED:             t
+:END:
+
+** References
+
+- https://people.csail.mit.edu/dnj/teaching/6898/papers/wadler88.pdf
 
 * Questions?
 
