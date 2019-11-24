@@ -1258,6 +1258,13 @@ And we want to apply that function and get resulting =Option[Int]=.
 Path from =Monoidal= to =Applicative= is through function application. Function
 application is a practical thing.
 
+** Some symmetry
+
+#+begin_src scala
+  def ap:   F[ A =>  B]  => (F[A] => F[B])
+  def comb: (F[A], F[B]) => F[ A,      B ]
+#+end_src
+
 ** Monoid part of =Monoidal=
 
 *** Left                                                         :B_column:
