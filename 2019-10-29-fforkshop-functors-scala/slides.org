@@ -2798,6 +2798,23 @@ How to combine errors?
 - <5-> Monoids and Functors are fundamental.
 - <6-> Applicatives have enough power to write expressive applications.
 
+* References
+:PROPERTIES:
+:UNNUMBERED:             t
+:END:
+
+** References
+
+- http://www.staff.city.ac.uk/~ross/papers/Applicative.pdf
+- Röjemo, Niklas. (1995). Garbage collection and memory efficiency. Ph.D.
+  thesis, Chalmers.
+- Swierstra, S. Doaitse, & Duponcheel, Luc. (1996). Deterministic,
+  error-correcting combinator parsers. Pages 184–207 of: Launchbury, John,
+  Meijer, Erik, & Sheard, Tim (eds), Advanced functional programming. LNCS,
+  vol. 1129. Springer.
+- https://www.schoolofhaskell.com/user/edwardk/snippets/fmap
+- https://ttic.uchicago.edu/~dreyer/course/papers/wadler.pdf
+
 * Questions?
 
 * Thank you very much!
