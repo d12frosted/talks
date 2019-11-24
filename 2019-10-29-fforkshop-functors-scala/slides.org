@@ -557,7 +557,7 @@ object OptionImpl {
     fmap(identity)(None)
   = None == None
 
-    fmap(indentity(Some(42))
+    fmap(indentity)(Some(42))
   = None != Some(42)
 #+end_src
 
