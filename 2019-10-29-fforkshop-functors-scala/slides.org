@@ -776,7 +776,7 @@ There is only one lawful implementation of Functor for a given type.
 
 ** Coding time
 
-- Open =wax.typeclass.functor.cats.package.implicits.scala= file.
+- Open =src/main/scala/wax/typeclass/functor/implicits/package.scala= file.
 - Task is to add missing implementations (no =???=).
 - Run =FunctorSpec= to test your implementation.
 
@@ -1311,9 +1311,9 @@ application is a practical thing.
 
 ** Coding time
 
-- Open =src/main/scala/wax/typeclass/applicative/cats/implicits/package.scala=
+- Open =src/main/scala/wax/typeclass/applicative/implicits/package.scala=
 - Task is to add missing implementations (no =???=).
-- Run =ApplicativeSpec= to test your ~cats~ implementation.
+- Run =ApplicativeSpec= to test your implementation.
 
 ** Outcome
 
