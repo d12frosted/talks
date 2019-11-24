@@ -194,8 +194,10 @@ applied to a value of type ~String~.
 There are constructors of even higher arity. For example,
 
 #+BEGIN_SRC scala
-def sum3: Int => Int => Int => Int =
-  x => y => z => x + y + z
+  def sum3(x: Int, y: Int, z: Int): Int = x + y + z
+
+  def sum3: Int => Int => Int => Int =
+    x => y => z => x + y + z
 #+END_SRC
 
 #+BEAMER: \pause
