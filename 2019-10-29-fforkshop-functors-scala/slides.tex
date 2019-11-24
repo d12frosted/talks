@@ -1,4 +1,4 @@
-% Created 2019-11-24 Sun 21:54
+% Created 2019-11-24 Sun 22:14
 % Intended LaTeX compiler: pdflatex
 \documentclass[presentation,aspectratio=169,smaller]{beamer}
 \usepackage[utf8x]{inputenc}
@@ -64,8 +64,8 @@
 }
 
 \section*{Intro}
-\label{sec:orgb428a92}
-\begin{frame}[label={sec:orga267fd2}]{About us}
+\label{sec:org08a838a}
+\begin{frame}[label={sec:orgcbe74d8}]{About us}
 \vspace*{20px}
 
 \begin{block}{Valik}
@@ -104,7 +104,7 @@ explain why.
 \end{block}
 \end{frame}
 
-\begin{frame}[label={sec:org44a5d72}]{About the Forkshop}
+\begin{frame}[label={sec:org10a481c}]{About the Forkshop}
 \begin{itemize}
 \item Basic forkshop is split into several parts:
 \begin{enumerate}
@@ -119,7 +119,7 @@ explain why.
 \end{itemize}
 \end{frame}
 
-\begin{frame}[label={sec:orgee3a4cf},fragile]{Whys}
+\begin{frame}[label={sec:orgeeb6a00},fragile]{Whys}
  \begin{itemize}
 \item <1-> Functional programming roams (a bit).
 \begin{itemize}
@@ -134,8 +134,8 @@ important.
 \end{frame}
 
 \section*{Today}
-\label{sec:org42a8b40}
-\begin{frame}[label={sec:orgd6782df}]{Agenda}
+\label{sec:org7f8f327}
+\begin{frame}[label={sec:org6c59894}]{Agenda}
 \begin{itemize}
 \item Values vs Types
 \item Functor
@@ -145,7 +145,7 @@ important.
 \end{itemize}
 \end{frame}
 
-\begin{frame}[label={sec:org9b90087},fragile]{Before we start}
+\begin{frame}[label={sec:org16305fb},fragile]{Before we start}
  \begin{minted}[]{bash}
 $ git clone git@gitlab.com:wax-org/fforkshop-functors-scala.git
 \end{minted}
@@ -154,8 +154,8 @@ And import it as sbt project.
 \end{frame}
 
 \section{Type theory}
-\label{sec:orge887055}
-\begin{frame}[label={sec:orgff9f755}]{Values and types}
+\label{sec:org0d19747}
+\begin{frame}[label={sec:org235d995}]{Values and types}
 In every\(^{?}\) program we write there are two notable levels:
 
 \begin{itemize}
@@ -180,7 +180,7 @@ produce types.
 order to construct a value/type.
 \end{frame}
 
-\begin{frame}[label={sec:orgc10deab},fragile]{Nullary value constructors}
+\begin{frame}[label={sec:orgd4091a0},fragile]{Nullary value constructors}
  Here are some examples of value constructors with arity of zero, e.g. they
 produce values without any other values.
 
@@ -190,7 +190,7 @@ produce values without any other values.
 \end{itemize}
 \end{frame}
 
-\begin{frame}[label={sec:org83803ea},fragile]{Unary value constructors: function}
+\begin{frame}[label={sec:org0fc60ef},fragile]{Unary value constructors: function}
  \begin{minted}[]{scala}
 def spacify: String => String =
   value => " " + value + " "
@@ -201,7 +201,7 @@ constructor, producing a value of type \texttt{String} once applied to a value o
 \texttt{String}.
 \end{frame}
 
-\begin{frame}[label={sec:orgc740163},fragile]{Unary value constructors: class}
+\begin{frame}[label={sec:org3eefd71},fragile]{Unary value constructors: class}
  Class constructors are another example of value constructors:
 
 \begin{minted}[]{scala}
@@ -212,7 +212,7 @@ case class Hero(name: String)
 applied to a value of type \texttt{String}.
 \end{frame}
 
-\begin{frame}[label={sec:org56fc86e},fragile]{Higher arity}
+\begin{frame}[label={sec:org6ce45e3},fragile]{Higher arity}
  There are constructors of even higher arity. For example,
 
 \begin{minted}[]{scala}
@@ -233,7 +233,7 @@ function. So we get another function.
 \end{itemize}
 \end{frame}
 
-\begin{frame}[label={sec:org491732c},fragile]{Nullary type constructors}
+\begin{frame}[label={sec:org5fdf7a4},fragile]{Nullary type constructors}
  Type constructors also can be of different arity. Here are some examples of
 nullary type constructors:
 
@@ -246,7 +246,7 @@ nullary type constructors:
 \end{itemize}
 \end{frame}
 
-\begin{frame}[label={sec:org4458b3b},fragile]{Unary type constructors}
+\begin{frame}[label={sec:orge7fe82f},fragile]{Unary type constructors}
  \begin{minted}[]{scala}
 case class Wrapper[A](value: A, reason: String)
 \end{minted}
@@ -263,7 +263,7 @@ case class Wrapper[A](value: A, reason: String)
 \end{itemize}
 \end{frame}
 
-\begin{frame}[label={sec:org3247846},fragile]{Higher arity}
+\begin{frame}[label={sec:orgc5d1826},fragile]{Higher arity}
  \begin{minted}[]{scala}
 case class TrickOrTreat[A, B](trick: A, treat: B)
 case class PostModernMatrix[A, B, C](pillA: A, pillB: B, pillC: C)
@@ -275,7 +275,7 @@ case class PostModernMatrix[A, B, C](pillA: A, pillB: B, pillC: C)
 \end{itemize}
 \end{frame}
 
-\begin{frame}[label={sec:org8b0558d},fragile]{Kinds}
+\begin{frame}[label={sec:org852c83b},fragile]{Kinds}
  Arrows allow to describe value constructors (functions on value level).
 
 \begin{minted}[]{scala}
@@ -291,7 +291,7 @@ Type constructors can be seen as functions on the type level.
 \alert{Kind} is the type of type constructor.
 \end{frame}
 
-\begin{frame}[label={sec:org90706f1},fragile]{Examples}
+\begin{frame}[label={sec:org88ac493},fragile]{Examples}
  \begin{itemize}
 \item \(*\) - \emph{concrete} type, kind of all nullary type constructors (e.g. \texttt{Int}).
 \end{itemize}
@@ -314,7 +314,7 @@ constructors (e.g. \texttt{PostModernMatrix}).
 \end{itemize}
 \end{frame}
 
-\begin{frame}[label={sec:org6bcf929},fragile]{Higher-order functions}
+\begin{frame}[label={sec:org5ef6a50},fragile]{Higher-order functions}
  Now let's define the following function:
 
 \begin{minted}[]{scala}
@@ -340,7 +340,7 @@ Functions that take other functions as arguments are called \alert{higher-order
 functions}.
 \end{frame}
 
-\begin{frame}[label={sec:org4496208},fragile]{Higher-order types (1)}
+\begin{frame}[label={sec:orgb289a84},fragile]{Higher-order types (1)}
  \begin{minted}[]{scala}
 case class Data[F[_]](level: F[Int], desc: String)
 \end{minted}
@@ -354,7 +354,7 @@ case class Data[F[_]](level: F[Int], desc: String)
 \end{itemize}
 \end{frame}
 
-\begin{frame}[label={sec:org7472fd8},fragile]{Higher-order types (2)}
+\begin{frame}[label={sec:org4e44bbf},fragile]{Higher-order types (2)}
  \begin{minted}[]{scala}
 case class Wrapper[F[_], A](value: F[A])
 \end{minted}
@@ -366,12 +366,12 @@ case class Wrapper[F[_], A](value: F[A])
 \end{itemize}
 \end{frame}
 
-\begin{frame}[label={sec:org6fd8194}]{Higher-order types (3)}
+\begin{frame}[label={sec:orgd11ca0b}]{Higher-order types (3)}
 Type constructors that take other type constructors as arguments are called
 \alert{higher-order types} or \alert{higher-kinded types}.
 \end{frame}
 
-\begin{frame}[label={sec:org7f95627}]{The most important question}
+\begin{frame}[label={sec:orgf5d1442}]{The most important question}
 \begin{center}
 \includegraphics[height=5cm]{images/whyyy.png}
 \end{center}
@@ -380,8 +380,8 @@ Why did we learn this?
 \end{frame}
 
 \section{Functor}
-\label{sec:org6b9ab0a}
-\begin{frame}[label={sec:org74d711a}]{Function Application}
+\label{sec:orgf9d6627}
+\begin{frame}[label={sec:org2a2ee75}]{Function Application}
 \alert{Function} is one of the most important pillars of the functional programming.
 Naturally, we can manipulate functions in two ways:
 
@@ -391,7 +391,7 @@ Naturally, we can manipulate functions in two ways:
 \end{enumerate}
 \end{frame}
 
-\begin{frame}[label={sec:orgfe94542},fragile]{Function Application}
+\begin{frame}[label={sec:org28b368f},fragile]{Function Application}
  We know how to apply functions.
 
 \begin{minted}[]{scala}
@@ -417,7 +417,7 @@ apply(add)(100)(42) // => 142
 \end{minted}
 \end{frame}
 
-\begin{frame}[label={sec:orgad5bff5},fragile]{Function Application}
+\begin{frame}[label={sec:org909c312},fragile]{Function Application}
  While this doesn't seem to be useful, it's important to understand type
 signature of \texttt{apply} function:
 
@@ -431,7 +431,7 @@ apply :   (A => B)    => A        => B
 It's higher-order function.
 \end{frame}
 
-\begin{frame}[label={sec:orgda76958},fragile]{Context: optional value}
+\begin{frame}[label={sec:orgf202c24},fragile]{Context: optional value}
  \texttt{Option} (or \texttt{Maybe}) is used to represent a context of value that may be
 absent.
 
@@ -454,7 +454,7 @@ data Maybe a = Nothing | Just a
 \texttt{Option} is unary type constructor with kind \(* \rightarrow *\).
 \end{frame}
 
-\begin{frame}[label={sec:orga183dab},fragile]{Context: optional value}
+\begin{frame}[label={sec:org0cba526},fragile]{Context: optional value}
  \begin{itemize}
 \item \texttt{Option(42)} is a value of type \texttt{Option[Int]}.
 \item \texttt{apply} can't be used to apply \texttt{inc} to \texttt{42} in that context.
@@ -470,7 +470,7 @@ apply(inc)(Option(42))
 \end{itemize}
 \end{frame}
 
-\begin{frame}[label={sec:org26d9a03},fragile]{Context: optional value}
+\begin{frame}[label={sec:org0ae7fb5},fragile]{Context: optional value}
  \begin{minted}[]{scala}
 //  apply        : (A => B) =>        A  =>        B
 def applyToOption: (A => B) => Option[A] => Option[B] = f => maybeV => match maybeV {
@@ -483,7 +483,7 @@ applyToOption(inc)(None)                // => None
 \end{minted}
 \end{frame}
 
-\begin{frame}[label={sec:org822c4a0},fragile]{Many contexts}
+\begin{frame}[label={sec:orgfba987c},fragile]{Many contexts}
  \begin{itemize}
 \item \texttt{Either} - a context of values with two possibilities. We mostly use it as a
 context of a value that may be absent with some reason (error).
@@ -494,7 +494,7 @@ context of a value that may be absent with some reason (error).
 \end{itemize}
 \end{frame}
 
-\begin{frame}[label={sec:org4c8f2cb},fragile]{Many applies}
+\begin{frame}[label={sec:org19f2ff8},fragile]{Many applies}
  \begin{minted}[]{scala}
 def apply           : (A => B) =>        A  =>        B
 def applyToOption   : (A => B) => Option[A] => Option[B]
@@ -509,7 +509,7 @@ def applyToContext  : (A => B) =>      F[A] =>      F[B]
 \end{minted}
 \end{frame}
 
-\begin{frame}[label={sec:orgac32024}]{Repetition is}
+\begin{frame}[label={sec:orgdca3b71}]{Repetition is}
 \begin{center}
 \includegraphics[height=5cm]{images/cucumber.jpg}
 \end{center}
@@ -517,7 +517,7 @@ def applyToContext  : (A => B) =>      F[A] =>      F[B]
 Cucumbersome
 \end{frame}
 
-\begin{frame}[label={sec:org709799d},fragile]{Functoriana}
+\begin{frame}[label={sec:org8355057},fragile]{Functoriana}
  \begin{minted}[]{scala}
 trait Functor[F[_]] {
   def fmap[A, B]: (A => B) => F[A] => F[B]
@@ -539,7 +539,7 @@ object OptionImpl {
 \end{minted}
 \end{frame}
 
-\begin{frame}[label={sec:org5fdf228},fragile]{Code responsibly, know the laws}
+\begin{frame}[label={sec:orgb61cb49},fragile]{Code responsibly, know the laws}
  \begin{enumerate}
 \item <1-> \texttt{fmap id = id}
 \item <2-> \texttt{fmap (g . f) = fmap g . fmap f}
@@ -552,7 +552,7 @@ object OptionImpl {
 \end{enumerate}
 \end{frame}
 
-\begin{frame}[label={sec:org74b4d64}]{Sum type: Option}
+\begin{frame}[label={sec:orge9e174b}]{Sum type: Option}
 \begin{center}
 \includegraphics[height=3.5cm]{.dot/functor-option.png}
 \end{center}
@@ -565,7 +565,7 @@ object OptionImpl {
 \end{itemize}
 \end{frame}
 
-\begin{frame}[label={sec:orgea96ee1},fragile]{Breaking the Option}
+\begin{frame}[label={sec:org43d17ac},fragile]{Breaking the Option}
  \begin{minted}[]{scala}
   fmap(identity)(value)
 = identity(value)
@@ -597,7 +597,7 @@ implicit val optionFunctor: Functor[Option] = {
 Shape is destroyed!
 \end{frame}
 
-\begin{frame}[label={sec:org9ae1ede},fragile]{Product type: List}
+\begin{frame}[label={sec:orgc8fce0f},fragile]{Product type: List}
  \begin{columns}
 \begin{column}[t]{0.5\columnwidth}
 \begin{center}
@@ -620,7 +620,7 @@ Shape is destroyed!
 \end{itemize}
 \end{frame}
 
-\begin{frame}[label={sec:orgfdad1bd},fragile,t]{Breaking the List}
+\begin{frame}[label={sec:orga47aa74},fragile,t]{Breaking the List}
  \begin{onlyenv}<1-2>
 \begin{minted}[]{scala}
 implicit val listFunctor: Functor[List] = new Functor[List] {
@@ -661,7 +661,7 @@ Shape is destroyed!
 \end{onlyenv}
 \end{frame}
 
-\begin{frame}[label={sec:orgea04324}]{What about the second rule?}
+\begin{frame}[label={sec:org022ac95}]{What about the second rule?}
 As a result of the Free Theorem (Wadler), it's impossible to break the second
 rule in Haskell without breaking the first one.
 
@@ -673,11 +673,11 @@ If you are interested in details, let's talk after the forkshop.
 \end{itemize}
 \end{frame}
 
-\begin{frame}[label={sec:org87a9dc5}]{There can be only one}
+\begin{frame}[label={sec:org3e01b3f}]{There can be only one}
 There is only one lawful implementation of Functor for a given type.
 \end{frame}
 
-\begin{frame}[label={sec:org24db7d9},fragile]{Coding time}
+\begin{frame}[label={sec:orgaae8163},fragile]{Coding time}
  \begin{itemize}
 \item Open \texttt{src/main/scala/wax/typeclass/functor/implicits/package.scala} file.
 \item Task is to add missing implementations (no \texttt{???}).
@@ -685,7 +685,7 @@ There is only one lawful implementation of Functor for a given type.
 \end{itemize}
 \end{frame}
 
-\begin{frame}[label={sec:orgd0b788b},fragile]{Outcome}
+\begin{frame}[label={sec:org6bb4770},fragile]{Outcome}
  \begin{itemize}
 \item Function application is very important.
 \item \texttt{Functor} provides us with means to apply regular function to value in a
@@ -699,9 +699,9 @@ context, without changing the shape of the context.
 \end{frame}
 
 \section{Applicative Functor}
-\label{sec:org42a71c5}
+\label{sec:org63db9a2}
 
-\begin{frame}[label={sec:org7971623},fragile]{Next step}
+\begin{frame}[label={sec:org63b45c9},fragile]{Next step}
  \begin{minted}[]{scala}
 val v1 = Option(42)
 val v2 = Option(100)
@@ -730,7 +730,7 @@ Now we have:
 And we want to apply that function and get resulting \texttt{Option[Int]}.
 \end{frame}
 
-\begin{frame}[label={sec:orgb1e28b7},fragile]{Next step}
+\begin{frame}[label={sec:org09d7fc3},fragile]{Next step}
  \begin{minted}[]{scala}
 def apply :  (A => B) =>   A  =>   B
 def fmap  :  (A => B) => F[A] => F[B]
@@ -743,7 +743,7 @@ def ???   : F[A => B] => F[A] => F[B]
 \end{minted}
 \end{frame}
 
-\begin{frame}[label={sec:org7fae356},fragile]{Solution}
+\begin{frame}[label={sec:org8673d6b},fragile]{Solution}
  \begin{minted}[]{scala}
 val v1 = Option(42)
 val v2 = Option(100)
@@ -758,7 +758,7 @@ applyOptionF(v1.fmap(add))(v2)
 \end{minted}
 \end{frame}
 
-\begin{frame}[label={sec:org32fafe8},fragile]{Following the same idea}
+\begin{frame}[label={sec:org39d244c},fragile]{Following the same idea}
  \begin{minted}[]{scala}
 trait Applicative[F[_]] extends Functor[F] {
   def ap[A, B]: F[A => B] => F[A] => F[B]
@@ -790,7 +790,7 @@ f <$> v1 <*> v2
 \end{columns}
 \end{frame}
 
-\begin{frame}[label={sec:orgdb8465a},fragile]{What's about pure?}
+\begin{frame}[label={sec:orga0dc601},fragile]{What's about pure?}
  \begin{columns}
 \begin{column}[t]{0.4\columnwidth}
 \begin{minted}[]{scala}
@@ -824,7 +824,7 @@ trait Applicative[F[_]] extends Functor[F] {
 \end{enumerate}
 \end{frame}
 
-\begin{frame}[label={sec:org6e91cf6},fragile]{Another perspective}
+\begin{frame}[label={sec:org5dc84d4},fragile]{Another perspective}
  \texttt{Applicative} interface is useful in day-to-day development.
 
 \pause
@@ -852,7 +852,7 @@ trait Monoidal[F[_]] extends Functor[F] {
 \end{columns}
 \end{frame}
 
-\begin{frame}[label={sec:orgfb6be3f},fragile]{From \texttt{Applicative} to \texttt{Monoidal}}
+\begin{frame}[label={sec:orga633526},fragile]{From \texttt{Applicative} to \texttt{Monoidal}}
  \begin{columns}
 \begin{column}[t]{0.5\columnwidth}
 \begin{minted}[]{scala}
@@ -882,7 +882,7 @@ class ApplicativeToMonoida[F[_]: Applicative]() extends Monoidal[F] {
 \end{minted}
 \end{frame}
 
-\begin{frame}[label={sec:org8788c62},fragile]{From \texttt{Applicative} to \texttt{Monoidal}}
+\begin{frame}[label={sec:orgc34057e},fragile]{From \texttt{Applicative} to \texttt{Monoidal}}
  \begin{columns}
 \begin{column}[t]{0.5\columnwidth}
 \begin{minted}[]{scala}
@@ -912,7 +912,7 @@ class ApplicativeToMonoida[F[_]: Applicative]() extends Monoidal[F] {
 \end{minted}
 \end{frame}
 
-\begin{frame}[label={sec:orgf7d71f0},fragile]{From \texttt{Applicative} to \texttt{Monoidal}}
+\begin{frame}[label={sec:org5efe84a},fragile]{From \texttt{Applicative} to \texttt{Monoidal}}
  \begin{columns}
 \begin{column}[t]{0.5\columnwidth}
 \begin{minted}[]{scala}
@@ -943,7 +943,7 @@ class ApplicativeToMonoida[F[_]: Applicative]() extends Monoidal[F] {
 \end{minted}
 \end{frame}
 
-\begin{frame}[label={sec:org5622c5a},fragile]{From \texttt{Monoidal} to \texttt{Applicative}}
+\begin{frame}[label={sec:orgd42d029},fragile]{From \texttt{Monoidal} to \texttt{Applicative}}
  \begin{columns}
 \begin{column}[t]{0.5\columnwidth}
 \begin{minted}[]{scala}
@@ -973,7 +973,7 @@ class MonoidalToApplicative[F[_]: Monoidal]() extends Applicative[F] {
 \end{minted}
 \end{frame}
 
-\begin{frame}[label={sec:org754b97a},fragile]{From \texttt{Monoidal} to \texttt{Applicative}}
+\begin{frame}[label={sec:orgd8716c8},fragile]{From \texttt{Monoidal} to \texttt{Applicative}}
  \begin{columns}
 \begin{column}[t]{0.5\columnwidth}
 \begin{minted}[]{scala}
@@ -1003,7 +1003,7 @@ class MonoidalToApplicative[F[_]: Monoidal]() extends Applicative[F] {
 \end{minted}
 \end{frame}
 
-\begin{frame}[label={sec:org73e6150},fragile]{From \texttt{Monoidal} to \texttt{Applicative}}
+\begin{frame}[label={sec:orgeb182fb},fragile]{From \texttt{Monoidal} to \texttt{Applicative}}
  \begin{columns}
 \begin{column}[t]{0.5\columnwidth}
 \begin{minted}[]{scala}
@@ -1033,7 +1033,7 @@ class MonoidalToApplicative[F[_]: Monoidal]() extends Applicative[F] {
 \end{minted}
 \end{frame}
 
-\begin{frame}[label={sec:orgc9657c2},fragile]{From \texttt{Monoidal} to \texttt{Applicative}}
+\begin{frame}[label={sec:org50e5f4b},fragile]{From \texttt{Monoidal} to \texttt{Applicative}}
  \begin{minted}[]{scala}
 class MonoidalToApplicative[F[_]: Monoidal]() extends Applicative[F] {
   override def pure[A](a: A): F[A] = Monoidal[F].unit.fmap(_ => a)
@@ -1046,7 +1046,7 @@ Path from \texttt{Monoidal} to \texttt{Applicative} is through function applicat
 application is a practical thing.
 \end{frame}
 
-\begin{frame}[label={sec:org88639d9},fragile]{Monoid part of \texttt{Monoidal}}
+\begin{frame}[label={sec:orgc5ee3f7},fragile]{Monoid part of \texttt{Monoidal}}
  \begin{columns}
 \begin{column}[t]{0.5\columnwidth}
 \begin{minted}[]{scala}
@@ -1074,7 +1074,7 @@ trait Monoidal[F[_]] extends Functor[F] {
 \end{itemize}
 \end{frame}
 
-\begin{frame}[label={sec:orgb2597af},fragile]{Applicative laws}
+\begin{frame}[label={sec:org49f9374},fragile]{Applicative laws}
  \begin{enumerate}
 \item Identity: \texttt{pure id <*> v = v}
 \begin{itemize}
@@ -1097,7 +1097,7 @@ applying a pure function of argument application to a function in a context.
 \end{enumerate}
 \end{frame}
 
-\begin{frame}[label={sec:org9857723},fragile]{Coding time}
+\begin{frame}[label={sec:org2976989},fragile]{Coding time}
  \begin{itemize}
 \item Open \texttt{src/main/scala/wax/typeclass/applicative/implicits/package.scala}
 \item Task is to add missing implementations (no \texttt{???}).
@@ -1105,17 +1105,49 @@ applying a pure function of argument application to a function in a context.
 \end{itemize}
 \end{frame}
 
-\begin{frame}[label={sec:org35a70a2},fragile]{Outcome}
+\begin{frame}[label={sec:orgf07278c},fragile]{Conditionals}
+ \begin{minted}[]{scala}
+def iffy[F[_]: Applicative, A](fb: F[Boolean], ft: F[A], fe: F[A]): F[A] = {
+  def cond: Boolean => A => A => A = b => t => e => if (b) t else e
+  Applicative[F].pure(cond).ap(fb).ap(ft).ap(fe)
+}
+\end{minted}
+
+\pause
+
+\begin{minted}[]{scala}
+> iffy(Option(true), Option(42), Option(100))
+Some(42)
+\end{minted}
+
+\pause
+
+\begin{minted}[]{scala}
+> iffy(Option(true), Option(42), None)
+None
+\end{minted}
+
+\pause
+
+\begin{minted}[]{scala}
+> iffy(IO(true), IO(println("true case")), IO(println("false case"))).unsafeRunSync()
+true case
+false case
+\end{minted}
+\end{frame}
+
+\begin{frame}[label={sec:org3dba76a},fragile]{Outcome}
  \begin{itemize}
 \item <1-> \texttt{Monoid} and \texttt{Functor} are two fundamental objects.
 \item <2-> We can apply regular function to multiple values in context.
+\item <3-> With applicatives, computations have a fixed unconditional structure.
 \end{itemize}
 \end{frame}
 
 \section{Parsing}
-\label{sec:org3636c3c}
+\label{sec:org0f70013}
 
-\begin{frame}[label={sec:orgb6ab241},fragile,t]{Parsing}
+\begin{frame}[label={sec:org81d67cb},fragile,t]{Parsing}
  \vspace*{20px}
 
 Parsing is the process of transforming input data (frequently text) to data
@@ -1168,7 +1200,7 @@ def run[A](parser: Parser[A])(input: String): Either[String, A] = parser.parse(i
 \end{onlyenv}
 \end{frame}
 
-\begin{frame}[label={sec:orge369635},fragile,t]{Simple parser}
+\begin{frame}[label={sec:orga0c48e3},fragile,t]{Simple parser}
  \begin{minted}[]{scala}
 case class Parser[A](parse: String => ParserResult[A])
 \end{minted}
@@ -1271,7 +1303,7 @@ Left("parser did not consume entire stream: 'omelette'")
 \end{columns}
 \end{frame}
 
-\begin{frame}[label={sec:orgcd45398},fragile]{Abstracting \texttt{char}}
+\begin{frame}[label={sec:org0fbfb69},fragile]{Abstracting \texttt{char}}
  \begin{minted}[]{scala}
 def satisfy(pred: Char => Boolean): Parser[Char] = Parser { s =>
   if (s.nonEmpty && pred(s.head)) ParserSuccess(s.head, s.tail)
@@ -1292,7 +1324,7 @@ def space: Parser[Char] = char(' ')
 \end{minted}
 \end{frame}
 
-\begin{frame}[label={sec:org5d1640f},fragile,t]{Repeating the parser}
+\begin{frame}[label={sec:org0022629},fragile,t]{Repeating the parser}
  \begin{onlyenv}<1>
 \begin{minted}[]{scala}
 def many[A](parser: Parser[A]): Parser[List[A]] = Parser { s =>
@@ -1371,7 +1403,7 @@ def many[A](parser: Parser[A]): Parser[List[A]] = Parser { s =>
 \end{onlyenv}
 \end{frame}
 
-\begin{frame}[label={sec:org4d64846},fragile,t]{Repeating the parser}
+\begin{frame}[label={sec:orgae366c0},fragile,t]{Repeating the parser}
  \begin{onlyenv}<1>
 \begin{minted}[]{scala}
 many(satisfy(_.isLetter)).parse("brânză")
@@ -1560,7 +1592,7 @@ ParserSuccess(List('b', 'r', 'â', 'n', 'z', 'ă'), "")
 \end{onlyenv}
 \end{frame}
 
-\begin{frame}[label={sec:orgde0087d},fragile,t]{(invalid) UUID parser}
+\begin{frame}[label={sec:org4c4335e},fragile,t]{(invalid) UUID parser}
  \begin{onlyenv}<1>
 \begin{minted}[]{scala}
 def uuid: Parser[String] = ???
@@ -1625,7 +1657,7 @@ Damn\ldots{}
 \end{onlyenv}
 \end{frame}
 
-\begin{frame}[label={sec:orgb1d9907},fragile,t]{Space invaders}
+\begin{frame}[label={sec:org01a0ca7},fragile,t]{Space invaders}
  \begin{minted}[]{scala}
 def uuid: Parser[String] = /* ... */
 def many[A](parser: Parser[A]): Parser[List[A]] = /* ... */
@@ -1695,13 +1727,13 @@ Right("0517b093-b49a-447a-ad66-96ac2b244859")
 \end{onlyenv}
 \end{frame}
 
-\begin{frame}[label={sec:org3fe6ffd}]{So\ldots{}}
+\begin{frame}[label={sec:orgf44590e}]{So\ldots{}}
 \begin{center}
 \includegraphics[height=5cm]{images/applicative-confusion.jpg}
 \end{center}
 \end{frame}
 
-\begin{frame}[label={sec:org3c4626b},fragile,t]{Simple case class example}
+\begin{frame}[label={sec:orgd6a2dcb},fragile,t]{Simple case class example}
  \begin{onlyenv}<1->
 \begin{minted}[]{scala}
 case class Person(name: String, age: Int)
@@ -1819,7 +1851,7 @@ Right(Person("boris", 42))
 \end{onlyenv}
 \end{frame}
 
-\begin{frame}[label={sec:orgbe6ffd5},fragile]{Coding time}
+\begin{frame}[label={sec:org2ba839a},fragile]{Coding time}
  \begin{itemize}
 \item Open \texttt{src/main/scala/wax/exercise/parser/ConfigParser.scala}
 \item Task is to add missing implementations (no \texttt{???}).
@@ -1832,7 +1864,7 @@ Right(Person("boris", 42))
 \end{itemize}
 \end{frame}
 
-\begin{frame}[label={sec:org88f754f}]{Outcome}
+\begin{frame}[label={sec:orgaa9a0e6}]{Outcome}
 \begin{itemize}
 \item <1-> It's easy to write parser combinators. And you can make them performant
 and add error reporting.
@@ -1842,9 +1874,9 @@ and add error reporting.
 \end{frame}
 
 \section{Validation}
-\label{sec:org13dbcf5}
+\label{sec:org93d18c3}
 
-\begin{frame}[label={sec:orgb2dd700},fragile]{Validation}
+\begin{frame}[label={sec:org1b926e7},fragile]{Validation}
  \begin{minted}[]{scala}
 def validate[E, A](value: A): Either[E, A]
 \end{minted}
@@ -1868,7 +1900,7 @@ Left("-100 must be >= 0")
 \end{minted}
 \end{frame}
 
-\begin{frame}[label={sec:org65542b4},fragile]{Person}
+\begin{frame}[label={sec:org41aa336},fragile]{Person}
  \begin{minted}[]{scala}
 case class Person(name: String, age: Int)
 \end{minted}
@@ -1895,7 +1927,7 @@ def validatePerson(person: Person): Either[String, Person] =
 \end{minted}
 \end{frame}
 
-\begin{frame}[label={sec:org4fac352},fragile]{Person}
+\begin{frame}[label={sec:org2ee4992},fragile]{Person}
  \begin{minted}[]{scala}
 > validatePerson(Person("Boris", 42))
 Right(Person("Boris",42))
@@ -1920,7 +1952,7 @@ Left("Age must be positive, got: -42")
 It works, but iterative error fixing annoys.
 \end{frame}
 
-\begin{frame}[label={sec:orgce19191},fragile]{Quest for 'all errors'}
+\begin{frame}[label={sec:org0db4dcc},fragile]{Quest for 'all errors'}
  \begin{minted}[]{scala}
 def validateName(name: String): Either[NonEmptyList[String], String] =
   if (name.isEmpty) Left(NonEmptyList.one("name must be non-empty"))
@@ -1944,7 +1976,7 @@ Left(NonEmptyList("name must be non-empty"))
 \end{minted}
 \end{frame}
 
-\begin{frame}[label={sec:orgb23870e},fragile]{What's wrong with Either?}
+\begin{frame}[label={sec:orga6ef037},fragile]{What's wrong with Either?}
  Either has 'fail-fast' implementation of `ap`.
 
 \pause
@@ -1959,7 +1991,7 @@ def ap[A, B](ff: Either[E, A => B])(fa: Either[E, A]): Either[E, B] = ff match {
 We completely ignore \texttt{fa} when \texttt{ff} is \texttt{Left}.
 \end{frame}
 
-\begin{frame}[label={sec:orgbed248a},fragile]{Doing as much as we can}
+\begin{frame}[label={sec:org7adb87e},fragile]{Doing as much as we can}
  \begin{minted}[]{scala}
 sealed trait Validated[+E, +A]
 case class Valid[+A](a: A) extends Validated[Nothing, A]
@@ -1977,7 +2009,7 @@ implicit def validatedApplicative[E: Semigroup]: Applicative[Validated[E, ?]] = 
 \end{minted}
 \end{frame}
 
-\begin{frame}[label={sec:org665bbe2},fragile]{Coding time}
+\begin{frame}[label={sec:org25a2ead},fragile]{Coding time}
  \begin{itemize}
 \item Open \texttt{src/main/scala/wax/exercise/parser/ConfigValidator.scala} file.
 \item Task is to add missing implementations (no \texttt{???}).
@@ -1990,8 +2022,8 @@ validate them.
 \end{frame}
 
 \section*{Final words}
-\label{sec:orgf671a63}
-\begin{frame}[label={sec:orgabd602e},fragile]{Recap}
+\label{sec:org67bf25f}
+\begin{frame}[label={sec:org9bbfc5e},fragile]{Recap}
  \begin{onlyenv}
 \begin{itemize}
 \item <1-> Function application (full vs partial).
@@ -2033,8 +2065,8 @@ def ap[A, B]:   F[A => B] => F[A] => F[B]
 \end{frame}
 
 \section{Questions?}
-\label{sec:org33a99a0}
+\label{sec:orgd24fcb6}
 
 \section{Thank you very much!}
-\label{sec:org3d049bb}
+\label{sec:orgf081ad3}
 \end{document}

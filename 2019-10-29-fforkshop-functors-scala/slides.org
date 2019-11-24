@@ -1317,10 +1317,42 @@ application is a practical thing.
 - Task is to add missing implementations (no =???=).
 - Run =ApplicativeSpec= to test your implementation.
 
+** Conditionals
+
+#+begin_src scala
+  def iffy[F[_]: Applicative, A](fb: F[Boolean], ft: F[A], fe: F[A]): F[A] = {
+    def cond: Boolean => A => A => A = b => t => e => if (b) t else e
+    Applicative[F].pure(cond).ap(fb).ap(ft).ap(fe)
+  }
+#+end_src
+
+#+BEAMER: \pause
+
+#+begin_src scala
+  > iffy(Option(true), Option(42), Option(100))
+  Some(42)
+#+end_src
+
+#+BEAMER: \pause
+
+#+begin_src scala
+  > iffy(Option(true), Option(42), None)
+  None
+#+end_src
+
+#+BEAMER: \pause
+
+#+begin_src scala
+  > iffy(IO(true), IO(println("true case")), IO(println("false case"))).unsafeRunSync()
+  true case
+  false case
+#+end_src
+
 ** Outcome
 
 - <1-> =Monoid= and =Functor= are two fundamental objects.
 - <2-> We can apply regular function to multiple values in context.
+- <3-> With applicatives, computations have a fixed unconditional structure.
 
 * Parsing
 
