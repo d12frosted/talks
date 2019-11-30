@@ -575,7 +575,7 @@ Extensibility holds, but with several caveats:
 #+begin_src scala
   import io.proprietary.monsters.cockatrice._
 
-  // Implement behaviour as a value in companion object
+  // Implement behaviour as a value in an object
   object CockatriceInstances {
     val introducibleCockatrice: Introducible[Cockatrice] = new Introducible[Cockatrice] {
       override def introduce(a: Cockatrice): String =
