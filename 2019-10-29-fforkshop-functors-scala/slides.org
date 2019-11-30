@@ -1262,7 +1262,7 @@ application is a practical thing.
 
 #+begin_src scala
   def ap:   F[ A =>  B]  => (F[A] => F[B])
-  def comb: (F[A], F[B]) => F[ A,      B ]
+  def comb: (F[A], F[B]) => F[(A,      B)]
 #+end_src
 
 ** Monoid part of =Monoidal=
