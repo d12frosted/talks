@@ -21,3 +21,4 @@ Authors: [[https://github.com/valentynv][Valentyn Vakatsiienko]] and [[https://d
 - [[http://mathworld.wolfram.com/Semigroup.html][Semigroup]]
 - [[http://mathworld.wolfram.com/Monoid.html][Monoid]]
 - [[http://mathworld.wolfram.com/FibonacciQ-Matrix.html][Fibonacci Q-Matrix]] (provable by induction)
+- [[https://en.wikipedia.org/wiki/Exponentiation_by_squaring][Exponentiation by squaring]]
