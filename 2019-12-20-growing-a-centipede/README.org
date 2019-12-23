@@ -1,0 +1,6 @@
+* Growing a Centipede
+
+Mostly a live coding session around Git.
+
+** References
+

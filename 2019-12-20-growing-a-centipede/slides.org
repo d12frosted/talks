@@ -1,0 +1,886 @@
+#+TITLE: Befriending your Git
+#+SUBTITLE: or how to grow a centipede
+#+DATE: December 20, 2019
+#+AUTHOR: Boris Buliga
+#+EMAIL: boris@d12frosted.io
+#+STARTUP: beamer
+#+LATEX_CLASS: beamer
+#+LATEX_CLASS_OPTIONS: [presentation,aspectratio=169,smaller]
+#+LATEX_HEADER: \usepackage[utf8]{inputenc}
+#+LATEX_HEADER: \usepackage{soul}
+#+LATEX_HEADER: \usepackage{unicode-math}
+#+LATEX_HEADER: \usepackage{mathtools}
+#+LATEX_HEADER: \usepackage[mathletters]{ucs}
+#+LATEX_HEADER: \usemintedstyle{tango}
+#+LATEX_HEADER: \setminted{fontsize=\scriptsize}
+#+LATEX_HEADER: \setminted{mathescape=true}
+#+LATEX_HEADER: \setbeamertemplate{itemize items}[circle]
+#+LATEX_HEADER: \setbeamertemplate{enumerate items}[default]
+#+LATEX_HEADER: \setlength{\parskip}{\baselineskip}%
+#+LATEX_HEADER: \setlength{\parindent}{0pt}%
+#+LATEX_HEADER: \setbeamertemplate{navigation symbols}{}%remove navigation symbols
+#+LATEX_HEADER: \newcommand{\hlyellow}[1]{\colorbox{yellow!50}{$\displaystyle#1$}}
+#+LATEX_HEADER: \newcommand{\hlfancy}[2]{\sethlcolor{#1}\hl{#2}}
+#+OPTIONS: H:2 toc:nil num:t
+
+#+begin_export latex
+\newcommand{\mathcolorbox}[2]{%
+  \begingroup
+  \setlength{\fboxsep}{2pt}%
+  \colorbox{#1}{$\displaystyle #2$}%
+  \endgroup
+}
+
+\AtBeginSection[]{
+  \begin{frame}
+  \vfill
+  \centering
+  \begin{beamercolorbox}[sep=8pt,center,shadow=true,rounded=true]{title}
+    \usebeamerfont{title}\insertsectionhead\par%
+  \end{beamercolorbox}
+  \vfill
+  \end{frame}
+}
+#+end_export
+
+* Plan :noexport:
+
+1. Intro
+   1. Creating repository.
+   2. Adding new content and committing.
+   3. Modifying content and committing.
+2. Branches
+   1. Creating branch
+   2. Deleting branch
+   3. Switching to branch
+3. HEAD
+   1. Switching to commit
+   2. Working with detached HEAD
+4. Merging
+5. Rebasing
+6. Resetting
+7. Reflog
+8. Stash
+9. Going remote
+   1. remote name
+   2. branch name
+   3. updating PR
+
+* Intro
+:PROPERTIES:
+:UNNUMBERED:             t
+:END:
+
+** Known story
+
+For several days God did something interesting.
+
+On the sixth day God was like:
+
+#+begin_quote
+Let the earth bring forth the living creature after its kind, cattle, and
+creeping thing, and beast of the earth after its kind.
+#+end_quote
+
+And God saw that it was good.
+
+** Divine rest
+
+#+BEAMER: \pause
+
+[[file:images/creepy-centipede.png]]
+
+** Commonalities
+
+[[file:images/torvalds.png]]
+
+** About me
+
+**** About                                                      :B_column:
+:PROPERTIES:
+:BEAMER_env:             column
+:BEAMER_col:             0.75
+:END:
+
+- Server developer @Wix.
+- Haskell ↔ Emacs Lisp extremist. Whatever that means.
+- Chinese tea lover.
+- Wine-lifestyle activist (92% of my life).
+
+**** Photo                                                      :B_column:
+:PROPERTIES:
+:BEAMER_env:             column
+:BEAMER_col:             0.25
+:END:
+
+#+ATTR_LATEX: :height 3.5cm
+[[file:images/boris.jpg]]
+
+** Agenda
+
+- What is Git
+- Initial setup
+- Commits
+- Branches
+- Stash
+- Merging
+- Rebasing
+- Undoing stuff
+
+* Version control systems
+
+** Version Control
+
+Reasons to use:
+
+1. A clear indicator of changes.
+2. To know what is different between two versions of something.
+
+As a bonus - backup system.
+
+Does it apply only to *code*?
+
+** Tricky questions
+
+1. How to name revisions?
+   1. Date
+   2. Incremental number
+   3. Some magic hash
+   4. Wine grape varieties
+   5. Snowball I, Snowball II, ..., Snowball IX, ...
+2. How much to save?
+   1. Only the changed files? Leads to hard time viewing the whole project at
+      particular point of time.
+   2. Only the changes in files? The same as above plus doesn't work for
+      binaries.
+   3. The whole project. Leads to wasted disk space (not that critical now,
+      but...)
+3. Collaboration is a huge tricky question!
+
+* 3 Generations
+
+** Generation I
+
+1. Collaboration via locks - only one person can edit specific file.
+2. No networking.
+3. One file at time operations.
+
+Examples: RCS, SCCS.
+
+** Generation II
+
+- More permissive collaboration:
+  - No locks.
+  - Users must merge current revision in order to commit changes.
+- Centralized networking:
+  - One source of truth.
+  - Requires connection to server in order to perform any operations (like
+    commit changes, switch between revisions).
+  - No need to store all revisions locally.
+  - No need to have whole project copy (one can checkout specific directory and
+    work only on the part of the project).
+
+Examples: CVS, Subversion.
+
+** Generation III
+
+- Separates getting changes and posting changes.
+- Distributed
+  - Every copy is a full copy of repository.
+  - No connection is required for most of the operations (only fetch and push
+    require connection). Thus some operations are much faster.
+  - Requires more disk space.
+
+Examples: Git, Mercurial, Bazaar, Darcs.
+
+** Git
+
+#+begin_quote
+the system wasn't really designed, but grew organically
+
+  --- Junio Hamano (2011)
+#+end_quote
+
+#+begin_quote
+Take Concurrent Versions System (CVS) as an example of what not to do; if in
+doubt, make the exact opposite decision.
+
+  --- Linus Torvalds (2007)
+#+end_quote
+
+- Main goal -- ease Linux development.
+- Main focus -- features.
+- Git is not easy. By no means.
+- But it's really cool.
+
+* Working locally
+
+** Introducing ourselves
+
+#+begin_src bash
+  $ git config [--global] user.name "Ștefan cel Mare"
+  $ git config [--global] user.email "stefan-ten-ten@gov.md"
+#+end_src
+
+#+BEAMER: \pause
+
+Believe me, it's the hardest thing!
+
+- People forget to do it.
+- Don't upset Ștefan and set your name and email.
+- It's useful in some scenarios.
+
+** Creating a repository
+
+#+begin_src bash
+  $ mkdir my-super-repo
+  $ cd my-super-repo
+  $ git init
+  $ ls -la
+  $ git status
+  On branch master
+
+  No commits yet
+
+  nothing to commit (create/copy files and use "git add" to track)
+
+#+end_src
+
+** Adding content
+
+*** Step 1 - 0                                                  :B_onlyenv:
+:PROPERTIES:
+:BEAMER_env:             onlyenv
+:BEAMER_act:             <1>
+:END:
+
+#+begin_src bash
+  $ echo "# Git Workshop" > README.md
+  $ git status
+  On branch master
+
+  No commits yet
+
+  Untracked files:
+    (use "git add <file>..." to include in what will be committed)
+    README.md
+
+  nothing added to commit but untracked files present (use "git add" to track)
+#+end_src
+
+
+*** Step 1 - 1                                                  :B_onlyenv:
+:PROPERTIES:
+:BEAMER_env:             onlyenv
+:BEAMER_act:             <2>
+:END:
+
+[[file:images/git-add-0.png]]
+
+*** Step 2 - 0                                                  :B_onlyenv:
+:PROPERTIES:
+:BEAMER_env:             onlyenv
+:BEAMER_act:             <3>
+:END:
+
+#+begin_src bash
+  $ git add README.md
+  $ git status
+  On branch master
+
+  No commits yet
+
+  Changes to be committed:
+    (use "git rm --cached <file>..." to unstage)
+    new file:   README.md
+#+end_src
+
+*** Step 2 - 1                                                  :B_onlyenv:
+:PROPERTIES:
+:BEAMER_env:             onlyenv
+:BEAMER_act:             <4>
+:END:
+
+[[file:images/git-add-1.png]]
+
+*** Step 3 - 0                                                  :B_onlyenv:
+:PROPERTIES:
+:BEAMER_env:             onlyenv
+:BEAMER_act:             <5>
+:END:
+
+#+begin_src bash
+  $ git commit -m "add README file"
+  [master (root-commit) 88d0e08] add README file
+   1 file changed, 1 insertion(+)
+   create mode 100644 README.md
+
+  $ git status
+  On branch master
+  nothing to commit, working tree clean
+#+end_src
+
+*** Step 3 - 1                                                  :B_onlyenv:
+:PROPERTIES:
+:BEAMER_env:             onlyenv
+:BEAMER_act:             <6>
+:END:
+
+[[file:images/git-add-2.png]]
+
+** Editing content
+
+*** Step 1 - 0                                                  :B_onlyenv:
+:PROPERTIES:
+:BEAMER_env:             onlyenv
+:BEAMER_act:             <1>
+:END:
+
+#+begin_src bash
+  $ echo "" >> README.md
+  $ echo "Using Git is fun, right?" >> README.md
+
+  $ git status
+  On branch master
+  Changes not staged for commit:
+    (use "git add <file>..." to update what will be committed)
+    (use "git restore <file>..." to discard changes in working directory)
+    modified:   README.md
+
+  no changes added to commit (use "git add" and/or "git commit -a")
+#+end_src
+
+*** Step 1 - 1                                                  :B_onlyenv:
+:PROPERTIES:
+:BEAMER_env:             onlyenv
+:BEAMER_act:             <2>
+:END:
+
+[[file:images/git-edit-0.png]]
+
+*** Step 2 - 0                                                  :B_onlyenv:
+:PROPERTIES:
+:BEAMER_env:             onlyenv
+:BEAMER_act:             <3>
+:END:
+
+#+begin_src bash
+  $ git add README.md
+
+  $ git status
+  On branch master
+  Changes to be committed:
+    (use "git restore --staged <file>..." to unstage)
+    modified:   README.md
+#+end_src
+
+*** Step 2 - 1                                                  :B_onlyenv:
+:PROPERTIES:
+:BEAMER_env:             onlyenv
+:BEAMER_act:             <4>
+:END:
+
+[[file:images/git-edit-1.png]]
+
+*** Step 3 - 0                                                  :B_onlyenv:
+:PROPERTIES:
+:BEAMER_env:             onlyenv
+:BEAMER_act:             <5>
+:END:
+
+#+begin_src bash
+  $ git commit -m "update README file"
+  [master 7e29246] update README file
+   1 file changed, 2 insertions(+)
+
+  $ git status
+  On branch master
+  nothing to commit, working tree clean
+#+end_src
+
+*** Step 3 - 1                                                  :B_onlyenv:
+:PROPERTIES:
+:BEAMER_env:             onlyenv
+:BEAMER_act:             <6>
+:END:
+
+[[file:images/git-edit-2.png]]
+
+** Areas of Git
+
+- Working directory - sandbox
+- Index (staging area) - proposed next commit snapshot
+- =.git= directory - repository database
+
+** Areas of Git
+
+[[file:images/areas-of-git.png]]
+
+** Viewing commits
+
+#+begin_src bash
+  $ ls -l .git/objects
+
+  $ git log
+#+end_src
+
+** Recap
+
+- =git add=: add files to index (staging)
+- =git commit=: create a commit from staging
+- =git log=: list commits
+
+* A file system
+
+** What is commit
+
+#+begin_src bash
+  $ git show 7e29246
+  commit 7e2924627a293bf793e045d0b6ca1332f151afba (HEAD -> master)
+  Author: Boris Buliga <boris@d12frosted.io>
+  Date:   Sun Dec 15 19:20:29 2019 +0200
+
+      update README file
+
+  diff --git a/README.md b/README.md
+  index 55a899f..dfdeab0 100644
+  --- a/README.md
+  +++ b/README.md
+  @@ -1 +1,3 @@
+   # Git Workshop
+  +
+  +Using Git is fun, right?
+#+end_src
+
+** What is commit
+
+#+begin_src bash
+  $ git cat-file -t 7e29246
+  commit
+
+  $ git cat-file -p 7e29246
+  tree 43e7b8c24bc186e88becdeaaaa32c42a4a5c3a5b
+  parent 88d0e082f116578b6a815efe03372400c4456454
+  author Boris Buliga <boris@d12frosted.io> 1576430429 +0200
+  committer Boris Buliga <boris@d12frosted.io> 1576430429 +0200
+  gpgsig -----BEGIN PGP SIGNATURE-----
+
+   iQIzBAABCAAdFiEEh3ycTfBYO6f60Is0+evwlDa8tQ8FAl32a10ACgkQ+evwlDa8
+   ...
+   ZVin9huB9mwAzGIyVOh/HONSt+QVnlGOtg8/mEKc7TFF7Mvjo/s=
+   =RjUf
+   -----END PGP SIGNATURE-----
+
+  update README file
+
+  $ λ git cat-file -p 43e7b8c24bc186e88becdeaaaa32c42a4a5c3a5b
+  100644 blob dfdeab0e7e7aeb6a8f639c386ed54d55a5b32988	README.md
+#+end_src
+
+** Three objects
+
+- Blobs
+- Trees
+- Commits
+
+** Git is a file system
+
+#+BEAMER: \pause
+
+#+ATTR_LATEX: :height 6.7cm
+[[file:images/too-much.jpg]]
+
+** But
+
+#+ATTR_LATEX: :height 6.7cm
+[[file:images/what-is-branch.jpg]]
+
+* Branches
+
+** Branch
+
+#+begin_src bash
+  $ cat .git/refs/heads/master
+  7e2924627a293bf793e045d0b6ca1332f151afba
+#+end_src
+
+41 bytes (40 for hash and 1 for new line)
+
+#+BEAMER: \pause
+
+#+begin_src bash
+  $ git cat-file -t 7e2924627a293bf793e045d0b6ca1332f151afba
+  commit
+
+  $ git cat-file -p 7e2924627a293bf793e045d0b6ca1332f151afba
+  tree 43e7b8c24bc186e88becdeaaaa32c42a4a5c3a5b
+  parent 88d0e082f116578b6a815efe03372400c4456454
+  author Boris Buliga <boris@d12frosted.io> 1576430429 +0200
+  committer Boris Buliga <boris@d12frosted.io> 1576430429 +0200
+  gpgsig -----BEGIN PGP SIGNATURE-----
+
+   iQIzBAABCAAdFiEEh3ycTfBYO6f60Is0+evwlDa8tQ8FAl32a10ACgkQ+evwlDa8
+   ...
+   =RjUf
+   -----END PGP SIGNATURE-----
+
+  update README file
+#+end_src
+
+** Manipulating branches
+
+- =git branch= - list the branches
+- =git branch NAME= - create a branch with =NAME=
+- =git branch -d NAME= - delete branch with =NAME=
+
+** Switching branches
+
+| action            | pre 2.23               | post 2.23            |
+|-------------------+------------------------+----------------------|
+| switch to branch  | =git checkout NAME=    | =git switch NAME=    |
+| create and switch | =git checkout -b NAME= | =git switch -c NAME= |
+
+** Visualisation
+
+#+ATTR_LATEX: :height 6.7cm
+[[file:images/git-checkout-0.png]]
+
+** HEAD
+
+- HEAD is a pointer of where current working directory is.
+  - =$ cat .git/HEAD= prints the reference
+- HEAD is the last commit snapshot and the next parent.
+
+** Visualisation
+
+*** P1                                                          :B_onlyenv:
+:PROPERTIES:
+:BEAMER_env:             onlyenv
+:BEAMER_act:             <1>
+:END:
+
+#+ATTR_LATEX: :height 6.7cm
+[[file:images/head-0.png]]
+
+#+begin_export latex
+\scriptsize{https://git-scm.com/book/en/v2}
+#+end_export
+
+*** P2                                                          :B_onlyenv:
+:PROPERTIES:
+:BEAMER_env:             onlyenv
+:BEAMER_act:             <2>
+:END:
+
+#+ATTR_LATEX: :height 6.7cm
+[[file:images/head-1.png]]
+
+#+begin_export latex
+\scriptsize{https://git-scm.com/book/en/v2}
+#+end_export
+
+*** P3                                                          :B_onlyenv:
+:PROPERTIES:
+:BEAMER_env:             onlyenv
+:BEAMER_act:             <3>
+:END:
+
+#+ATTR_LATEX: :height 6.7cm
+[[file:images/head-2.png]]
+
+#+begin_export latex
+\scriptsize{https://git-scm.com/book/en/v2}
+#+end_export
+
+*** P4                                                          :B_onlyenv:
+:PROPERTIES:
+:BEAMER_env:             onlyenv
+:BEAMER_act:             <4>
+:END:
+
+#+ATTR_LATEX: :height 6.7cm
+[[file:images/head-3.png]]
+
+#+begin_export latex
+\scriptsize{https://git-scm.com/book/en/v2}
+#+end_export
+
+*** P5                                                          :B_onlyenv:
+:PROPERTIES:
+:BEAMER_env:             onlyenv
+:BEAMER_act:             <5>
+:END:
+
+#+ATTR_LATEX: :height 6.7cm
+[[file:images/head-4.png]]
+
+#+begin_export latex
+\scriptsize{https://git-scm.com/book/en/v2}
+#+end_export
+
+*** P6                                                          :B_onlyenv:
+:PROPERTIES:
+:BEAMER_env:             onlyenv
+:BEAMER_act:             <6>
+:END:
+
+#+ATTR_LATEX: :height 6.7cm
+[[file:images/head-5.png]]
+
+#+begin_export latex
+\scriptsize{https://git-scm.com/book/en/v2}
+#+end_export
+
+** Switching to commit
+
+*** checkout                                                     :B_column:
+:PROPERTIES:
+:BEAMER_env:             column
+:BEAMER_opt:             [t]
+:BEAMER_col:             0.46
+:END:
+
+#+begin_src bash
+  $ git checkout 88d0e08
+  Note: switching to '88d0e08'.
+
+  You are in 'detached HEAD' state. You can look around,
+  make experimental changes and commit them, and you can
+  discard any commits you make in this state without
+  impacting any branches by switching back to a branch.
+
+  If you want to create a new branch to retain commits
+  you create, you may do so (now or later) by using -c
+  with the switch command. Example:
+
+    git switch -c <new-branch-name>
+
+  Or undo this operation with:
+
+    git switch -
+
+  Turn off this advice by setting config variable
+  advice.detachedHead to false
+
+  HEAD is now at 88d0e08 add README file
+#+end_src
+
+*** switch                                                       :B_column:
+:PROPERTIES:
+:BEAMER_env:             column
+:BEAMER_opt:             [t]
+:BEAMER_col:             0.46
+:END:
+
+#+begin_src bash
+  $ git switch 88d0e08
+  fatal: a branch is expected, got commit '88d0e08'
+
+  $ git switch --detach 88d0e08
+  HEAD is now at 88d0e08 add README file
+#+end_src
+
+** Dealing with detached HEAD
+
+*** initial state                                               :B_onlyenv:
+:PROPERTIES:
+:BEAMER_env:             onlyenv
+:BEAMER_act:             <1>
+:END:
+
+After you make a commit on detached =HEAD=:
+
+#+begin_src bash
+  λ git lg master HEAD
+  ,* 864a083 <Boris Buliga> - (HEAD, detached-head-file) detached head file (2 minutes ago)
+  | * efd7f07 <Boris Buliga> - (master) add game.exe (32 hours ago)
+  | * 7e29246 <Boris Buliga> - (feature/whatever) update README file (3 days ago)
+  |/
+  ,* 88d0e08 <Boris Buliga> - add README file (3 days ago)
+#+end_src
+
+*** cherry-pick                                                 :B_onlyenv:
+:PROPERTIES:
+:BEAMER_env:             onlyenv
+:BEAMER_act:             <2>
+:END:
+
+#+begin_src bash
+  $ git checkout master
+  Previous HEAD position was 864a083 detached head file
+  Switched to branch 'master'
+
+  $ git cherry-pick 864a083
+  [master 2aacafb] detached head file
+   Date: Wed Dec 18 16:10:41 2019 +0200
+   1 file changed, 0 insertions(+), 0 deletions(-)
+   create mode 100644 detached-head-file
+
+  $ git lg
+  ,* 2aacafb <Boris Buliga> - (HEAD -> master) detached head file (2 seconds ago)
+  ,* efd7f07 <Boris Buliga> - add game.exe (32 hours ago)
+  ,* 7e29246 <Boris Buliga> - (feature/whatever) update README file (3 days ago)
+  ,* 88d0e08 <Boris Buliga> - add README file (3 days ago)
+#+end_src
+
+*** merge                                                       :B_onlyenv:
+:PROPERTIES:
+:BEAMER_env:             onlyenv
+:BEAMER_act:             <3>
+:END:
+
+#+begin_src bash
+  $ git branch detached-head-file
+
+  $ git checkout master
+  Previous HEAD position was 864a083 detached head file
+  Switched to branch 'master'
+
+  $ git merge detached-head-file
+  Merge made by the 'recursive' strategy.
+   detached-head-file | 0
+   1 file changed, 0 insertions(+), 0 deletions(-)
+   create mode 100644 detached-head-file
+
+  $ git lg
+  ,*   7e24cc1 <Boris Buliga> - (HEAD -> master) Merge branch 'detached-head-file' (5 seconds ago)
+  |\
+  | * 864a083 <Boris Buliga> - (detached-head-file) detached head file (4 minutes ago)
+  ,* | efd7f07 <Boris Buliga> - add game.exe (32 hours ago)
+  ,* | 7e29246 <Boris Buliga> - (feature/whatever) update README file (3 days ago)
+  |/
+  ,* 88d0e08 <Boris Buliga> - add README file (3 days ago)
+#+end_src
+
+** How it looked
+
+[[file:images/merging-vs-rebasing-0.png]]
+
+** After merge
+
+#+begin_src bash
+$ git checkout branch-a
+$ git merge branch-b
+#+end_src
+
+[[file:images/merging-vs-rebasing-1.png]]
+
+** How it looked
+
+[[file:images/merging-vs-rebasing-0.png]]
+
+
+** After rebase
+
+#+begin_src bash
+$ git checkout branch-b
+$ git rebase branch-a
+#+end_src
+
+[[file:images/merging-vs-rebasing-2.png]]
+
+** After rebase + merge
+
+#+begin_src bash
+$ git checkout branch-a
+$ git merge branch-b
+#+end_src
+
+[[file:images/merging-vs-rebasing-2.png]]
+
+** Working with conflicts
+
+Fieldwork
+
+** Aborting
+
+#+begin_src bash
+  $ git merge --abort
+  $ git rebase --abort
+  $ git cherry-pick --abort
+#+end_src
+
+* Undoing stuff
+
+** Reset
+
+#+ATTR_LATEX: :height 6.7cm
+[[file:images/reset-start.png]]
+
+#+begin_export latex
+\scriptsize{https://git-scm.com/book/en/v2}
+#+end_export
+
+** Three levels of reset
+
+- Soft reset
+- Mixed reset (mixed feelings is what you get)
+- Hard reset
+
+** Hard reset
+
+#+ATTR_LATEX: :height 6.7cm
+[[file:images/reset-hard.png]]
+
+#+begin_export latex
+\scriptsize{https://git-scm.com/book/en/v2}
+#+end_export
+
+** Mixed reset
+
+#+ATTR_LATEX: :height 6.7cm
+[[file:images/reset-mixed.png]]
+
+#+begin_export latex
+\scriptsize{https://git-scm.com/book/en/v2}
+#+end_export
+
+** Soft reset
+
+#+ATTR_LATEX: :height 6.7cm
+[[file:images/reset-soft.png]]
+
+#+begin_export latex
+\scriptsize{https://git-scm.com/book/en/v2}
+#+end_export
+
+** Checkout
+
+#+ATTR_LATEX: :height 6.7cm
+[[file:images/reset-checkout.png]]
+
+#+begin_export latex
+\scriptsize{https://git-scm.com/book/en/v2}
+#+end_export
+
+* Stash
+
+* Collaboration
+
+** Collaboration
+
+- remotes
+- fetching
+- pushing
+- cloning
+
+** Collaboration
+
+- Patches
+- Pull requests
+- Reviews
+
+* References
+:PROPERTIES:
+:UNNUMBERED:             t
+:END:
+
+** References
+
+- =man git <command>=
+- Pro Git: https://git-scm.com/book/en/v2
+- https://github.blog/2019-08-16-highlights-from-git-2-23/
+- https://redfin.engineering/two-commits-that-wrecked-the-user-experience-of-git-f0075b77eab1
+
+* Questions?
+* Thank you
