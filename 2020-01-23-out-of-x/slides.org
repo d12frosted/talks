@@ -1,0 +1,310 @@
+#+TITLE: Out of X/Quartz
+#+DATE: January 23, 2020
+#+AUTHOR: Boris Buliga/Borys Bulyha
+#+STARTUP: beamer
+#+LATEX_CLASS: beamer
+#+LATEX_CLASS_OPTIONS: [presentation,aspectratio=169,smaller]
+#+LATEX_HEADER: \usepackage[utf8]{inputenc}
+#+LATEX_HEADER: \usepackage{soul}
+#+LATEX_HEADER: \usepackage{unicode-math}
+#+LATEX_HEADER: \usepackage{mathtools}
+#+LATEX_HEADER: \usepackage[mathletters]{ucs}
+#+LATEX_HEADER: \usemintedstyle{tango}
+#+LATEX_HEADER: \setminted{fontsize=\scriptsize}
+#+LATEX_HEADER: \setminted{mathescape=true}
+#+LATEX_HEADER: \setbeamertemplate{itemize items}[circle]
+#+LATEX_HEADER: \setbeamertemplate{enumerate items}[default]
+#+LATEX_HEADER: \setlength{\parskip}{\baselineskip}%
+#+LATEX_HEADER: \setlength{\parindent}{0pt}%
+#+LATEX_HEADER: \setbeamertemplate{navigation symbols}{}%remove navigation symbols
+#+LATEX_HEADER: \newcommand{\hlyellow}[1]{\colorbox{yellow!50}{$\displaystyle#1$}}
+#+LATEX_HEADER: \newcommand{\hlfancy}[2]{\sethlcolor{#1}\hl{#2}}
+#+OPTIONS: H:2 toc:nil num:t
+
+#+begin_export latex
+\newcommand{\mathcolorbox}[2]{%
+  \begingroup
+  \setlength{\fboxsep}{2pt}%
+  \colorbox{#1}{$\displaystyle #2$}%
+  \endgroup
+}
+
+\AtBeginSection[]{
+  \begin{frame}
+  \vfill
+  \centering
+  \begin{beamercolorbox}[sep=8pt,center,shadow=true,rounded=true]{title}
+    \usebeamerfont{title}\insertsectionhead\par%
+  \end{beamercolorbox}
+  \vfill
+  \end{frame}
+}
+#+end_export
+
+* Evolution so far
+
+** Long time ago
+
+#+ATTR_LATEX: :height 7.0cm
+[[file:images/evolution-1.png]]
+
+#+begin_export latex
+\scriptsize{www.ft.com}
+#+end_export
+
+** Not that far away from now
+
+#+ATTR_LATEX: :height 7.0cm
+[[file:images/evolution-2.png]]
+
+#+begin_export latex
+\scriptsize{Moreau - Prometheus}
+#+end_export
+
+** More recent events
+
+- ... important stuff happens (wine and math).
+- 33 AD -- people started to look at the bright side of life (according to MP).
+- ... math continues to evolve.
+- 1822 -- Charles Babbage designs first Analytical Engine.
+- 1840s -- Ada Lovelace writes a program for this engine to calculate
+  Bernoulli numbers.
+- 1936 -- Alan Turing presents the notion of a universal machine.
+- 1945 -- ENIAC, first electronic general-purpose computer is built.
+- 1950s -- COBOL, Fortran.
+- 1960s -- Douglas Engelbart creates first ever computer mouse.
+- 1971 -- Ken Thompson creates first version of Unix shell.
+- 1976 -- release of Emacs.
+- 1981 -- computers with mice in mass production.
+- 1984 -- the first release of X window server (though it's not the first one).
+- ...
+
+** Present days
+
+#+ATTR_LATEX: :height 7.0cm
+[[file:images/evolution-3.png]]
+
+** About me
+
+*** About                                                        :B_column:
+:PROPERTIES:
+:BEAMER_env:             column
+:BEAMER_col:             0.75
+:END:
+
+- Server developer @Payments by Wix.
+- Haskell ↔ Emacs Lisp extremist. Whatever that means.
+- Chinese tea drinker.
+- Wine-lifestyle activist (92% of my life).
+- @d12frosted
+
+*** Photo                                                        :B_column:
+:PROPERTIES:
+:BEAMER_env:             column
+:BEAMER_col:             0.25
+:END:
+
+#+ATTR_LATEX: :height 3.5cm
+[[file:images/boris.jpg]]
+
+** Agenda
+
+- Shells
+- PATH
+- Basic commands
+- Being privileged
+- Piping
+
+* To GUI or not?
+
+** GUI motivation
+
+- GUI is usually more user friendly (≠ obvious)
+  - Explorable in a passive fashion
+  - In most cases you don’t have to read documentation or excessively use DuckDuckGo
+- Some tasks are hard or nearly impossible to solve without a decent user interface
+  - Editing Video or Image
+  - Real-time 3D games?
+
+** CLI Motivation
+
+- GUI and TUI are usually less powerful than CLI
+  - Automation
+  - Composition
+- GUI is not always available
+  - X server is not started automatically (let’s greet my setup)
+  - SSH
+
+* Unix shell
+
+** Mushlya
+
+- Unix shell is command-line interpreter and a scripting language.
+- Hides technical details of the OS kernel interface.
+- Everyone uses shell, but not necessarily directly.
+- 'Modern' shells:
+  - Bourne shell -- =sh=
+  - Bourne-Again shell -- =bash=
+  - Korn shell -- =ksh=
+  - Z shell -- =zsh=; default on macOS since 10.15 Catalina
+  - C shell -- =csh= or =tcsh=
+  - Fish shell -- =fish=
+
+** Terminal emulator
+
+User interacts with shell using terminal emulator
+
+- Terminal.app
+- iTerm
+- xterm
+- rxvt
+- kitty
+
+** Binary location
+
+*** command -v                                                   :B_column:
+:PROPERTIES:
+:BEAMER_env:             column
+:BEAMER_col:             0.5
+:END:
+
+#+begin_src bash
+  $ command -v bash
+  /usr/bin/bash
+
+  $ command -v echo
+  /usr/bin/echo
+
+  $ command -v wixtaller
+  /home/d12frosted/.local/bin/wixtaller
+
+  $ command -v command
+  <error>
+#+end_src
+
+*** which                                                        :B_column:
+:PROPERTIES:
+:BEAMER_env:             column
+:BEAMER_col:             0.5
+:END:
+
+#+begin_src bash
+  $ which bash
+  /usr/bin/bash
+
+  $ which echo
+  /usr/bin/echo
+
+  $ which wixtaller
+  /home/d12frosted/.local/bin/wixtaller
+
+  $ which which
+  /usr/bin/which
+#+end_src
+
+** =PATH=
+
+#+begin_src bash
+  $ echo $PATH
+  /home/d12frosted/.config/bin /home/d12frosted/.local/bin /usr/local/sbin /usr/local/bin /usr/bin
+#+end_src
+
+#+begin_src bash
+export PATH=$HOME/.local/bin:$PATH
+#+end_src
+
+Put in:
+
+- =$HOME/.bashrc=
+- =$HOME/.zshrc=
+- =$XDG_CONFIG_HOME/fish/config.fish=
+
+** Installing software
+
+1. Use package manager
+   1. =brew= -- https://brew.sh
+   2. =pacman=
+   3. =apt-get=
+2. Update to the latest versions
+   1. =brew upgrade=
+   2. =pacman -Syu=
+   3. ???
+
+** Important
+
+Run command only when you understand what it does!
+
+** Basic commands
+
+- =man command= - manual for command
+  - =command --help=
+  - =command -h=
+- =pwd= - prints working directory
+- =ls= - list files (useful options are =-l=, =-a=, =-h=)
+- =cd= - change directory
+- =cat= - view file
+- =less= - view something
+- =rm= - remove file
+
+** Printing and interpolation
+
+#+begin_src bash
+  $ echo "hello world"
+  hello world
+
+  $ echo "hello $USER"
+  hello d12frosted
+
+  $ echo 'hello $USER'
+  hello $USER
+#+end_src
+
+** Redirect
+
+#+begin_src bash
+  $ echo "hello" > file.txt
+
+  $ cat file.txt
+  hello
+
+  $ echo "world" > file.txt
+
+  $ cat file.txt
+  world
+
+  $ cat file.txt > other-file.txt
+
+  $ echo "is huge" >> other-file.txt
+
+  $ cat other-file.txt
+  world
+  is huge
+#+end_src
+
+** Piping
+
+#+begin_src bash
+  $ curl --help
+
+  $ curl --help | less
+
+  $ brew install jq
+
+  $ curl https://api.coindesk.com/v1/bpi/currentprice.json
+#+end_src
+
+** Right or left
+
+#+begin_src bash
+  $ pacman -S hlint
+  error: you cannot perform this operation unless you are root.
+
+  $ sudo pacman -S hlint
+#+end_src
+
+** Dollar or hash?
+
+- =$ command= -- execute as regular user
+- =# command= -- execute as privileged user
+* Questions?
+* Thank you
