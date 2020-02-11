@@ -1337,6 +1337,11 @@ application is a practical thing.
 
 #+begin_src scala
   > iffy(Option(true), Option(42), Option(100))
+#+end_src
+
+#+BEAMER: \pause
+
+#+begin_src scala
   Some(42)
 #+end_src
 
@@ -1344,6 +1349,11 @@ application is a practical thing.
 
 #+begin_src scala
   > iffy(Option(true), Option(42), None)
+#+end_src
+
+#+BEAMER: \pause
+
+#+begin_src scala
   None
 #+end_src
 
@@ -1351,9 +1361,15 @@ application is a practical thing.
 
 #+begin_src scala
   > iffy(IO(true), IO(println("true case")), IO(println("false case"))).unsafeRunSync()
+#+end_src
+
+#+BEAMER: \pause
+
+#+begin_src scala
   true case
   false case
 #+end_src
+
 
 ** Outcome
 

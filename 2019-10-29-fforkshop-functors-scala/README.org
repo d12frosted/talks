@@ -22,3 +22,15 @@ The tasks are located in a separate repository:
 [[https://github.com/wax-org/fforkshop-functors-scala][wax-org/fforkshop-functors-scala]].
 
 Authors: [[https://github.com/valentynv][Valentyn Vakatsiienko]] and [[https://d12frosted.io][Boris Buliga]].
+
+** References
+
+- http://www.staff.city.ac.uk/~ross/papers/Applicative.pdf
+- Röjemo, Niklas. (1995). Garbage collection and memory efficiency. Ph.D.
+  thesis, Chalmers.
+- Swierstra, S. Doaitse, & Duponcheel, Luc. (1996). Deterministic,
+  error-correcting combinator parsers. Pages 184–207 of: Launchbury, John,
+  Meijer, Erik, & Sheard, Tim (eds), Advanced functional programming. LNCS,
+  vol. 1129. Springer.
+- https://ttic.uchicago.edu/~dreyer/course/papers/wadler.pdf
+- https://www.schoolofhaskell.com/user/edwardk/snippets/fmap
