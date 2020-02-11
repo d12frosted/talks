@@ -1,6 +1,6 @@
 name:                demo
 version:             0.1.0.0
-git:                 "https://gitlab.com/d12frosted/talks"
+git:                 "https://github.com/d12frosted/talks"
 license:             BSD3
 author:              "Boris Buliga"
 maintainer:          "boris@d12frosted.io"

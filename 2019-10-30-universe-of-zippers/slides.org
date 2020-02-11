@@ -2738,7 +2738,7 @@ That should be obvious by now.
 
 ** Grab the code
 
-https://gitlab.com/d12frosted/talks
+https://github.com/d12frosted/talks
 
 * References
 :PROPERTIES:

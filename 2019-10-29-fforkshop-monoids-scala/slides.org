@@ -132,7 +132,7 @@ explain why.
 ** Before we start
 
 #+begin_src bash
-  $ git clone git@gitlab.com:wax-org/fforkshop-monoids-scala.git
+  $ git clone git@github.com:wax-org/fforkshop-monoids-scala.git
 #+end_src
 
 And import it as sbt project.

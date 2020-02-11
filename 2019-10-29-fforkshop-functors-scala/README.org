@@ -19,6 +19,6 @@ Afterwards we solve two problems:
 - Validation.
 
 The tasks are located in a separate repository:
-[[https://gitlab.com/wax-org/fforkshop-functors-scala][wax-org/fforkshop-functors-scala]].
+[[https://github.com/wax-org/fforkshop-functors-scala][wax-org/fforkshop-functors-scala]].
 
 Authors: [[https://github.com/valentynv][Valentyn Vakatsiienko]] and [[https://d12frosted.io][Boris Buliga]].
