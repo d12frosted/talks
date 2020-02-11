@@ -101,7 +101,7 @@ explain why.
 - Basic forkshop is split into several parts:
   1. Type classes, Semigroups and Monoids.
   2. Functors and Applicative Functors.
-  3. Monads.
+  3. Selective Applicative Functors and Monads.
   4. Readers.
   5. Comonads.
 - Theory and practice. Make sure that you are ready to write the code.
