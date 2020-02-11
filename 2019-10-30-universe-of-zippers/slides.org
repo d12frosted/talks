@@ -1,6 +1,7 @@
 #+TITLE: Universe of zippers (or how to plant a bomb)
 #+AUTHOR: Boris Buliga
 #+EMAIL: boris@d12frosted.io
+#+DATE: October 30, 2019
 #+STARTUP: beamer
 #+LATEX_CLASS: beamer
 #+LATEX_CLASS_OPTIONS: [presentation,aspectratio=169,smaller]
