@@ -34,3 +34,5 @@ Authors: [[https://github.com/valentynv][Valentyn Vakatsiienko]] and [[https://d
   vol. 1129. Springer.
 - https://ttic.uchicago.edu/~dreyer/course/papers/wadler.pdf
 - https://www.schoolofhaskell.com/user/edwardk/snippets/fmap
+- https://duplode.github.io/posts/idempotent-applicatives-parametricity-and-a-puzzle.html
+- http://blog.ezyang.com/2012/08/applicative-functors/

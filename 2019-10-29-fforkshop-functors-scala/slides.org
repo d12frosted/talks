@@ -1318,6 +1318,12 @@ application is a practical thing.
 4. Composition: ~pure (.) <*> u <*> v <*> w = u <*> (v <*> w)~
    - Says that function composition 'holds' in the applicative context.
 
+** Monoidal laws
+
+1. Left identity: =comb (u, unit) ~ u=
+2. Right identity: =comb (unit, u) ~ u=
+3. Associativity: =comb (comb (u, v), w) ~ comb (u, comb (v, w))=
+
 ** Coding time
 
 - Open =src/main/scala/wax/typeclass/applicative/implicits/package.scala=
@@ -1369,7 +1375,6 @@ application is a practical thing.
   true case
   false case
 #+end_src
-
 
 ** Outcome
 
@@ -2830,6 +2835,8 @@ How to combine errors?
   vol. 1129. Springer.
 - https://www.schoolofhaskell.com/user/edwardk/snippets/fmap
 - https://ttic.uchicago.edu/~dreyer/course/papers/wadler.pdf
+- https://duplode.github.io/posts/idempotent-applicatives-parametricity-and-a-puzzle.html
+- http://blog.ezyang.com/2012/08/applicative-functors/
 
 * Questions?
 
