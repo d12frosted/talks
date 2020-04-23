@@ -2011,6 +2011,10 @@ structure.
 :BEAMER_opt:             t
 :END:
 
+#+begin_src scala
+  case class UUID(value: String)
+#+end_src
+
 *** Step 1                                                      :B_onlyenv:
 :PROPERTIES:
 :BEAMER_env:             onlyenv
@@ -2018,7 +2022,7 @@ structure.
 :END:
 
 #+begin_src scala
-  def uuid: Parser[String] = ???
+  def uuid: Parser[UUID] = ???
 #+end_src
 
 *** Step 2                                                      :B_onlyenv:
@@ -2028,7 +2032,7 @@ structure.
 :END:
 
 #+begin_src scala
-  def uuid: Parser[String] =
+  def uuid: Parser[UUID] =
     satisfy(c => c.isLetterOrDigit || c == '-')
 #+end_src
 
@@ -2039,9 +2043,9 @@ structure.
 :END:
 
 #+begin_src scala
-  def uuid: Parser[String] =
+  def uuid: Parser[UUID] =
     satisfy(c => c.isLetterOrDigit || c == '-')
-    // Required: Parser [ String ]
+    // Required: Parser [ UUID ]
     // Found:    Parser [ Char   ]
 #+end_src
 
@@ -2052,7 +2056,7 @@ structure.
 :END:
 
 #+begin_src scala
-  def uuid: Parser[String] =
+  def uuid: Parser[UUID] =
     many(satisfy(c => c.isLetterOrDigit || c == '-'))
 #+end_src
 
@@ -2063,9 +2067,9 @@ structure.
 :END:
 
 #+begin_src scala
-  def uuid: Parser[String] =
+  def uuid: Parser[UUID] =
     many(satisfy(c => c.isLetterOrDigit || c == '-'))
-    // Required: Parser [ String     ]
+    // Required: Parser [ UUID     ]
     // Found:    Parser [ List[Char] ]
 #+end_src
 
@@ -2076,8 +2080,8 @@ structure.
 :END:
 
 #+begin_src scala
-  def uuid: Parser[String] =
-    satisfy(c => c.isLetterOrDigit || c == '-').fmap(_.mkString)
+  def uuid: Parser[UUID] =
+    satisfy(c => c.isLetterOrDigit || c == '-').fmap(_.mkString).fmap(UUID)
 #+end_src
 
 *** Usage 1                                                     :B_onlyenv:
@@ -2088,7 +2092,7 @@ structure.
 
 #+begin_src scala
   > uuid.run("0517b093-b49a-447a-ad66-96ac2b244859")
-  Right("0517b093-b49a-447a-ad66-96ac2b244859")
+  Right(UUID("0517b093-b49a-447a-ad66-96ac2b244859"))
 #+end_src
 
 *** Usage 2                                                     :B_onlyenv:
@@ -2116,7 +2120,7 @@ Damn...
 :END:
 
 #+begin_src scala
-  def uuid: Parser[String] = /* ... */
+  def uuid: Parser[UUID] = /* ... */
   def many[A](parser: Parser[A]): Parser[List[A]] = /* ... */
   def space: Parser[Char] = /* ... */
 #+end_src
@@ -2187,10 +2191,10 @@ Damn...
 
 #+begin_src scala
   > tokenize(uuid).run("0517b093-b49a-447a-ad66-96ac2b244859")
-  Right("0517b093-b49a-447a-ad66-96ac2b244859")
+  Right(UUID("0517b093-b49a-447a-ad66-96ac2b244859"))
 
   > tokenize(uuid).run("    0517b093-b49a-447a-ad66-96ac2b244859")
-  Right("0517b093-b49a-447a-ad66-96ac2b244859")
+  Right(UUID("0517b093-b49a-447a-ad66-96ac2b244859"))
 #+end_src
 
 *** Tokenize - 4                                                :B_onlyenv:
@@ -2212,7 +2216,7 @@ Damn...
 
 #+begin_src scala
   > tokenize(uuid).run("             0517b093-b49a-447a-ad66-96ac2b244859 ")
-  Right("0517b093-b49a-447a-ad66-96ac2b244859")
+  Right(UUID("0517b093-b49a-447a-ad66-96ac2b244859"))
 #+end_src
 
 ** Improving UUID parser :noexport:
