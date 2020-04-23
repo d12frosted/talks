@@ -2525,7 +2525,7 @@ Damn...
     name.fmap(n => a => Person(n, a)).ap(int)
 
   val person: Parser[Person] =
-    name.fmap(n => a => Person(n, a)) <*> int
+    Person.pure[Parser] <*> name <*> int
 
   val person: Parser[Person] =
     (name, int).mapN(Person)
@@ -2580,7 +2580,7 @@ We forgot the separator!
     name.fmap(n => a => Person(n, a)).ap(char ',' *> int)
 
   val person: Parser[Person] =
-    name.fmap(n => a => Person(n, a)) <*> (char ',' *> int)
+    Person.pure[Parser] <*> name <*> (char ',' *> int)
 #+end_src
 
 **** Haskell                                                    :B_column:
