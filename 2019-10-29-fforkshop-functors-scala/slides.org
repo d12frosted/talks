@@ -9,6 +9,7 @@
 #+LATEX_HEADER: \usepackage{unicode-math}
 #+LATEX_HEADER: \usepackage{mathtools}
 #+LATEX_HEADER: \usepackage[mathletters]{ucs}
+#+LATEX_HEADER: \usepackage[cache=false]{minted}
 #+LATEX_HEADER: \usemintedstyle{tango}
 #+LATEX_HEADER: \setminted{fontsize=\scriptsize}
 #+LATEX_HEADER: \setminted{mathescape=true}
@@ -204,7 +205,7 @@ There are constructors of even higher arity. For example,
 
 - <2-> It's a /ternary/ value constructor.
 - <3-> If we provide only one value, it becomes /binary/ value constructor.
-- <4-> Type of ~sum(300)~ is ~Int => Int => Int~.
+- <4-> Type of ~sum3(42)~ is ~Int => Int => Int~.
 - <5-> *Partial application* - is when not all arguments are provided to a
   function. So we get another function.
 
