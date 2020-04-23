@@ -438,7 +438,7 @@ data Maybe a = Nothing | Just a
 
 #+BEGIN_SRC scala
 //  apply        : (A => B) =>        A  =>        B
-def applyToOption: (A => B) => Option[A] => Option[B] = f => maybeV => match maybeV {
+def applyToOption: (A => B) => Option[A] => Option[B] = f => maybeV => maybeV match {
   case None    => None
   case Some(v) => Some(f(v))
 }
