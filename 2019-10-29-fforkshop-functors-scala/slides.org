@@ -861,7 +861,7 @@ And we want to apply that function and get resulting =Option[Int]=.
   trait Applicative[F[_]] extends Functor[F] {
     def ap[A, B]: F[A => B] => F[A] => F[B]
 
-    def pure[A](a: A): A => F[A]
+    def pure[A]: A => F[A]
   }
 #+end_src
 
@@ -897,7 +897,6 @@ And we want to apply that function and get resulting =Option[Int]=.
 
 ** What's about pure?
 
-
 *** Functor                                                :B_column:BMCOL:
 :PROPERTIES:
 :BEAMER_env:             column
@@ -922,7 +921,7 @@ And we want to apply that function and get resulting =Option[Int]=.
   trait Applicative[F[_]] extends Functor[F] {
     def ap[A, B]: F[A => B] => F[A] => F[B]
 
-    def pure[A](a: A): A => F[A]
+    def pure[A]: A => F[A]
   }
 #+end_src
 
