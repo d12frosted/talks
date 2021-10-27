@@ -1,0 +1,4 @@
+\begin{Verbatim}[commandchars=\\\{\},codes={\catcode`\$=3\catcode`\^=7\catcode`\_=8\relax}]
+\PYG{k}{def} \PYG{n+nf}{getAtomX}\PYG{p}{(}\PYG{n}{atom}\PYG{p}{:} \PYG{n+nc}{Atom}\PYG{p}{):} \PYG{n+nc}{Double} \PYG{o}{=}
+  \PYG{n}{atom}\PYG{p}{.}\PYG{n}{point}\PYG{p}{.}\PYG{n}{x}
+\end{Verbatim}

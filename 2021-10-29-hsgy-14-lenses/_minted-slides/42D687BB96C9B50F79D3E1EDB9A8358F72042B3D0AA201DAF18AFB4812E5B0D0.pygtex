@@ -1,0 +1,4 @@
+\begin{Verbatim}[commandchars=\\\{\},codes={\catcode`\$=3\catcode`\^=7\catcode`\_=8\relax}]
+\PYG{n+nf}{setAtomX} \PYG{o+ow}{::} \PYG{k+kt}{Double} \PYG{o+ow}{\PYGZhy{}\PYGZgt{}} \PYG{k+kt}{Atom} \PYG{o+ow}{\PYGZhy{}\PYGZgt{}} \PYG{k+kt}{Atom}
+\PYG{n+nf}{setAtomX} \PYG{n}{x} \PYG{n}{a} \PYG{o+ow}{=} \PYG{n}{setPoint} \PYG{p}{(}\PYG{n}{setX} \PYG{n}{x} \PYG{p}{(}\PYG{n}{\PYGZus{}point} \PYG{n}{a}\PYG{p}{))} \PYG{n}{a}
+\end{Verbatim}

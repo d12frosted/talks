@@ -1,0 +1,4 @@
+\begin{Verbatim}[commandchars=\\\{\},codes={\catcode`\$=3\catcode`\^=7\catcode`\_=8\relax}]
+\PYG{n+nf}{getAtomX} \PYG{o+ow}{::} \PYG{k+kt}{Atom} \PYG{o+ow}{\PYGZhy{}\PYGZgt{}} \PYG{k+kt}{Double}
+\PYG{n+nf}{getAtomX} \PYG{o+ow}{=} \PYG{n}{\PYGZus{}x} \PYG{o}{.} \PYG{n}{\PYGZus{}point}
+\end{Verbatim}

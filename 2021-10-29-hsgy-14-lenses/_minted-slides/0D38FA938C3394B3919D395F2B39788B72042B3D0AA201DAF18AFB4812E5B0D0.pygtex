@@ -1,0 +1,4 @@
+\begin{Verbatim}[commandchars=\\\{\},codes={\catcode`\$=3\catcode`\^=7\catcode`\_=8\relax}]
+\PYG{k+kr}{data} \PYG{k+kt}{Atom} \PYG{o+ow}{=} \PYG{k+kt}{Atom} \PYG{p}{\PYGZob{}} \PYG{n}{\PYGZus{}element} \PYG{o+ow}{::} \PYG{k+kt}{String}\PYG{p}{,} \PYG{n}{\PYGZus{}point} \PYG{o+ow}{::} \PYG{k+kt}{Point} \PYG{p}{\PYGZcb{}}
+\PYG{k+kr}{data} \PYG{k+kt}{Point} \PYG{o+ow}{=} \PYG{k+kt}{Point} \PYG{p}{\PYGZob{}} \PYG{n}{\PYGZus{}x} \PYG{o+ow}{::} \PYG{k+kt}{Double}\PYG{p}{,} \PYG{n}{\PYGZus{}y} \PYG{o+ow}{::} \PYG{k+kt}{Double} \PYG{p}{\PYGZcb{}}
+\end{Verbatim}

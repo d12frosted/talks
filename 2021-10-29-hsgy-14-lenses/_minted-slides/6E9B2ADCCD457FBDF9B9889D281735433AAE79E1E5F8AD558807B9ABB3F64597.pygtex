@@ -1,0 +1,4 @@
+\begin{Verbatim}[commandchars=\\\{\},codes={\catcode`\$=3\catcode`\^=7\catcode`\_=8\relax}]
+\PYG{k}{case} \PYG{k}{class} \PYG{n+nc}{Atom}\PYG{p}{(}\PYG{n}{element}\PYG{p}{:} \PYG{n+nc}{String}\PYG{p}{,} \PYG{n}{point}\PYG{p}{:} \PYG{n+nc}{Point}\PYG{p}{)}
+\PYG{k}{case} \PYG{k}{class} \PYG{n+nc}{Point}\PYG{p}{(}\PYG{n}{x}\PYG{p}{:} \PYG{n+nc}{Double}\PYG{p}{,} \PYG{n}{y}\PYG{p}{:} \PYG{n+nc}{Double}\PYG{p}{)}
+\end{Verbatim}

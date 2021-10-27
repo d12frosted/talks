@@ -1,0 +1,174 @@
+% Created 2021-10-25 Mon 20:29
+% Intended LaTeX compiler: pdflatex
+\documentclass[presentation,aspectratio=169,8pt]{beamer}
+\usepackage[utf8x]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{graphicx}
+\usepackage{grffile}
+\usepackage{longtable}
+\usepackage{wrapfig}
+\usepackage{rotating}
+\usepackage[normalem]{ulem}
+\usepackage{amsmath}
+\usepackage{textcomp}
+\usepackage{amssymb}
+\usepackage{capt-of}
+\usepackage{hyperref}
+\usepackage{color}
+\usepackage[newfloat]{minted}
+\usepackage{soul}
+\usepackage{mathtools}
+\usemintedstyle{tango}
+\setminted{mathescape=true}
+\setbeamertemplate{itemize items}[circle]
+\setbeamertemplate{enumerate items}[default]
+\setbeamertemplate{caption}{\raggedright\insertcaption\par}
+\setlength{\parskip}{\baselineskip}%
+\setlength{\parindent}{0pt}%
+\setbeamertemplate{navigation symbols}{}%remove navigation symbols
+\newcommand{\hlyellow}[1]{\colorbox{yellow!50}{$\displaystyle#1$}}
+\newcommand{\hlfancy}[2]{\sethlcolor{#1}\hl{#2}}
+\usetheme{default}
+\date{October 29, 2021}
+\title{HSGy - 14}
+\subtitle{Lenses}
+\hypersetup{
+ pdfauthor={},
+ pdftitle={HSGy - 14},
+ pdfkeywords={},
+ pdfsubject={},
+ pdfcreator={Emacs 28.0.50 (Org mode 9.4.6)}, 
+ pdflang={English}}
+\begin{document}
+
+\maketitle
+\newcommand{\mathcolorbox}[2]{%
+  \begingroup
+  \setlength{\fboxsep}{2pt}%
+  \colorbox{#1}{$\displaystyle #2$}%
+  \endgroup
+}
+
+\AtBeginSection[]{
+  \begin{frame}
+  \vfill
+  \centering
+  \begin{beamercolorbox}[sep=8pt,center,shadow=true,rounded=true]{title}
+    \usebeamerfont{title}\insertsectionhead\par%
+  \end{beamercolorbox}
+  \vfill
+  \end{frame}
+}
+
+\begin{frame}[label={sec:orge039d3b}]{Haskell Study Group, yo!}
+Prerequisites:
+
+\begin{enumerate}
+\item You forgot Haskell syntax.
+\item You are ready to suffer.
+\end{enumerate}
+\end{frame}
+
+\begin{frame}[label={sec:org6cb53d4}]{Lenses}
+Lenses abstraction make the concept of a field of an abstraction, a first class
+notion.
+
+Lenses is a little language of its own.
+
+Used by many interesting libraries. Copycatted to Scala.
+\end{frame}
+
+\begin{frame}[label={sec:org24fbdf8},fragile]{Data types}
+ \begin{block}{Haskell}
+\begin{minted}[]{haskell}
+data Atom = Atom { _element :: String, _point :: Point }
+data Point = Point { _x :: Double, _y :: Double }
+\end{minted}
+\end{block}
+
+\begin{block}{Scala}
+\begin{minted}[]{scala}
+case class Atom(element: String, point: Point)
+case class Point(x: Double, y: Double)
+\end{minted}
+\end{block}
+\end{frame}
+
+\begin{frame}[label={sec:org88975d1},fragile]{Getters}
+ \begin{columns}
+\begin{column}{0.5\columnwidth}
+\begin{minted}[]{haskell}
+getAtomX :: Atom -> Double
+getAtomX = _x . _point
+\end{minted}
+\end{column}
+
+\begin{column}{0.5\columnwidth}
+\begin{minted}[]{scala}
+def getAtomX(atom: Atom): Double =
+  atom.point.x
+\end{minted}
+\end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}[label={sec:org481528b},fragile]{Setters}
+ \begin{columns}
+\begin{column}{0.5\columnwidth}
+\begin{minted}[]{haskell}
+setPoint :: Point -> Atom -> Atom
+setPoint p a = a { _point = p }
+
+setElement :: String -> Atom -> Atom
+setElement e a = a { _element = e }
+
+setX:: Double -> Point -> Point
+setX x p = p { _x = x }
+
+setY:: Double -> Point -> Point
+setY y p = p { _y = y }
+\end{minted}
+\end{column}
+
+\begin{column}{0.5\columnwidth}
+\begin{minted}[]{scala}
+def setPoint(point: Point, atom: Atom): Atom =
+  atom.copy(point = point)
+
+def setElement(element: String, atom: Atom): Atom =
+  atom.copy(element = element)
+
+def setX(x: Double, point: Point): Point =
+  point.copy(x = x)
+
+def setY(Y: Double, point: Point): Point =
+  point.copy(y = y)
+\end{minted}
+\end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}[label={sec:org99a5ffb},fragile]{But what if\ldots{} nested?}
+ \begin{columns}
+\begin{column}{0.5\columnwidth}
+\begin{minted}[]{haskell}
+setAtomX :: Double -> Atom -> Atom
+setAtomX x a = setPoint (setX x (_point a)) a
+\end{minted}
+\end{column}
+
+\begin{column}{0.5\columnwidth}
+\begin{minted}[]{scala}
+def setAtomX(x: Double, atom: Atom): Atom =
+  setPoint(setX(x, atom.point), point)
+\end{minted}
+\end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}[label={sec:org77ccaf7}]{Well, that's}
+\begin{center}
+\includegraphics[height=7.5cm]{images/hory-shet.png}
+\end{center}
+\end{frame}
+\end{document}

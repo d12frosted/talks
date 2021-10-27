@@ -1,0 +1,13 @@
+\begin{Verbatim}[commandchars=\\\{\},codes={\catcode`\$=3\catcode`\^=7\catcode`\_=8\relax}]
+\PYG{k}{def} \PYG{n+nf}{setPoint}\PYG{p}{(}\PYG{n}{point}\PYG{p}{:} \PYG{n+nc}{Point}\PYG{p}{,} \PYG{n}{atom}\PYG{p}{:} \PYG{n+nc}{Atom}\PYG{p}{):} \PYG{n+nc}{Atom} \PYG{o}{=}
+  \PYG{n}{atom}\PYG{p}{.}\PYG{n}{copy}\PYG{p}{(}\PYG{n}{point} \PYG{o}{=} \PYG{n}{point}\PYG{p}{)}
+
+\PYG{k}{def} \PYG{n+nf}{setElement}\PYG{p}{(}\PYG{n}{element}\PYG{p}{:} \PYG{n+nc}{String}\PYG{p}{,} \PYG{n}{atom}\PYG{p}{:} \PYG{n+nc}{Atom}\PYG{p}{):} \PYG{n+nc}{Atom} \PYG{o}{=}
+  \PYG{n}{atom}\PYG{p}{.}\PYG{n}{copy}\PYG{p}{(}\PYG{n}{element} \PYG{o}{=} \PYG{n}{element}\PYG{p}{)}
+
+\PYG{k}{def} \PYG{n+nf}{setX}\PYG{p}{(}\PYG{n}{x}\PYG{p}{:} \PYG{n+nc}{Double}\PYG{p}{,} \PYG{n}{point}\PYG{p}{:} \PYG{n+nc}{Point}\PYG{p}{):} \PYG{n+nc}{Point} \PYG{o}{=}
+  \PYG{n}{point}\PYG{p}{.}\PYG{n}{copy}\PYG{p}{(}\PYG{n}{x} \PYG{o}{=} \PYG{n}{x}\PYG{p}{)}
+
+\PYG{k}{def} \PYG{n+nf}{setY}\PYG{p}{(}\PYG{n+nc}{Y}\PYG{p}{:} \PYG{n+nc}{Double}\PYG{p}{,} \PYG{n}{point}\PYG{p}{:} \PYG{n+nc}{Point}\PYG{p}{):} \PYG{n+nc}{Point} \PYG{o}{=}
+  \PYG{n}{point}\PYG{p}{.}\PYG{n}{copy}\PYG{p}{(}\PYG{n}{y} \PYG{o}{=} \PYG{n}{y}\PYG{p}{)}
+\end{Verbatim}

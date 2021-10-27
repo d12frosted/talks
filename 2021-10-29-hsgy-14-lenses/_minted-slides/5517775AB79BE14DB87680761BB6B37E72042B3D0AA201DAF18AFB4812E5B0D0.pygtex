@@ -1,0 +1,13 @@
+\begin{Verbatim}[commandchars=\\\{\},codes={\catcode`\$=3\catcode`\^=7\catcode`\_=8\relax}]
+\PYG{n+nf}{setPoint} \PYG{o+ow}{::} \PYG{k+kt}{Point} \PYG{o+ow}{\PYGZhy{}\PYGZgt{}} \PYG{k+kt}{Atom} \PYG{o+ow}{\PYGZhy{}\PYGZgt{}} \PYG{k+kt}{Atom}
+\PYG{n+nf}{setPoint} \PYG{n}{p} \PYG{n}{a} \PYG{o+ow}{=} \PYG{n}{a} \PYG{p}{\PYGZob{}} \PYG{n}{\PYGZus{}point} \PYG{o+ow}{=} \PYG{n}{p} \PYG{p}{\PYGZcb{}}
+
+\PYG{n+nf}{setElement} \PYG{o+ow}{::} \PYG{k+kt}{String} \PYG{o+ow}{\PYGZhy{}\PYGZgt{}} \PYG{k+kt}{Atom} \PYG{o+ow}{\PYGZhy{}\PYGZgt{}} \PYG{k+kt}{Atom}
+\PYG{n+nf}{setElement} \PYG{n}{e} \PYG{n}{a} \PYG{o+ow}{=} \PYG{n}{a} \PYG{p}{\PYGZob{}} \PYG{n}{\PYGZus{}element} \PYG{o+ow}{=} \PYG{n}{e} \PYG{p}{\PYGZcb{}}
+
+\PYG{n+nf}{setX}\PYG{o+ow}{::} \PYG{k+kt}{Double} \PYG{o+ow}{\PYGZhy{}\PYGZgt{}} \PYG{k+kt}{Point} \PYG{o+ow}{\PYGZhy{}\PYGZgt{}} \PYG{k+kt}{Point}
+\PYG{n+nf}{setX} \PYG{n}{x} \PYG{n}{p} \PYG{o+ow}{=} \PYG{n}{p} \PYG{p}{\PYGZob{}} \PYG{n}{\PYGZus{}x} \PYG{o+ow}{=} \PYG{n}{x} \PYG{p}{\PYGZcb{}}
+
+\PYG{n+nf}{setY}\PYG{o+ow}{::} \PYG{k+kt}{Double} \PYG{o+ow}{\PYGZhy{}\PYGZgt{}} \PYG{k+kt}{Point} \PYG{o+ow}{\PYGZhy{}\PYGZgt{}} \PYG{k+kt}{Point}
+\PYG{n+nf}{setY} \PYG{n}{y} \PYG{n}{p} \PYG{o+ow}{=} \PYG{n}{p} \PYG{p}{\PYGZob{}} \PYG{n}{\PYGZus{}y} \PYG{o+ow}{=} \PYG{n}{y} \PYG{p}{\PYGZcb{}}
+\end{Verbatim}
