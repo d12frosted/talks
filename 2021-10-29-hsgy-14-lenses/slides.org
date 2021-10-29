@@ -934,9 +934,9 @@ And they compose well:
 
 * References
 
-- [[http://hackage.haskell.org/package/lens][lens library]]
-- [[http://hackage.haskell.org/package/microlens][microlens library]]
-- [[https://en.wikibooks.org/wiki/Haskell/Lenses_and_functional_references][Lenses on WikiBooks]]
-- [[https://artyom.me/lens-over-tea-1][Lens over Tea P1]]
+- [[http://hackage.haskell.org/package/lens]]
+- [[http://hackage.haskell.org/package/microlens]]
+- [[https://en.wikibooks.org/wiki/Haskell/Lenses_and_functional_references]]
+- [[https://artyom.me/lens-over-tea-1]]
 
 * Thank you
