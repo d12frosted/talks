@@ -1,0 +1,41 @@
+cabal-version: 1.12
+
+-- This file has been generated from package.yaml by hpack version 0.34.4.
+--
+-- see: https://github.com/sol/hpack
+
+name:           hsgy14
+version:        0.0.0
+build-type:     Simple
+
+library
+  exposed-modules:
+      Lens1
+      Lens2
+      Lens3
+      Lens4
+      Lens5
+      Lenses
+      Types
+  other-modules:
+      Paths_hsgy14
+  hs-source-dirs:
+      src
+  ghc-options: -Wall
+  build-depends:
+      base
+  default-language: Haskell2010
+
+benchmark benchmark
+  type: exitcode-stdio-1.0
+  main-is: Main.hs
+  other-modules:
+      Paths_hsgy14
+  hs-source-dirs:
+      benchmark
+  ghc-options: -Wall
+  build-depends:
+      base
+    , criterion
+    , hsgy14
+  default-language: Haskell2010

@@ -1,0 +1,17 @@
+name: hsgy14
+
+ghc-options: -Wall
+
+dependencies:
+  - base
+
+library:
+  source-dirs: src
+
+benchmarks:
+  benchmark:
+    source-dirs: benchmark
+    dependencies:
+      - criterion
+      - hsgy14
+    main: Main.hs

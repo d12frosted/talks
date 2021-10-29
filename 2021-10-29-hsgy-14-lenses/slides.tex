@@ -1,4 +1,4 @@
-% Created 2021-10-25 Mon 20:29
+% Created 2021-10-29 Fri 08:20
 % Intended LaTeX compiler: pdflatex
 \documentclass[presentation,aspectratio=169,8pt]{beamer}
 \usepackage[utf8x]{inputenc}
@@ -60,7 +60,7 @@
   \end{frame}
 }
 
-\begin{frame}[label={sec:orge039d3b}]{Haskell Study Group, yo!}
+\begin{frame}[label={sec:orgb9ad417}]{Haskell Study Group, yo!}
 Prerequisites:
 
 \begin{enumerate}
@@ -69,7 +69,7 @@ Prerequisites:
 \end{enumerate}
 \end{frame}
 
-\begin{frame}[label={sec:org6cb53d4}]{Lenses}
+\begin{frame}[label={sec:org4a8c515}]{Lenses}
 Lenses abstraction make the concept of a field of an abstraction, a first class
 notion.
 
@@ -78,7 +78,7 @@ Lenses is a little language of its own.
 Used by many interesting libraries. Copycatted to Scala.
 \end{frame}
 
-\begin{frame}[label={sec:org24fbdf8},fragile]{Data types}
+\begin{frame}[label={sec:org5dc8e90},fragile]{Data types}
  \begin{block}{Haskell}
 \begin{minted}[]{haskell}
 data Atom = Atom { _element :: String, _point :: Point }
@@ -94,7 +94,7 @@ case class Point(x: Double, y: Double)
 \end{block}
 \end{frame}
 
-\begin{frame}[label={sec:org88975d1},fragile]{Getters}
+\begin{frame}[label={sec:org8aa5d8e},fragile]{Getters}
  \begin{columns}
 \begin{column}{0.5\columnwidth}
 \begin{minted}[]{haskell}
@@ -112,7 +112,7 @@ def getAtomX(atom: Atom): Double =
 \end{columns}
 \end{frame}
 
-\begin{frame}[label={sec:org481528b},fragile]{Setters}
+\begin{frame}[label={sec:org8f0231f},fragile]{Setters}
  \begin{columns}
 \begin{column}{0.5\columnwidth}
 \begin{minted}[]{haskell}
@@ -148,7 +148,7 @@ def setY(Y: Double, point: Point): Point =
 \end{columns}
 \end{frame}
 
-\begin{frame}[label={sec:org99a5ffb},fragile]{But what if\ldots{} nested?}
+\begin{frame}[label={sec:org5c254c3},fragile]{But what if\ldots{} nested?}
  \begin{columns}
 \begin{column}{0.5\columnwidth}
 \begin{minted}[]{haskell}
@@ -166,9 +166,688 @@ def setAtomX(x: Double, atom: Atom): Atom =
 \end{columns}
 \end{frame}
 
-\begin{frame}[label={sec:org77ccaf7}]{Well, that's}
+\begin{frame}[label={sec:org647ed2e}]{Well, that's}
 \begin{center}
 \includegraphics[height=7.5cm]{images/hory-shet.png}
 \end{center}
+\end{frame}
+
+\begin{frame}[label={sec:org78e8f67},fragile]{A simple lens}
+ \begin{columns}
+\begin{column}{0.5\columnwidth}
+\begin{minted}[]{haskell}
+data Lens a b = Lens
+  { view :: a -> b,
+    set :: b -> a -> a
+  }
+\end{minted}
+\end{column}
+
+\begin{column}{0.5\columnwidth}
+\pause
+
+\begin{minted}[]{haskell}
+point :: Lens Atom Point
+point = Lens _point setPoint
+
+element :: Lens Atom String
+element = Lens _element setElement
+
+x :: Lens Point Double
+x = Lens _x setX
+
+y :: Lens Point Double
+y = Lens _y setY
+\end{minted}
+\end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}[label={sec:orgedade99},fragile]{To use it}
+ \begin{verbatim}
+λ> :t view x
+view x :: Point -> Double
+
+λ> view x (Point 42.0 36.0)
+42.0
+
+λ> :t set x
+set x :: Double -> Point -> Point
+
+λ> set x 12.0 (Point 42.0 36.0)
+Point {_x = 12.0, _y = 36.0}
+\end{verbatim}
+\end{frame}
+
+\begin{frame}[label={sec:org00cd3e7},fragile]{Composition}
+ \begin{minted}[]{haskell}
+comp :: Lens a b -> Lens b c -> Lens a c
+comp l1 l2 = Lens
+  (view l2 . view l1)
+  (\c a -> set l1 (set l2 c (view l1 a)) a)
+\end{minted}
+\end{frame}
+
+\begin{frame}[label={sec:org3ae49aa},fragile]{To use it}
+ \begin{verbatim}
+λ> :t view (point `comp` x)
+view (point `comp` x) :: Atom -> Double
+
+λ> view (point `comp` x) (Atom "oxygen" (Point 42.0 36.0))
+42.0
+
+λ> :t set (point `comp` x)
+set (point `comp` x) :: Double -> Atom -> Atom
+
+λ> set (point `comp` x) 12.0 (Atom "oxygen" (Point 42.0 36.0))
+Atom {_element = "oxygen", _point = Point {_x = 12.0, _y = 36.0}}
+\end{verbatim}
+\end{frame}
+
+\begin{frame}[label={sec:orgeedff50},fragile]{/Over/coming patterns}
+ \begin{minted}[]{haskell}
+over :: Lens a b -> (b -> b) -> (a -> a)
+over l f a = set l (f (view l a)) a
+\end{minted}
+
+\pause
+
+\begin{minted}[]{haskell}
+moveAtom :: Atom -> Atom
+moveAtom = over (point `comp` x) (+ 1)
+\end{minted}
+\end{frame}
+
+\begin{frame}[label={sec:org914e2bd},fragile]{Composition}
+ \begin{columns}
+\begin{column}{0.5\columnwidth}
+\begin{minted}[]{haskell}
+comp :: Lens a b -> Lens b c -> Lens a c
+comp l1 l2 = Lens
+  (view l2 . view l1)
+  (\c a -> set l1 (set l2 c (view l1 a)) a)
+\end{minted}
+\end{column}
+
+\begin{column}{0.5\columnwidth}
+\begin{minted}[]{haskell}
+comp :: Lens a b -> Lens b c -> Lens a c
+comp l1 l2 = Lens
+  (view l2 . view l1)
+  (over l1 . set l2)
+\end{minted}
+\end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}[label={sec:org4da5e28},fragile]{Redundant access to Lens}
+ \begin{columns}
+\begin{column}{0.5\columnwidth}
+\begin{minted}[]{haskell}
+over :: Lens a b -> (b -> b) -> (a -> a)
+over l f a = set l (f (view l a)) a
+\end{minted}
+
+\pause
+
+\begin{minted}[]{haskell}
+data Lens a b = Lens
+  { view :: a -> b,
+    set :: b -> a -> a,
+    over :: (b -> b) -> (a -> a)
+  }
+\end{minted}
+
+\pause
+
+\begin{minted}[]{haskell}
+mkLens :: (a -> b) -> (b -> a -> a) -> Lens a b
+mkLens v s = Lens v s (\f a -> s (f (v a)) a)
+\end{minted}
+\end{column}
+
+\begin{column}{0.5\columnwidth}
+\pause
+
+\begin{minted}[]{haskell}
+point :: Lens Atom Point
+point = mkLens _point setPoint
+
+element :: Lens Atom String
+element = mkLens _element setElement
+
+x :: Lens Point Double
+x = mkLens _x setX
+
+y :: Lens Point Double
+y = mkLens _y setY
+\end{minted}
+\end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}[label={sec:orgc6e42b2},fragile]{Composition}
+ \begin{minted}[]{haskell}
+comp :: Lens a b -> Lens b c -> Lens a c
+comp l1 l2 =
+  Lens
+    (view l2 . view l1)
+    (over l1 . set l2)
+    (over l1 . over l2)
+\end{minted}
+\end{frame}
+
+\begin{frame}[label={sec:org145f9c6},fragile]{Redundant \texttt{set}}
+ \begin{minted}[]{haskell}
+data Lens a b = Lens
+  { view :: a -> b,
+    over :: (b -> b) -> (a -> a)
+  }
+\end{minted}
+
+\pause
+
+\begin{minted}[]{haskell}
+set :: Lens a b -> b -> a -> a
+set l b = over l (const b)
+\end{minted}
+
+\pause
+
+\begin{minted}[]{haskell}
+mkLens :: (a -> b) -> (b -> a -> a) -> Lens a b
+mkLens v s = Lens v (\f a -> s (f (v a)) a)
+\end{minted}
+
+\pause
+
+\begin{minted}[]{haskell}
+comp :: Lens a b -> Lens b c -> Lens a c
+comp l1 l2 =
+  Lens
+    (view l2 . view l1)
+    (over l1 . over l2)
+\end{minted}
+\end{frame}
+
+\begin{frame}[label={sec:orgeda7cf3},fragile]{What about IO?}
+ \begin{minted}[]{haskell}
+askX :: Atom -> IO Atom
+askX = over (point `comp` x) askUser
+  where
+    askUser :: Double -> IO Double
+    askUser a = do
+      putStrLn $ "Current position is " ++ show a ++ ". New Position?"
+      read <$> getLine
+\end{minted}
+
+\pause
+
+\begin{verbatim}
+• Couldn't match type ‘Atom’ with ‘IO Atom’
+  Expected type: Atom -> IO Atom
+    Actual type: Atom -> Atom
+• In the expression: over (point `comp` x) askUser
+
+...
+
+• Couldn't match type ‘IO Double’ with ‘Double’
+  Expected type: Double -> Double
+    Actual type: Double -> IO Double
+• In the second argument of ‘over’, namely ‘askUser’
+  In the expression: over (point `comp` x) askUser
+  In an equation for ‘askX’:
+
+...
+\end{verbatim}
+\end{frame}
+
+\begin{frame}[label={sec:org72be128},fragile]{\texttt{overIO}}
+ \begin{minted}[]{haskell}
+data Lens a b = Lens
+  { view :: a -> b,
+    over :: (b -> b) -> (a -> a),
+    overIO :: (b -> IO b) -> (a -> IO a)
+  }
+\end{minted}
+
+\pause
+
+\begin{minted}[]{haskell}
+mkLens :: (a -> b) -> (b -> a -> a) -> Lens a b
+mkLens v s = Lens v o oIO
+  where
+    o f a = s (f (v a)) a
+    oIO f a = (\b' -> s b' a) <$> f (v a)
+\end{minted}
+
+\pause
+
+\begin{minted}[]{haskell}
+comp :: Lens a b -> Lens b c -> Lens a c
+comp l1 l2 =
+  Lens
+    (view l2 . view l1)
+    (over l1 . over l2)
+    (overIO l1 . overIO l2)
+\end{minted}
+\end{frame}
+
+\begin{frame}[label={sec:org5b9203f},fragile]{Works}
+ \begin{minted}[]{haskell}
+askX :: Atom -> IO Atom
+askX = overF (point `comp` x) askUser
+  where
+    askUser :: Double -> IO Double
+    askUser a = do
+      putStrLn $ "Current position is " ++ show a ++ ". New Position?"
+      read <$> getLine
+\end{minted}
+\end{frame}
+
+\begin{frame}[label={sec:org157b873},fragile]{But generalisation \sout{is the root of all evil}}
+ \begin{minted}[]{haskell}
+data Lens a b = Lens
+  { view :: a -> b,
+    over :: (b -> b) -> (a -> a),
+    overF :: forall t. Functor t => (b -> t b) -> (a -> t a)
+  }
+
+mkLens :: (a -> b) -> (b -> a -> a) -> Lens a b
+mkLens v s = Lens v o oF
+  where
+    o f a = s (f (v a)) a
+    oF f a = (`s` a) <$> f (v a)
+\end{minted}
+
+\pause
+
+\begin{minted}[]{haskell}
+set :: Lens a b -> b -> a -> a
+set l b = over l (const b)
+
+setF :: Functor f => Lens a b -> f b -> a -> f a
+setF l b = overF l (const b)
+\end{minted}
+\end{frame}
+
+\begin{frame}[label={sec:org724ab60},fragile]{Getting over \texttt{over}}
+ \begin{minted}[]{haskell}
+over  ::                        (b ->   b) -> (a ->   a)
+overF :: forall t. Functor t => (b -> t b) -> (a -> t a)
+\end{minted}
+
+\pause
+
+So we need some isomoprhism between some \texttt{t a} and \texttt{a}.
+\end{frame}
+
+\begin{frame}[label={sec:org2ac0fdb},fragile]{Identity Functor}
+ \begin{minted}[]{haskell}
+newtype I a = MkI a
+
+unI :: I a -> a
+unI (MkI a) = a
+
+instance Functor I where
+  fmap f a = MkI (f (unI a))
+\end{minted}
+
+\pause
+
+\begin{minted}[]{haskell}
+over :: Lens a b -> (b -> b) -> (a -> a)
+over l f a = unI $ l f' a
+  where
+    f' b = MkI (f b)
+\end{minted}
+
+\pause
+
+\begin{minted}[]{haskell}
+data Lens a b = Lens
+  { view :: a -> b,
+    overF :: forall t. Functor t => (b -> t b) -> (a -> t a)
+  }
+\end{minted}
+\end{frame}
+
+\begin{frame}[label={sec:orged7a48d},fragile]{Naughty \texttt{view}}
+ \begin{minted}[]{haskell}
+view  ::                                       a -> b
+overF :: forall t. Functor t => (b -> t b) -> (a -> t a)
+\end{minted}
+
+\pause
+
+\begin{enumerate}
+\item turn \texttt{b} into \texttt{t a}
+\item provide \texttt{b -> t b}
+\end{enumerate}
+\end{frame}
+
+\begin{frame}[label={sec:orge58f939},fragile]{Constant Functor}
+ \begin{minted}[]{haskell}
+newtype C b a = MkC b
+
+unC :: C b a -> b
+unC (MkC b) = b
+
+instance Functor (C b) where
+  fmap _ (MkC b) = MkC b
+\end{minted}
+
+\pause
+
+\begin{minted}[]{haskell}
+overF :: Functor t => Lens a b -> (b -> t b) -> a -> t a
+MkC   :: b -> C b a
+\end{minted}
+
+\pause
+
+\begin{minted}[]{haskell}
+λ> :t \l -> overF l MkC
+\l -> overF l MkC :: Lens a b -> a -> C b a
+
+λ> :t \l -> unC . overF l MkC
+\l -> unC . overF l MkC :: Lens a c -> a -> c
+\end{minted}
+\end{frame}
+
+\begin{frame}[label={sec:orgd59e811},fragile]{Waaat?}
+ \begin{minted}[]{haskell}
+view :: Lens a b -> a -> b
+view l a = unC $ overF l MkC a
+\end{minted}
+\end{frame}
+
+\begin{frame}[label={sec:org676b2af},fragile]{Waaaaat?}
+ \begin{minted}[]{haskell}
+type Lens a b = forall t. Functor t => (b -> t b) -> (a -> t a)
+\end{minted}
+
+\pause
+
+\begin{minted}[]{haskell}
+set :: Lens a b -> b -> a -> a
+set l b = over l (const b)
+
+setF :: Functor f => Lens a b -> f b -> a -> f a
+setF l b = l (const b)
+
+over :: Lens a b -> (b -> b) -> (a -> a)
+over l f a = unI $ l (MkI . f) a
+
+view :: Lens a b -> a -> b
+view l a = unC $ l MkC a
+\end{minted}
+\end{frame}
+
+\begin{frame}[label={sec:orgb887df5},fragile]{Waaaaaaat?}
+ \begin{minted}[]{haskell}
+type Lens a b = forall t. Functor t => (b -> t b) -> (a -> t a)
+\end{minted}
+
+\pause
+
+\begin{minted}[]{haskell}
+mkLens :: (a -> b) -> (b -> a -> a) -> Lens a b
+mkLens v s f a = (`s` a) <$> f (v a)
+\end{minted}
+\end{frame}
+
+\begin{frame}[label={sec:org2b37169},fragile]{Waaaaaaaaat?}
+ \begin{minted}[]{haskell}
+comp :: Lens a b -> Lens b c -> Lens a c
+comp l1 l2 = l1 . l2
+\end{minted}
+
+\pause
+
+\begin{minted}[]{haskell}
+setAtomX :: Double -> Atom -> Atom
+setAtomX = set (point . x)
+
+moveAtom :: Atom -> Atom
+moveAtom = over (point . x) (+ 1)
+\end{minted}
+\end{frame}
+
+\begin{frame}[label={sec:org9763d9c},fragile]{Applicative behind the corner}
+ \begin{minted}[]{haskell}
+type Lens a b      = forall t. Functor t      => (b -> t b) -> (a -> t a)
+\end{minted}
+
+\pause
+
+\begin{minted}[]{haskell}
+type Traversal a b = forall t . Applicative t => (b -> t b) -> (a -> t a)
+\end{minted}
+
+\pause
+
+\begin{minted}[]{haskell}
+lensToTraversal :: Lens a b -> Traversal a b
+lensToTraversal l = l
+\end{minted}
+\end{frame}
+
+\begin{frame}[label={sec:orgc5a7786},fragile]{Generalizing \texttt{over}}
+ \begin{columns}
+\begin{column}{0.5\columnwidth}
+\begin{minted}[]{haskell}
+over :: Lens a b -> (b -> b) -> (a -> a)
+over l f a = unI $ l (MkI . f) a
+\end{minted}
+\end{column}
+
+\begin{column}{0.5\columnwidth}
+\begin{minted}[]{haskell}
+over :: Traversal a b -> (b -> b) -> (a -> a)
+over l f a = unI $ l (MkI . f) a
+\end{minted}
+\end{column}
+\end{columns}
+
+\begin{columns}
+\pause
+
+\begin{column}{0.5\columnwidth}
+\begin{minted}[]{haskell}
+instance Functor I where
+  fmap f a = MkI (f (unI a))
+\end{minted}
+\end{column}
+
+\begin{column}{0.5\columnwidth}
+\begin{minted}[]{haskell}
+instance Applicative I where
+  pure a = MkI a
+  f <*> a = MkI $ (unI f) (unI a)
+\end{minted}
+\end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}[label={sec:orgefcac02},fragile]{What about \texttt{view}?}
+ \begin{minted}[]{haskell}
+view :: Lens a b -> a -> b
+view l a = unC $ l MkC a
+
+newtype C b a = MkC b
+
+unC :: C b a -> b
+unC (MkC b) = bs
+
+instance Applicative (C b) where
+  pure a = MkC undefined
+  f <*> a = MkC undefined
+\end{minted}
+\end{frame}
+
+\begin{frame}[label={sec:orgbf40d5f},fragile]{So\ldots{}}
+ \begin{itemize}
+\item \texttt{Traversal a b} describes how one can (possibly effectful) set or update value
+of type \texttt{b} in \texttt{a};
+\item \texttt{Lens a b} describes how one can (possibly effectful) set, update or \alert{view}
+value of type \texttt{b} in \texttt{a}
+\end{itemize}
+\end{frame}
+
+\begin{frame}[label={sec:org91aac1c},fragile]{\texttt{Maybe} Traversal}
+ \begin{minted}[]{haskell}
+this :: Traversal (Maybe a) a
+this _ Nothing = pure Nothing
+this f (Just a) = Just <$> f a
+\end{minted}
+
+\pause
+
+\begin{minted}[]{haskell}
+this               :: Applicative t => (a -> t a) -> Maybe a -> t (Maybe a)
+this (\a -> [a,a]) :: Maybe a -> [Maybe a]
+
+λ> this (\a -> [a,a]) $ Just 1
+[Just 1,Just 1]
+
+λ> this (\a -> [a,a]) $ Nothing
+[Nothing]
+\end{minted}
+\end{frame}
+
+\begin{frame}[label={sec:org6949f30},fragile]{List Traversal}
+ \begin{minted}[]{haskell}
+elems :: Traversal [a] a
+elems _ [] = pure []
+elems f (a : as) = (:) <$> f a <*> elems f as
+\end{minted}
+
+\pause
+
+\begin{minted}[]{haskell}
+positiveOnly       :: Double -> Maybe Double
+elems              :: Applicative t => (a -> t a) -> [a] -> t [a]
+elems positiveOnly :: [Double] -> Maybe [Double]
+
+λ> elems positiveOnly [1.6, 4.2, 0, 3.13]
+Just [1.6,4.2,0.0,3.13]
+
+λ> elems positiveOnly [1.6, -1, 4.2, 0, 3.13]
+Nothing
+\end{minted}
+\end{frame}
+
+\begin{frame}[label={sec:orgeef6620},fragile]{Pointy traversal}
+ \begin{minted}[]{haskell}
+points :: Traversal Point Double
+points f (Point a b) = Point <$> f a <*> f b
+\end{minted}
+
+\pause
+
+\begin{minted}[]{haskell}
+positiveOnly        :: Double -> Maybe Double
+points              :: Applicative t => (Double -> t Double) -> Point -> t Point
+points positiveOnly :: Point -> Maybe Point
+
+λ> points positiveOnly $ Point 1 2
+Just (Point {_x = 1.0, _y = 2.0})
+
+λ> points positiveOnly $ Point (-1) 2
+Nothing
+\end{minted}
+\end{frame}
+
+\begin{frame}[label={sec:org6340940},fragile]{Getting all of them}
+ So we cannot have view because the structure might have zero or more than one
+elements. Well, then at least we should be able to get a list of them?
+
+\begin{minted}[]{haskell}
+listOf :: Traversal a b -> a -> [b]
+\end{minted}
+
+\pause
+
+Looks like \texttt{view}, just with list as a result.
+\end{frame}
+
+\begin{frame}[label={sec:orgf543b1b},fragile]{Constant}
+ \begin{columns}
+\begin{column}{0.5\columnwidth}
+\begin{minted}[]{haskell}
+newtype C b a = MkC b
+
+unC :: C b a -> b
+unC (MkC b) = b
+
+instance Functor (C b) where
+  fmap _ (MkC b) = MkC b
+
+instance Applicative (C b) where
+  pure a = MkC undefined
+  f <*> a = MkC undefined
+\end{minted}
+\end{column}
+
+\begin{column}{0.5\columnwidth}
+\begin{minted}[]{haskell}
+newtype CL b a = MkCL [b]
+
+unCL :: CL b a -> [b]
+unCL (MkCL bs) = bs
+
+instance Functor (CL b) where
+  fmap _ (MkCL bs) = MkCL bs
+
+instance Applicative (CL b) where
+  pure _ = MkCL []
+  f <*> a = MkCL (unCL f <> unCL a)
+\end{minted}
+\end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}[label={sec:org976c3ce},fragile]{Constant}
+ \begin{columns}
+\begin{column}{0.5\columnwidth}
+\begin{minted}[]{haskell}
+newtype C b a = MkC b
+
+unC :: C b a -> b
+unC (MkC b) = b
+
+instance Functor (C b) where
+  fmap _ (MkC b) = MkC b
+
+instance Monoid b => Applicative (C b) where
+  pure a = MkC mempty
+  f <*> a = MkC (unC f <> unC a)
+\end{minted}
+\end{column}
+
+\begin{column}{0.5\columnwidth}
+\begin{minted}[]{haskell}
+newtype CL b a = MkCL [b]
+
+unCL :: CL b a -> [b]
+unCL (MkCL bs) = bs
+
+instance Functor (CL b) where
+  fmap _ (MkCL bs) = MkCL bs
+
+instance Applicative (CL b) where
+  pure _ = MkCL []
+  f <*> a = MkCL (unCL f <> unCL a)
+\end{minted}
+\end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}[label={sec:org66285df},fragile]{\texttt{listOf}}
+ \begin{minted}[]{haskell}
+listOf :: Monoid b => Traversal a b -> a -> b
+listOf t a = unC $ t MkC a
+\end{minted}
 \end{frame}
 \end{document}
