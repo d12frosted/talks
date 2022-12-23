@@ -1,0 +1,494 @@
+% Created 2022-12-23 Fri 13:46
+% Intended LaTeX compiler: pdflatex
+\documentclass[presentation,aspectratio=169,smaller]{beamer}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{graphicx}
+\usepackage{longtable}
+\usepackage{wrapfig}
+\usepackage{rotating}
+\usepackage[normalem]{ulem}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{capt-of}
+\usepackage{hyperref}
+\usepackage{color}
+\usepackage[newfloat]{minted}
+\usepackage[utf8]{inputenc}
+\usepackage{soul}
+\usepackage{unicode-math}
+\usepackage{mathtools}
+\usepackage[mathletters]{ucs}
+\usemintedstyle{tango}
+\setminted{fontsize=\scriptsize}
+\setminted{mathescape=true}
+\setbeamertemplate{itemize items}[circle]
+\setbeamertemplate{enumerate items}[default]
+\setlength{\parskip}{\baselineskip}%
+\setlength{\parindent}{0pt}%
+\setbeamertemplate{navigation symbols}{}%remove navigation symbols
+\newcommand{\hlyellow}[1]{\colorbox{yellow!50}{$\displaystyle#1$}}
+\newcommand{\hlfancy}[2]{\sethlcolor{#1}\hl{#2}}
+\usetheme{default}
+\author{Boris Buliga/Borys Bulyha}
+\date{December 23, 2022}
+\title{Drinking wine with Emacs}
+\subtitle{or a story of technical alcoholism}
+\hypersetup{
+ pdfauthor={Boris Buliga/Borys Bulyha},
+ pdftitle={Drinking wine with Emacs},
+ pdfkeywords={},
+ pdfsubject={},
+ pdfcreator={Emacs 30.0.50 (Org mode 9.6)}, 
+ pdflang={English}}
+\begin{document}
+
+\maketitle
+\newcommand{\mathcolorbox}[2]{%
+  \begingroup
+  \setlength{\fboxsep}{2pt}%
+  \colorbox{#1}{$\displaystyle #2$}%
+  \endgroup
+}
+
+\AtBeginSection[]{
+  \begin{frame}
+  \vfill
+  \centering
+  \begin{beamercolorbox}[sep=8pt,center,shadow=true,rounded=true]{title}
+    \usebeamerfont{title}\insertsectionhead\par%
+  \end{beamercolorbox}
+  \vfill
+  \end{frame}
+}
+
+\section{Emacs}
+\label{sec:org3d9efb7}
+
+\begin{frame}[label={sec:orgd487ae9},fragile]{What is Emacs?\footnote{Daria Tkhorevska asked me to be explicit that no one actually asked this question during Yaniv and Aviran Q\&A session. I made the whole story up.}}
+ \begin{columns}
+\begin{column}{0.5\columnwidth}
+\begin{itemize}
+\item \alert{Extensible} text editor.
+\item Development began in 1970s.
+\item Initially released in 1976.
+\item Actively maintained till this day.
+\item Use \texttt{C-x C-c} to quit it.
+\end{itemize}
+\end{column}
+
+\begin{column}{0.5\columnwidth}
+\begin{center}
+\includegraphics[height=3.5cm]{images/emacs.png}
+\end{center}
+\end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}[label={sec:org1fab026}]{Order salads}
+\begin{figure}[htbp]
+\centering
+\includegraphics[height=5.0cm]{images/salad.png}
+\caption{from \texttt{CestDiego/sweetgreen.el}}
+\end{figure}
+\end{frame}
+
+\begin{frame}[label={sec:orgbdfb417}]{Read email}
+\begin{figure}[htbp]
+\centering
+\includegraphics[height=7.0cm]{images/email-dashboard.png}
+\caption{from \texttt{rougier/mu4e-dashboard}}
+\end{figure}
+\end{frame}
+
+\begin{frame}[label={sec:orgae303f2}]{Control sex toys}
+\begin{figure}[htbp]
+\centering
+\includegraphics[height=5.0cm]{images/deldo.png}
+\caption{You may like Emacs, but Kyle (aka Poor Life Choices) \textbf{loves} Emacs. And it's mutual.}
+\end{figure}
+\end{frame}
+
+\begin{frame}[label={sec:org8057d42}]{Write some code}
+\begin{center}
+\includegraphics[height=8.0cm]{images/coding.png}
+\end{center}
+\end{frame}
+
+\begin{frame}[label={sec:org116498e}]{Take notes and manage tasks}
+\begin{center}
+\includegraphics[height=8.0cm]{images/note-taking.png}
+\end{center}
+\end{frame}
+
+\begin{frame}[label={sec:org01c0b81}]{Manage your wine cellar}
+\begin{center}
+\includegraphics[height=8.0cm]{images/wine-notes.png}
+\end{center}
+\end{frame}
+
+\section*{Intro}
+\label{sec:orgb7058e5}
+\begin{frame}[label={sec:org0da4cfd}]{About me}
+\begin{columns}
+\begin{column}{0.75\columnwidth}
+\begin{itemize}
+\item UA Server Guild manager @Wix.
+\item Haskell \(\leftrightarrow\) Emacs Lisp extremist. Whatever that means.
+\item Chinese tea lover.
+\item Wine-lifestyle activist (92\% of my life).
+\end{itemize}
+\end{column}
+
+\begin{column}{0.25\columnwidth}
+\begin{center}
+\includegraphics[height=3.5cm]{images/boris.jpg}
+\end{center}
+\end{column}
+\end{columns}
+\end{frame}
+
+\section{I drink wine}
+\label{sec:org6f5a0c8}
+
+\begin{frame}[label={sec:org8fe2b30}]{I \sout{love} need\footnote{Is it Obsessive-compulsive disorder?} to take notes}
+\begin{enumerate}
+\item What, when, where and with whom.
+\item Score and tasting notes.
+\item Information about wine, producer, region, grape, technology, etc.
+\item Manage cellar (inventory?).
+\end{enumerate}
+\end{frame}
+
+\begin{frame}[label={sec:org8f98e2a}]{What about existing solutions (CellarTracker/Vivino/Delectable)?}
+\begin{enumerate}
+\item Data is not owned by me.
+\item Incorrect data.
+\item No way to extend data with extra fields.
+\item Capabilities limited by proprietary solution.
+\item Requires internet connection (and who is laughing now?).
+\item \ldots{}
+\item I am engineer, I am capable of creating my own solution.
+\end{enumerate}
+\end{frame}
+
+\section{Solution}
+\label{sec:org4a75de6}
+
+\begin{frame}[label={sec:orgcb72f42}]{Obviously\ldots{}}
+\begin{center}
+\includegraphics[height=3.5cm]{images/emacs.png}
+\end{center}
+
+\begin{quote}
+Solution? \sout{Kafka} Emacs.
+
+Problem? You tell me.
+
+--- Kyrylo Ponomariov
+\end{quote}
+\end{frame}
+
+\begin{frame}[label={sec:org717a093}]{Airtable/Notion}
+\begin{figure}[htbp]
+\centering
+\includegraphics[height=6.0cm]{images/airtable.png}
+\caption{Image of my old Tea database (don't have wine there anymore).}
+\end{figure}
+\end{frame}
+
+\begin{frame}[label={sec:org4f85c59}]{Issues}
+\begin{itemize}
+\item Too much manual work.
+\item Hard to analyse.
+\item Hard to write automations (might be outdated).
+\item Still not everything is under \emph{my} control.
+\item Sometimes blocked by platform (e.g. waiting for features).
+\end{itemize}
+
+It's actually good enough. My wife still uses Airtable to manage our home library.
+\end{frame}
+
+\begin{frame}[label={sec:org2e71fe0}]{Org Mode for the rescue}
+\begin{columns}
+\begin{column}{0.75\columnwidth}
+\begin{itemize}
+\item A markup language (like markdown, but beefed with features).
+\item An extension for Emacs.
+\item Provides nice APIs to manipulate documents.
+\item People use it to write documents, notes, presentations manage tasks and projects, etc.
+\end{itemize}
+\end{column}
+
+\begin{column}{0.25\columnwidth}
+\begin{center}
+\includegraphics[height=3.5cm]{images/org-mode-unicorn.png}
+\end{center}
+\end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}[label={sec:org64d8ecd}]{Notes structure}
+\begin{center}
+\includegraphics[height=7.0cm]{images/notes-structure.png}
+\end{center}
+\end{frame}
+
+\begin{frame}[label={sec:org1ff6a95}]{Wine entry}
+\begin{center}
+\includegraphics[height=8.0cm]{images/wine-entry.png}
+\end{center}
+\end{frame}
+
+\begin{frame}[label={sec:org916a648}]{Rating}
+\begin{center}
+\includegraphics[height=8.0cm]{images/rating.png}
+\end{center}
+\end{frame}
+
+\begin{frame}[label={sec:org21ffc73},fragile]{Database}
+ \begin{itemize}
+\item All notes (e.g. data) are structured.
+\item There are APIs to parse these notes.
+\item So it's easy to build a database (\texttt{sqlite}) from the notes.
+\end{itemize}
+\end{frame}
+
+\begin{frame}[label={sec:org7d5fcac}]{Database}
+\begin{center}
+\includegraphics[height=6.0cm]{images/database.png}
+\end{center}
+\end{frame}
+
+\begin{frame}[label={sec:orge476030}]{Vulpea}
+\begin{columns}
+\begin{column}{0.75\columnwidth}
+\begin{itemize}
+\item A collection of functions for note taking based on Org Mode and Org Roam.
+\item A library to write applications and utilities around Org notes (structured or not).
+\item Optimized for reads.
+\item Allows to query by different metadata, custom fields, links etc.
+\item Allows to extend database with custom tables and data extractors.
+\item Handles quite big notes collection (10k+).
+\item \url{https://github.com/d12frosted/vulpea}
+\end{itemize}
+\end{column}
+
+\begin{column}{0.25\columnwidth}
+\begin{center}
+\includegraphics[height=3.5cm]{images/vulpea.png}
+\end{center}
+\end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}[label={sec:orgb1d3991}]{Vino}
+\begin{columns}
+\begin{column}{0.75\columnwidth}
+\begin{itemize}
+\item An Emacs application for cellar tracking and wine notes management.
+\item \url{https://github.com/d12frosted/vino}
+\end{itemize}
+\end{column}
+
+\begin{column}{0.25\columnwidth}
+\begin{center}
+\includegraphics[height=3.5cm]{images/vino.png}
+\end{center}
+\end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}[label={sec:org57fa62c}]{So what?}
+\begin{itemize}
+\item I have org files as source of truth. These notes are \alert{well-structured}.
+\item I have APIs to manipulate these files.
+\item I have database with all data extracted (so there is no need to parse these files every time).
+\end{itemize}
+\end{frame}
+
+\section{Emacs UI is ugly, isn't it? And no one can read your notes.}
+\label{sec:orgcef766d}
+
+\begin{frame}[label={sec:org9132fa5}]{barberry.io}
+\begin{center}
+\includegraphics[height=8.0cm]{images/barberry-garden-home.png}
+\end{center}
+\end{frame}
+
+\begin{frame}[label={sec:org1fe83b8}]{publicatorg}
+\begin{center}
+\includegraphics[height=6.0cm]{images/publicatorg.png}
+\end{center}
+\end{frame}
+
+\begin{frame}[label={sec:orgb4b25d5}]{publicatorg}
+\begin{center}
+\includegraphics[height=8.0cm]{images/publicatorg-exec.png}
+\end{center}
+\end{frame}
+
+\begin{frame}[label={sec:org3361d12}]{And it's crazy cool}
+\begin{itemize}
+\item I can keep my private notes as the source of truth.
+\item I have my cozy Emacs UI.
+\item But thanks to structured notes and APIs I can build multiple views.
+\item \ldots{}
+\item Just think about it :) I am overly excited!
+\end{itemize}
+\end{frame}
+
+\section{Some cool features}
+\label{sec:orgfab5220}
+
+\begin{frame}[label={sec:org996143e}]{Code blocks execution}
+\begin{columns}
+\begin{column}{0.5\columnwidth}
+\begin{center}
+\includegraphics[height=4.0cm]{images/code-execution-1.png}
+\end{center}
+\end{column}
+
+\begin{column}{0.5\columnwidth}
+\begin{center}
+\includegraphics[height=4.0cm]{images/code-execution-2.png}
+\end{center}
+\end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}[label={sec:org4afd33f}]{Fancy on Web and readable in plain text}
+\begin{columns}
+\begin{column}{0.5\columnwidth}
+\begin{center}
+\includegraphics[height=5.0cm]{images/graph-1.png}
+\end{center}
+\end{column}
+
+\begin{column}{0.5\columnwidth}
+\begin{center}
+\includegraphics[height=3.0cm]{images/graph-2.png}
+\end{center}
+\end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}[label={sec:org8f9735a}]{Convive page}
+\begin{center}
+\includegraphics[height=7.0cm]{images/convive.png}
+\end{center}
+\end{frame}
+
+\begin{frame}[label={sec:orgc2e0909}]{There's more}
+\begin{itemize}
+\item Barberry Garden budget is managed with small Emacs extension based on Vulpea.
+\item Plans for tasting events are managed  with small Emacs extension based on Vulpea.
+\item I have a view to review my cellar (scattered across 3 places).
+\item I have a view that suggests what to post to Vivino (e.g. what was not posted yet).
+\item For wine tasting events presentations are generated automatically (no shit) from the event article.
+\item I have a simple script that provides me various stats for a given time frame.
+\end{itemize}
+
+But there is no time to cover it all, so don't worry.
+\end{frame}
+
+\begin{frame}[label={sec:orgcaaccd7}]{Why so complicated?}
+\begin{quote}
+[…] org-mode is just a collection of lisp running in an editor. It cannot impose more complex features on you. \alert{The genius of org-mode is that you will eventually impose more complex features on yourself.}
+
+--- Michael Hall
+\end{quote}
+\end{frame}
+
+\begin{frame}[label={sec:org9ebc35d}]{Conclusion}
+\begin{itemize}
+\item Avoid Emacs at all costs.
+\item Structured data is cool.
+\item APIs are cool.
+\item Combined they can solve lots of routine tasks and result in some interesting products.
+\item Don't hesitate to start your own project, even if you are solving your own problems.
+\item Drink wine.
+\end{itemize}
+\end{frame}
+
+\begin{frame}[label={sec:org8c2c63d}]{Seriously, drink wine}
+\begin{center}
+\includegraphics[height=6cm]{images/tg-barberry-garden.png}
+\end{center}
+\end{frame}
+
+\begin{frame}[label={sec:orged92127}]{Seriously, drink wine}
+\begin{figure}[htbp]
+\centering
+\includegraphics[height=3.5cm]{images/tg-wix.JPG}
+\caption{Wix internal chat}
+\end{figure}
+\end{frame}
+
+\begin{frame}[label={sec:org45ed7ba}]{Follow}
+\begin{itemize}
+\item \url{https://barberry.io}
+\item \url{https://d12frosted.io}
+\item @d12frosted on GitHub
+\end{itemize}
+\end{frame}
+
+\section{What's next?}
+\label{sec:org16a6492}
+
+\begin{frame}[label={sec:orgcd8166a}]{Companion App}
+\begin{center}
+\includegraphics[height=4.0cm]{images/companion.png}
+\end{center}
+
+\begin{itemize}
+\item A web application to facilitate wine tasting events.
+\begin{itemize}
+\item Allow to assign scores, mark favourites and outcasts, etc.
+\item Provide technical information about wines.
+\item Support blind tasting.
+\end{itemize}
+\item Wine lovers - find and register for events; see your participation history.
+\item Sommeliers - facilitate events and build your audience.
+\end{itemize}
+\end{frame}
+
+\begin{frame}[label={sec:orgde94e3e}]{Wanna join?}
+\begin{itemize}
+\item Barberry Garden
+\begin{itemize}
+\item UX
+\item Content writers
+\end{itemize}
+\item Companion App
+\begin{itemize}
+\item UX
+\item Developers (unfortunately, TypeScript)
+\end{itemize}
+\item Everything else: there are plenty of ideas, reach me out to discuss
+\end{itemize}
+\end{frame}
+
+\section{Questions?}
+\label{sec:orgd066ea8}
+
+\section{Why not Wix?}
+\label{sec:org269d901}
+
+\section{Monetisation?}
+\label{sec:org31beebd}
+
+\section{Are you proud?}
+\label{sec:org15dc042}
+
+\section{Thank you}
+\label{sec:orgbbbfa54}
+
+\begin{frame}[label={sec:org73142f0}]{Links}
+\begin{itemize}
+\item \url{https://github.com/CestDiego/sweetgreen.el}
+\item \url{https://github.com/rougier/mu4e-dashboard}
+\item \url{https://github.com/qdot/deldo}
+\end{itemize}
+\end{frame}
+\end{document}

@@ -1,0 +1,438 @@
+#+TITLE: Drinking wine with Emacs
+#+subtitle: or a story of technical alcoholism
+#+DATE: December 23, 2022
+#+AUTHOR: Boris Buliga/Borys Bulyha
+#+STARTUP: beamer
+#+LATEX_CLASS: beamer
+#+LATEX_CLASS_OPTIONS: [presentation,aspectratio=169,smaller]
+#+LATEX_HEADER: \usepackage[utf8]{inputenc}
+#+LATEX_HEADER: \usepackage{soul}
+#+LATEX_HEADER: \usepackage{unicode-math}
+#+LATEX_HEADER: \usepackage{mathtools}
+#+LATEX_HEADER: \usepackage[mathletters]{ucs}
+#+LATEX_HEADER: \usemintedstyle{tango}
+#+LATEX_HEADER: \setminted{fontsize=\scriptsize}
+#+LATEX_HEADER: \setminted{mathescape=true}
+#+LATEX_HEADER: \setbeamertemplate{itemize items}[circle]
+#+LATEX_HEADER: \setbeamertemplate{enumerate items}[default]
+#+LATEX_HEADER: \setlength{\parskip}{\baselineskip}%
+#+LATEX_HEADER: \setlength{\parindent}{0pt}%
+#+LATEX_HEADER: \setbeamertemplate{navigation symbols}{}%remove navigation symbols
+#+LATEX_HEADER: \newcommand{\hlyellow}[1]{\colorbox{yellow!50}{$\displaystyle#1$}}
+#+LATEX_HEADER: \newcommand{\hlfancy}[2]{\sethlcolor{#1}\hl{#2}}
+#+OPTIONS: H:2 toc:nil num:t
+
+#+begin_export latex
+\newcommand{\mathcolorbox}[2]{%
+  \begingroup
+  \setlength{\fboxsep}{2pt}%
+  \colorbox{#1}{$\displaystyle #2$}%
+  \endgroup
+}
+
+\AtBeginSection[]{
+  \begin{frame}
+  \vfill
+  \centering
+  \begin{beamercolorbox}[sep=8pt,center,shadow=true,rounded=true]{title}
+    \usebeamerfont{title}\insertsectionhead\par%
+  \end{beamercolorbox}
+  \vfill
+  \end{frame}
+}
+#+end_export
+
+* Emacs
+
+** What is Emacs?[fn:1]
+
+**** About                                                      :B_column:
+:PROPERTIES:
+:BEAMER_env:             column
+:BEAMER_col:             0.5
+:END:
+
+- *Extensible* text editor.
+- Development began in 1970s.
+- Initially released in 1976.
+- Actively maintained till this day.
+- Use ~C-x C-c~ to quit it.
+
+[fn:1] Daria Tkhorevska asked me to be explicit that no one actually asked this question during Yaniv and Aviran Q&A session. I made the whole story up.
+
+**** Photo                                                      :B_column:
+:PROPERTIES:
+:BEAMER_env:             column
+:BEAMER_col:             0.5
+:END:
+
+#+attr_latex: :height 3.5cm
+[[file:images/emacs.png]]
+
+** Order salads
+
+#+attr_latex: :height 5.0cm
+#+caption: from =CestDiego/sweetgreen.el=
+[[file:images/salad.png]]
+
+** Read email
+
+#+attr_latex: :height 7.0cm
+#+caption: from =rougier/mu4e-dashboard=
+[[file:images/email-dashboard.png]]
+
+** Control sex toys
+
+#+attr_latex: :height 5.0cm
+#+caption: You may like Emacs, but Kyle (aka Poor Life Choices) *loves* Emacs. And it's mutual.
+[[file:images/deldo.png]]
+
+** Write some code
+
+#+attr_latex: :height 8.0cm
+[[file:images/coding.png]]
+
+** Take notes and manage tasks
+
+#+attr_latex: :height 8.0cm
+[[file:images/note-taking.png]]
+
+** Manage your wine cellar
+
+#+attr_latex: :height 8.0cm
+[[file:images/wine-notes.png]]
+
+* Intro
+:PROPERTIES:
+:UNNUMBERED:             t
+:END:
+
+** About me
+
+**** About                                                      :B_column:
+:PROPERTIES:
+:BEAMER_env:             column
+:BEAMER_col:             0.75
+:END:
+
+- UA Server Guild manager @Wix.
+- Haskell $\leftrightarrow$ Emacs Lisp extremist. Whatever that means.
+- Chinese tea lover.
+- Wine-lifestyle activist (92% of my life).
+
+**** Photo                                                      :B_column:
+:PROPERTIES:
+:BEAMER_env:             column
+:BEAMER_col:             0.25
+:END:
+
+#+attr_latex: :height 3.5cm
+[[file:images/boris.jpg]]
+
+* I drink wine
+
+** I +love+ need[fn:2] to take notes
+
+1. What, when, where and with whom.
+2. Score and tasting notes.
+3. Information about wine, producer, region, grape, technology, etc.
+4. Manage cellar (inventory?).
+
+[fn:2] Is it Obsessive-compulsive disorder?
+
+** What about existing solutions (CellarTracker/Vivino/Delectable)?
+
+1. Data is not owned by me.
+2. Incorrect data.
+3. No way to extend data with extra fields.
+4. Capabilities limited by proprietary solution.
+5. Requires internet connection (and who is laughing now?).
+6. ...
+7. I am engineer, I am capable of creating my own solution.
+
+* Solution
+
+** Obviously...
+
+#+attr_latex: :height 3.5cm
+[[file:images/emacs.png]]
+
+#+begin_quote
+Solution? +Kafka+ Emacs.
+
+Problem? You tell me.
+
+--- Kyrylo Ponomariov
+#+end_quote
+
+** Airtable/Notion
+
+#+attr_latex: :height 6.0cm
+#+caption: Image of my old Tea database (don't have wine there anymore).
+[[file:images/airtable.png]]
+
+** Issues
+
+- Too much manual work.
+- Hard to analyse.
+- Hard to write automations (might be outdated).
+- Still not everything is under /my/ control.
+- Sometimes blocked by platform (e.g. waiting for features).
+
+It's actually good enough. My wife still uses Airtable to manage our home library.
+
+** Org Mode for the rescue
+
+*** About                                                          :B_column:
+:PROPERTIES:
+:BEAMER_env:             column
+:BEAMER_col:             0.75
+:END:
+
+- A markup language (like markdown, but beefed with features).
+- An extension for Emacs.
+- Provides nice APIs to manipulate documents.
+- People use it to write documents, notes, presentations manage tasks and projects, etc.
+
+*** Photo                                                          :B_column:
+:PROPERTIES:
+:BEAMER_env:             column
+:BEAMER_col:             0.25
+:END:
+
+#+attr_latex: :height 3.5cm
+[[file:images/org-mode-unicorn.png]]
+
+** Notes structure
+
+#+attr_latex: :height 7.0cm
+[[file:images/notes-structure.png]]
+
+** Wine entry
+
+#+attr_latex: :height 8.0cm
+[[file:images/wine-entry.png]]
+
+** Rating
+
+#+attr_latex: :height 8.0cm
+[[file:images/rating.png]]
+
+** Database
+
+- All notes (e.g. data) are structured.
+- There are APIs to parse these notes.
+- So it's easy to build a database (=sqlite=) from the notes.
+
+** Database
+
+#+attr_latex: :height 6.0cm
+[[file:images/database.png]]
+
+** Vulpea
+
+*** About                                                          :B_column:
+:PROPERTIES:
+:BEAMER_env:             column
+:BEAMER_col:             0.75
+:END:
+
+- A collection of functions for note taking based on Org Mode and Org Roam.
+- A library to write applications and utilities around Org notes (structured or not).
+- Optimized for reads.
+- Allows to query by different metadata, custom fields, links etc.
+- Allows to extend database with custom tables and data extractors.
+- Handles quite big notes collection (10k+).
+- https://github.com/d12frosted/vulpea
+
+*** Photo                                                          :B_column:
+:PROPERTIES:
+:BEAMER_env:             column
+:BEAMER_col:             0.25
+:END:
+
+#+attr_latex: :height 3.5cm
+[[file:images/vulpea.png]]
+
+** Vino
+
+*** About                                                          :B_column:
+:PROPERTIES:
+:BEAMER_env:             column
+:BEAMER_col:             0.75
+:END:
+
+- An Emacs application for cellar tracking and wine notes management.
+- https://github.com/d12frosted/vino
+
+*** Photo                                                          :B_column:
+:PROPERTIES:
+:BEAMER_env:             column
+:BEAMER_col:             0.25
+:END:
+
+#+attr_latex: :height 3.5cm
+[[file:images/vino.png]]
+
+** So what?
+
+- I have org files as source of truth. These notes are *well-structured*.
+- I have APIs to manipulate these files.
+- I have database with all data extracted (so there is no need to parse these files every time).
+
+* Emacs UI is ugly, isn't it? And no one can read your notes.
+
+** barberry.io
+
+#+attr_latex: :height 8.0cm
+[[file:images/barberry-garden-home.png]]
+
+** publicatorg
+
+#+attr_latex: :height 6.0cm
+[[file:images/publicatorg.png]]
+
+** publicatorg
+
+#+attr_latex: :height 8.0cm
+[[file:images/publicatorg-exec.png]]
+
+** And it's crazy cool
+
+- I can keep my private notes as the source of truth.
+- I have my cozy Emacs UI.
+- But thanks to structured notes and APIs I can build multiple views.
+- ...
+- Just think about it :) I am overly excited!
+
+* Some cool features
+
+** Code blocks execution
+
+*** Note                                                           :B_column:
+:PROPERTIES:
+:BEAMER_env:             column
+:BEAMER_col:             0.5
+:END:
+
+#+attr_latex: :height 4.0cm
+[[file:images/code-execution-1.png]]
+
+*** Site                                                           :B_column:
+:PROPERTIES:
+:BEAMER_env:             column
+:BEAMER_col:             0.5
+:END:
+
+#+attr_latex: :height 4.0cm
+[[file:images/code-execution-2.png]]
+
+** Fancy on Web and readable in plain text
+
+*** Note                                                           :B_column:
+:PROPERTIES:
+:BEAMER_env:             column
+:BEAMER_col:             0.5
+:END:
+
+#+attr_latex: :height 5.0cm
+[[file:images/graph-1.png]]
+
+*** Site                                                           :B_column:
+:PROPERTIES:
+:BEAMER_env:             column
+:BEAMER_col:             0.5
+:END:
+
+#+attr_latex: :height 3.0cm
+[[file:images/graph-2.png]]
+
+** Convive page
+
+#+attr_latex: :height 7.0cm
+[[file:images/convive.png]]
+
+** There's more
+
+- Barberry Garden budget is managed with small Emacs extension based on Vulpea.
+- Plans for tasting events are managed  with small Emacs extension based on Vulpea.
+- I have a view to review my cellar (scattered across 3 places).
+- I have a view that suggests what to post to Vivino (e.g. what was not posted yet).
+- For wine tasting events presentations are generated automatically (no shit) from the event article.
+- I have a simple script that provides me various stats for a given time frame.
+
+But there is no time to cover it all, so don't worry.
+
+** Why so complicated?
+
+#+begin_quote
+[…] org-mode is just a collection of lisp running in an editor. It cannot impose more complex features on you. *The genius of org-mode is that you will eventually impose more complex features on yourself.*
+
+--- Michael Hall
+#+end_quote
+
+** Conclusion
+
+- Avoid Emacs at all costs.
+- Structured data is cool.
+- APIs are cool.
+- Combined they can solve lots of routine tasks and result in some interesting products.
+- Don't hesitate to start your own project, even if you are solving your own problems.
+- Drink wine.
+
+** Seriously, drink wine
+
+#+attr_latex: :height 6cm
+[[file:images/tg-barberry-garden.png]]
+
+** Seriously, drink wine
+
+#+attr_latex: :height 3.5cm
+#+caption: Wix internal chat
+[[file:images/tg-wix.JPG]]
+
+** Follow
+
+- https://barberry.io
+- https://d12frosted.io
+- @d12frosted on GitHub
+
+* What's next?
+
+** Companion App
+
+#+attr_latex: :height 4.0cm
+[[file:images/companion.png]]
+
+- A web application to facilitate wine tasting events.
+  - Allow to assign scores, mark favourites and outcasts, etc.
+  - Provide technical information about wines.
+  - Support blind tasting.
+- Wine lovers - find and register for events; see your participation history.
+- Sommeliers - facilitate events and build your audience.
+
+** Wanna join?
+
+- Barberry Garden
+  - UX
+  - Content writers
+- Companion App
+  - UX
+  - Developers (unfortunately, TypeScript)
+- Everything else: there are plenty of ideas, reach me out to discuss
+
+* Questions?
+
+* Why not Wix?
+
+* Monetisation?
+
+* Are you proud?
+
+* Thank you
+
+** Links
+
+- https://github.com/CestDiego/sweetgreen.el
+- https://github.com/rougier/mu4e-dashboard
+- https://github.com/qdot/deldo
