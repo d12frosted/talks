@@ -1,4 +1,4 @@
-* Functional Forkshop: Part 2 - Monoids (Scala edition)
+* Functional Forkshop: Part 2 - Functors (Scala edition)
 
 This is the second part of the Functional Forkshop - a series of introduction
 workshops to the functional programming.
