@@ -1,0 +1,770 @@
+#+TITLE: Drinking wine with Emacs
+#+subtitle: or a story of technical alcoholism
+#+DATE: June 01, 2024
+#+AUTHOR: Boris Buliga
+#+STARTUP: beamer
+#+LATEX_CLASS: beamer
+#+LATEX_CLASS_OPTIONS: [presentation,aspectratio=169,smaller]
+#+LATEX_HEADER: \usepackage[utf8]{inputenc}
+#+LATEX_HEADER: \usepackage{soul}
+#+LATEX_HEADER: \usepackage{unicode-math}
+#+LATEX_HEADER: \usepackage{mathtools}
+#+LATEX_HEADER: \usepackage[mathletters]{ucs}
+#+LATEX_HEADER: \usemintedstyle{tango}
+#+LATEX_HEADER: \setminted{fontsize=\scriptsize}
+#+LATEX_HEADER: \setminted{mathescape=true}
+#+LATEX_HEADER: \setbeamertemplate{itemize items}[circle]
+#+LATEX_HEADER: \setbeamertemplate{enumerate items}[default]
+#+LATEX_HEADER: \setlength{\parskip}{\baselineskip}%
+#+LATEX_HEADER: \setlength{\parindent}{0pt}%
+#+LATEX_HEADER: \setbeamertemplate{navigation symbols}{}%remove navigation symbols
+#+LATEX_HEADER: \newcommand{\hlyellow}[1]{\colorbox{yellow!50}{$\displaystyle#1$}}
+#+LATEX_HEADER: \newcommand{\hlfancy}[2]{\sethlcolor{#1}\hl{#2}}
+#+OPTIONS: H:2 toc:nil num:t
+
+#+begin_export latex
+\newcommand{\mathcolorbox}[2]{%
+  \begingroup
+  \setlength{\fboxsep}{2pt}%
+  \colorbox{#1}{$\displaystyle #2$}%
+  \endgroup
+}
+
+\AtBeginSection[]{
+  \begin{frame}
+  \vfill
+  \centering
+  \begin{beamercolorbox}[sep=8pt,center,shadow=true,rounded=true]{title}
+    \usebeamerfont{title}\insertsectionhead\par%
+  \end{beamercolorbox}
+  \vfill
+  \end{frame}
+}
+#+end_export
+
+* Intro
+:PROPERTIES:
+:UNNUMBERED:             t
+:END:
+
+** Frequently Asked Questions
+
+- Can I get a replacement for my broken glass?
+- What is the difference between Pét-Nat and Method Ancestrale?
+- Where is Nadia Verrua?
+- What the heck is Emacs?
+- Why does Mykola hate dosage in Champagne?
+
+** Broken glass?
+
+#+attr_latex: :height 5.5cm
+[[file:images/defeated-male.jpg]]
+
+** What the heck is Emacs?[fn:1]
+
+**** About                                                      :B_column:
+:PROPERTIES:
+:BEAMER_env:             column
+:BEAMER_col:             0.5
+:END:
+
+- *Extensible* text editor.
+- Development began in 1970s.
+- Initially released in 1976.
+- Actively maintained till this day.
+- Use ~C-x C-c~ to quit it.
+- It's like Notepad/TextEdit, but for nerdy and masochistic kids.
+- It's counter-intuitive, but some people do in fact love Emacs.
+
+[fn:1] I still ask myself this very question.
+
+**** Photo                                                      :B_column:
+:PROPERTIES:
+:BEAMER_env:             column
+:BEAMER_col:             0.5
+:END:
+
+#+attr_latex: :height 3.5cm
+[[file:images/emacs.png]]
+
+** Order salads
+
+#+attr_latex: :height 5.0cm
+#+caption: from =CestDiego/sweetgreen.el=
+[[file:images/salad.png]]
+
+** Read email
+
+#+attr_latex: :height 7.0cm
+#+caption: from =rougier/mu4e-dashboard=
+[[file:images/email-dashboard.png]]
+
+** Control sex toys
+
+#+attr_latex: :height 5.0cm
+#+caption: You may like Emacs, but Kyle (aka Poor Life Choices) *loves* Emacs. And it's mutual.
+[[file:images/deldo.png]]
+
+** Write some code
+
+#+attr_latex: :height 8.0cm
+[[file:images/coding.png]]
+
+** Take notes and manage tasks
+
+#+attr_latex: :height 8.0cm
+[[file:images/note-taking.png]]
+
+** Manage your wine cellar
+
+#+attr_latex: :height 8.0cm
+[[file:images/wine-notes.png]]
+
+** About me
+
+**** About                                                      :B_column:
+:PROPERTIES:
+:BEAMER_env:             column
+:BEAMER_col:             0.75
+:END:
+
+- Server Guild Manager @Wix.
+- Author of Barberry Garden.
+- Wine enthusiast.
+  - Not a sommelier.
+  - No affiliations with wine importers or stores.
+- Emacs user for 10+ years.
+
+**** Photo                                                      :B_column:
+:PROPERTIES:
+:BEAMER_env:             column
+:BEAMER_col:             0.25
+:END:
+
+#+attr_latex: :height 3.5cm
+#+caption: Boris Buliga
+[[file:images/boris.jpg]]
+
+* I drink wine
+
+** I +love+ need[fn:2] to take notes
+
+1. Information about wine, producer, region, grape, technology, etc.
+2. Score and tasting notes.
+3. What, when, where and with whom.
+4. Manage cellar.
+
+[fn:2] Is it Obsessive-compulsive disorder? Nah, it's just my crappy memory.
+
+* Existing solutions
+** Vivino: Buy The Right Wine
+
+**** About                                                      :B_column:
+:PROPERTIES:
+:BEAMER_env:             column
+:BEAMER_col:             0.6
+:END:
+
+- An online wine marketplace and wine app.
+- Launched in 2010.
+- Arguably the most popular wine application on [UA] market.
+- AFAIK devs are located in Lviv.
+- Premium is not required.
+
+**** Photo                                                      :B_column:
+:PROPERTIES:
+:BEAMER_env:             column
+:BEAMER_col:             0.4
+:END:
+
+#+attr_latex: :height 7.0cm
+[[file:images/vivino.png]]
+
+** Vivino Pros
+
+**** About                                                      :B_column:
+:PROPERTIES:
+:BEAMER_env:             column
+:BEAMER_col:             0.5
+:END:
+
+- Huge user base. Including folks from UA.
+- Huge wine base.
+- Can't find a wine? Add it yourself.
+- Good image recognition.
+- Simple cellar tracking.
+- Taste profile.
+- Wine Adventures.
+
+**** Photo                                                      :B_column:
+:PROPERTIES:
+:BEAMER_env:             column
+:BEAMER_col:             0.25
+:END:
+
+#+attr_latex: :height 7.0cm
+[[file:images/vivino-adventures.png]]
+
+**** Photo                                                      :B_column:
+:PROPERTIES:
+:BEAMER_env:             column
+:BEAMER_col:             0.25
+:END:
+
+#+attr_latex: :height 7.0cm
+[[file:images/vivino-taste-profile.png]]
+
+** Vivino Cons
+
+**** About                                                      :B_column:
+:PROPERTIES:
+:BEAMER_env:             column
+:BEAMER_col:             1.0
+:END:
+
+- Mostly useless ratings.
+  - Subscribe to people you trust.
+- Duplicated wines and mistakes.
+- Strict limit on review length ($2^9$ characters).
+- Buggy and sometimes too eventual "eventual consistency".
+- Mostly useless premium. But at least you support folks.
+- Lame Web version.
+- No export functionality.
+- User ranking and achievements.
+
+** User Ranking and Achievements
+
+**** P1                                                            :B_column:
+:PROPERTIES:
+:BEAMER_env:             column
+:BEAMER_col:             0.3
+:END:
+
+#+attr_latex: :height 7.0cm
+[[file:images/vivino-rank.png]]
+
+**** P2                                                            :B_column:
+:PROPERTIES:
+:BEAMER_env:             column
+:BEAMER_col:             0.3
+:END:
+
+#+attr_latex: :height 7.0cm
+[[file:images/vivino-achievements.png]]
+
+**** P3                                                            :B_column:
+:PROPERTIES:
+:BEAMER_env:             column
+:BEAMER_col:             0.3
+:END:
+
+- Gamification
+- Forces interactions
+- Promotes users
+
+** User Ranking and Achievements
+
+**** P1                                                            :B_column:
+:PROPERTIES:
+:BEAMER_env:             column
+:BEAMER_col:             0.4
+:END:
+
+It promotes
+
+- unhealthy *habits*
+- unhealthy *culture*
+
+**** P2                                                            :B_column:
+:PROPERTIES:
+:BEAMER_env:             column
+:BEAMER_col:             0.6
+:END:
+
+#+attr_latex: :height 6.0cm
+[[file:images/fry-coffee.jpg]]
+
+** Delectable - Scan & Rate Wine
+
+**** About                                                      :B_column:
+:PROPERTIES:
+:BEAMER_env:             column
+:BEAMER_col:             0.6
+:END:
+
+- A platform to share and discover wine.
+- Launched in 2011.
+- Run by Vinous Group.
+  - Don't forget to subscribe.
+- Premium is not required.
+
+**** Photo                                                      :B_column:
+:PROPERTIES:
+:BEAMER_env:             column
+:BEAMER_col:             0.4
+:END:
+
+#+attr_latex: :height 7.0cm
+[[file:images/delectable.png]]
+
+** Delectable Pros
+
+**** About                                                      :B_column:
+:PROPERTIES:
+:BEAMER_env:             column
+:BEAMER_col:             0.5
+:END:
+
+- Active user base, but smaller compared to Vivino.
+- Decent wine base.
+- Less strict limits on the review length.
+- No user ranking.
+- Nice users promotion approach.
+- Ok Web version.
+
+**** Photo                                                      :B_column:
+:PROPERTIES:
+:BEAMER_env:             column
+:BEAMER_col:             0.25
+:END:
+
+#+attr_latex: :height 7.0cm
+[[file:images/delectable-home.png]]
+
+**** Photo                                                      :B_column:
+:PROPERTIES:
+:BEAMER_env:             column
+:BEAMER_col:             0.25
+:END:
+
+#+attr_latex: :height 7.0cm
+[[file:images/delectable-trending.png]]
+
+** Delectable Cons
+
+**** About                                                      :B_column:
+:PROPERTIES:
+:BEAMER_env:             column
+:BEAMER_col:             0.5
+:END:
+
+- Can't find wine?
+  - Someone from the team will process it and create a new wine entry if needed.
+  - Premium gives priority wine transcription.
+  - The team can't figure it out? Too bad.
+- Almost no users from UA.
+- No cellar feature.
+- Lame taste insights.
+- No export functionality.
+
+**** Photo                                                      :B_column:
+:PROPERTIES:
+:BEAMER_env:             column
+:BEAMER_col:             0.25
+:END:
+
+#+attr_latex: :height 7.0cm
+[[file:images/delectable-missing-wines.png]]
+
+**** Photo                                                      :B_column:
+:PROPERTIES:
+:BEAMER_env:             column
+:BEAMER_col:             0.25
+:END:
+
+#+attr_latex: :height 7.0cm
+[[file:images/delectable-taste-insights.png]]
+
+** CellarTracker - Wine Reviews & Cellar Management Tools
+
+- A platform for cellar management and note taking.
+- Launched in 2003.
+- Premium is optional.
+- A bit old school.
+
+** Dial-up vibes
+
+#+attr_latex: :height 7.0cm
+[[file:images/cellar-tracker-home-desktop.jpeg]]
+
+** Dial-up vibes...
+
+#+attr_latex: :height 6.0cm
+[[file:images/cellar-tracker-mobile-1.png]]
+
+** A fresh face
+
+**** Before                                                        :B_column:
+:PROPERTIES:
+:BEAMER_env:             column
+:BEAMER_col:             0.5
+:END:
+
+#+attr_latex: :height 6.0cm
+#+caption: before
+[[file:images/cellar-tracker-mobile-1.png]]
+
+**** After                                                         :B_column:
+:PROPERTIES:
+:BEAMER_env:             column
+:BEAMER_col:             0.5
+:END:
+
+#+attr_latex: :height 6.0cm
+#+caption: after
+[[file:images/cellar-tracker-mobile-2.png]]
+
+** A fresh new face
+
+#+attr_latex: :height 7.0cm
+[[file:images/theare-the-same.jpeg]]
+
+** CellarTracker Pros
+
+**** About                                                      :B_column:
+:PROPERTIES:
+:BEAMER_env:             column
+:BEAMER_col:             0.5
+:END:
+
+- A small but active user base.
+- Huge wine base.
+- Easy to add new wine records and edit mistakes.
+- The most advanced cellar tracker capabilities.
+- The most advanced note taking capabilities.
+- Full-blown web version.
+- Good image recognition (based on Vivino).
+- Data export functionality.
+
+**** Photo                                                      :B_column:
+:PROPERTIES:
+:BEAMER_env:             column
+:BEAMER_col:             0.25
+:END:
+
+#+attr_latex: :height 7.0cm
+[[file:images/cellar-tracker-add-bottle-1.png]]
+
+**** Photo                                                      :B_column:
+:PROPERTIES:
+:BEAMER_env:             column
+:BEAMER_col:             0.25
+:END:
+
+#+attr_latex: :height 7.0cm
+[[file:images/cellar-tracker-add-bottle-2.png]]
+
+** CellarTracker Cons
+
+- +UI+
+- Complexity.
+- 67 users from UA.
+  - 5 users with >100 reviews.
+
+* And the winner is...
+
+** No one, really
+
+- Vivino is leader because of community.
+- I wish Delectable didn't fail in the core feature.
+- CellarTracker is superior, obviously.
+
+** So what's wrong?
+
+1. Data is not owned by me.
+2. Incorrect data.
+3. No way to extend data with extra fields.
+4. Capabilities limited by proprietary solution.
+5. Requires internet connection (and who is laughing now?).
+6. ...
+7. I am engineer, I am capable of creating my own solution.
+
+** What are my options?
+
+- Notebooks (plain and specialised)
+- Spreadsheets
+- AirTable
+- Notion
+- <2-> Emacs
+
+** Obviously...
+
+#+attr_latex: :height 3.5cm
+[[file:images/emacs.png]]
+
+#+begin_quote
+Solution? +Kafka+ Emacs.
+
+Problem? You tell me.
+
+--- a wise man
+#+end_quote
+
+** What's wrong about AirTable/Notion?                             :noexport:
+
+- Too much manual work.
+- Hard to analyse.
+- Hard to write automations (info might be outdated).
+- Still not everything is under /my/ control.
+- Sometimes blocked by platform (e.g. waiting for features).
+- Requires internet connection.
+
+It's actually good enough. My wife still uses Airtable to manage our home library.
+
+** Important aspects
+
+- Evolutionary approach
+- Automation
+- Fun
+
+* Emacs as a wine app
+
+** Org Mode for the rescue
+
+*** About                                                          :B_column:
+:PROPERTIES:
+:BEAMER_env:             column
+:BEAMER_col:             0.75
+:END:
+
+- A markup language (like markdown, but beefed with features).
+- An extension for Emacs.
+- Provides nice APIs to manipulate documents.
+- People use it to write documents, notes, presentations manage tasks and projects, etc.
+
+*** Photo                                                          :B_column:
+:PROPERTIES:
+:BEAMER_env:             column
+:BEAMER_col:             0.25
+:END:
+
+#+attr_latex: :height 3.5cm
+[[file:images/org-mode-unicorn.png]]
+
+** What the actual heck?
+
+#+attr_latex: :height 7.0cm
+[[file:images/org-mode-example.png]]
+
+** It can be less ugly... probably
+
+#+attr_latex: :height 8.0cm
+[[file:images/org-mode-example-2.png]]
+
+** Notes structure
+
+#+attr_latex: :height 7.0cm
+[[file:images/notes-structure.png]]
+
+** Wine entry
+
+#+attr_latex: :height 8.0cm
+[[file:images/vino-wine-entry.png]]
+
+** Rating
+
+#+attr_latex: :height 8.0cm
+[[file:images/vino-rating.png]]
+
+** Database
+
+- All notes (e.g. data) are structured.
+- There are APIs to parse these notes.
+- So it's easy to build a database (=sqlite=) from the notes.
+
+#+attr_latex: :height 5.0cm
+[[file:images/database.png]]
+
+** Vulpea
+
+*** About                                                          :B_column:
+:PROPERTIES:
+:BEAMER_env:             column
+:BEAMER_col:             0.75
+:END:
+
+- A collection of functions for note taking based on Org Mode and Org Roam.
+- A library to write applications and utilities around Org notes (structured or not).
+- Optimized for reads.
+- Allows to query by different metadata, custom fields, links etc.
+- Allows to extend database with custom tables and data extractors.
+- Handles quite big notes collection (50k+).
+- https://github.com/d12frosted/vulpea
+
+*** Photo                                                          :B_column:
+:PROPERTIES:
+:BEAMER_env:             column
+:BEAMER_col:             0.25
+:END:
+
+#+attr_latex: :height 3.5cm
+[[file:images/vulpea.png]]
+
+** Vino
+
+*** About                                                          :B_column:
+:PROPERTIES:
+:BEAMER_env:             column
+:BEAMER_col:             0.75
+:END:
+
+- An Emacs application for cellar tracking and wine notes management.
+- https://github.com/d12frosted/vino
+
+*** Photo                                                          :B_column:
+:PROPERTIES:
+:BEAMER_env:             column
+:BEAMER_col:             0.25
+:END:
+
+#+attr_latex: :height 3.5cm
+[[file:images/vino.png]]
+
+** So what?
+
+- I have org files as source of truth. These notes are *well-structured*.
+- I have APIs to manipulate these files.
+- I have database with all data extracted (so there is no need to parse these files every time).
+
+* Emacs UI is ugly, isn't it? And no one can read your notes.
+
+** https://barberry.io
+
+#+attr_latex: :height 8.0cm
+[[file:images/barberry-garden-home.png]]
+
+** publicatorg
+
+#+attr_latex: :height 8.0cm
+[[file:images/publicatorg.png]]
+
+** publicatorg
+
+#+attr_latex: :height 8.0cm
+[[file:images/publicatorg-exec.png]]
+
+** And it's crazy cool
+
+- I can keep my private notes as the source of truth.
+- I have my cozy Emacs UI.
+- But thanks to structured notes and APIs I can build multiple views.
+- ...
+- Just think about it :) I am overly excited!
+
+* Some cool features
+
+** CellarTracker
+
+Me: can we have a CellarTracker?\\
+Mom: we have CellarTracker at home.\\
+CellarTracker at home:
+
+#+attr_latex: :height 5.0cm
+[[file:images/vino-inv-ui.png]]
+
+** Event organisation (plan)
+
+#+attr_latex: :height 7.5cm
+[[file:images/vino-event-plan-1.png]]
+
+** Event organisation (scores)
+
+#+attr_latex: :height 7.5cm
+[[file:images/vino-event-plan-2.png]]
+
+** Event organisation (scores) $\rightarrow$ event summary
+
+#+attr_latex: :height 6.0cm
+[[file:images/barberry-event-summary.png]]
+
+** Event organisation (scores) $\rightarrow$ personal scores
+
+#+attr_latex: :height 6.0cm
+[[file:images/barberry-event-scores.png]]
+
+** Event organisation (scores) $\rightarrow$ convive page
+
+#+attr_latex: :height 7.0cm
+[[file:images/barberry-convive-page.png]]
+
+** Event organisation (order)
+
+#+attr_latex: :height 7.5cm
+[[file:images/vino-event-plan-3.png]]
+
+** Event organisation (extra)
+
+#+attr_latex: :height 5.0cm
+[[file:images/vino-event-plan-4.png]]
+
+** Event organisation (invoices)
+
+#+attr_latex: :height 5.0cm
+[[file:images/vino-event-plan-5.png]]
+
+** Graphs
+
+#+attr_latex: :height 7.0cm
+#+caption: from "Yearly events report - Vol. 2023"
+[[file:images/barberry-value-of-events.png]]
+
+** Woman in red
+
+#+attr_latex: :height 7.0cm
+#+caption: from "Yearly events report - Vol. 2023"
+[[file:images/barberry-value-of-events-raw.png]]
+
+** There's more
+
+- Barberry Garden budget is managed with small Emacs extension based on ledger.
+- I have a view that suggests what to post to Vivino (e.g. what was not posted yet).
+- For wine tasting events presentations are generated automatically from the event article.
+- I have a simple script that provides me various stats for a given time frame.
+
+But there is no time to cover it all, so don't worry.
+
+** Why so complicated?
+
+#+begin_quote
+[…] org-mode is just a collection of lisp running in an editor. It cannot impose more complex features on you. *The genius of org-mode is that you will eventually impose more complex features on yourself.*
+
+--- Michael Hall
+#+end_quote
+
+* Are you proud?
+
+** Conclusion
+
+- Avoid Emacs at all costs.
+- Structured data is cool.
+- APIs are cool.
+- Combined they can solve lots of routine tasks and result in some interesting products.
+- Don't hesitate to start your own project, even if you are solving your own problems.
+- People around me are cool.
+
+
+** Follow
+
+**** About                                                      :B_column:
+:PROPERTIES:
+:BEAMER_env:             column
+:BEAMER_col:             0.5
+:END:
+
+- https://barberry.io
+- mail: boris@barberry.io
+- @d12frosted on GitHub
+
+**** Photo                                                      :B_column:
+:PROPERTIES:
+:BEAMER_env:             column
+:BEAMER_col:             0.5
+:END:
+
+#+attr_latex: :height 6cm
+[[file:images/tg-barberry-garden.png]]
+
+* Thank you
+
+* Questions?
+
